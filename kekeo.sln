@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms14068", "ms14068\ms14068.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E977}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aoratopw", "aoratopw\aoratopw.vcxproj", "{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global files", "{C3104405-A517-4F6B-8D09-0EE6EA32FD89}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{8163071B-5A86-4F7E-8685-F71045451CE0}"
+	ProjectSection(SolutionItems) = preProject
+		inc\asn1code.h = inc\asn1code.h
+		inc\asn1glob.h = inc\asn1glob.h
+		inc\asn1hdr.h = inc\asn1hdr.h
+		inc\asn1util.h = inc\asn1util.h
+		inc\etype.h = inc\etype.h
+		inc\iaapi.h = inc\iaapi.h
+		inc\ossasn1.h = inc\ossasn1.h
+		inc\ossber.h = inc\ossber.h
+		inc\ossdll.h = inc\ossdll.h
+		inc\ossexer.h = inc\ossexer.h
+		inc\ossglobl.h = inc\ossglobl.h
+		inc\ossiaapi.h = inc\ossiaapi.h
+		inc\ossmmgmt.h = inc\ossmmgmt.h
+		inc\ossper.h = inc\ossper.h
+		inc\osstrace.h = inc\osstrace.h
+		inc\osstype.h = inc\osstype.h
+		inc\ossxer.h = inc\ossxer.h
+		inc\superglobals.h = inc\superglobals.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{979399AD-9EB8-485F-970F-BE32E1AE0ADC}"
+	ProjectSection(SolutionItems) = preProject
+		lib\cryptdll.lib = lib\cryptdll.lib
+		lib\ntdll.min.lib = lib\ntdll.min.lib
+		lib\ossiphlp.lib = lib\ossiphlp.lib
+		lib\samlib.lib = lib\samlib.lib
+		lib\toedcode.lib = lib\toedcode.lib
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F4CBDD4-E97A-4708-A829-600230C3E977}.Release|Win32.ActiveCfg = Release|Win32
+		{2F4CBDD4-E97A-4708-A829-600230C3E977}.Release|Win32.Build.0 = Release|Win32
+		{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}.Release|Win32.ActiveCfg = Release|Win32
+		{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8163071B-5A86-4F7E-8685-F71045451CE0} = {C3104405-A517-4F6B-8D09-0EE6EA32FD89}
+		{979399AD-9EB8-485F-970F-BE32E1AE0ADC} = {C3104405-A517-4F6B-8D09-0EE6EA32FD89}
+	EndGlobalSection
+EndGlobal
