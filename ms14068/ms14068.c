@@ -378,7 +378,6 @@ void impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, P
 
 						RtlFreeUnicodeString(&uProg);
 					}
-
 					RtlFreeUnicodeString(&uPass);
 				}
 				RtlFreeUnicodeString(&uDomain);

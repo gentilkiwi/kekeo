@@ -81,9 +81,7 @@ int main(int argc, char * argv[])
 								kull_m_string_printf_hex(userKey.keyvalue.value, userKey.keyvalue.length, 0);
 								kprintf(" (%s)\n", kull_m_kerberos_asn1_helper_util_etypeToString(userKey.keytype));
 
-
 								makeInception(szUser, szDomain, szNew, &userKey, szWhatDC, 88, 464);
-
 
 								NetApiBufferFree(cInfo);
 							}

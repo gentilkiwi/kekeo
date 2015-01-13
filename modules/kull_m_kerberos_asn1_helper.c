@@ -557,7 +557,6 @@ NTSTATUS kull_m_kerberos_asn1_helper_util_stringToKey(PCSTR user, PCSTR domain, 
 				RtlInitString(&aUser, user);
 				RtlInitString(&aDomain, domain);
 				RtlInitString(&aPassword, password);
-
 				status = RtlAnsiStringToUnicodeString(&uUser, &aUser, TRUE);
 				if(NT_SUCCESS(status))
 				{
