@@ -51,4 +51,9 @@
       <UniqueIdentifier>{bf330aec-9121-400c-ab30-09c9ac045ced}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.asn">
+      <Filter>common modules</Filter>
+    </None>
+  </ItemGroup>
 </Project>

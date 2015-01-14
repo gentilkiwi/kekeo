@@ -59,4 +59,9 @@
     </ClInclude>
     <ClInclude Include="kuhl_m_kerberos_pac.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.asn">
+      <Filter>common modules</Filter>
+    </None>
+  </ItemGroup>
 </Project>

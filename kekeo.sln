@@ -12,23 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global file
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{8163071B-5A86-4F7E-8685-F71045451CE0}"
 	ProjectSection(SolutionItems) = preProject
-		inc\asn1code.h = inc\asn1code.h
-		inc\asn1glob.h = inc\asn1glob.h
-		inc\asn1hdr.h = inc\asn1hdr.h
-		inc\asn1util.h = inc\asn1util.h
-		inc\etype.h = inc\etype.h
-		inc\iaapi.h = inc\iaapi.h
 		inc\ossasn1.h = inc\ossasn1.h
-		inc\ossber.h = inc\ossber.h
-		inc\ossdll.h = inc\ossdll.h
-		inc\ossexer.h = inc\ossexer.h
-		inc\ossglobl.h = inc\ossglobl.h
-		inc\ossiaapi.h = inc\ossiaapi.h
-		inc\ossmmgmt.h = inc\ossmmgmt.h
-		inc\ossper.h = inc\ossper.h
-		inc\osstrace.h = inc\osstrace.h
 		inc\osstype.h = inc\osstype.h
-		inc\ossxer.h = inc\ossxer.h
 		inc\superglobals.h = inc\superglobals.h
 	EndProjectSection
 EndProject
