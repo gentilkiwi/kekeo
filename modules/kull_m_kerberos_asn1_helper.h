@@ -4,7 +4,7 @@
 	Licence : http://creativecommons.org/licenses/by/3.0/fr/
 */
 #pragma once
-#include "globals.h"
+#include "superglobals.h"
 #include "kull_m_kerberos_asn1.h"
 #include "kull_m_crypto_system.h"
 
@@ -14,9 +14,20 @@ BOOL kull_m_kerberos_asn1_helper_term();
 void kull_m_kerberos_asn1_helper_ossFreeBuf(void *data);
 int kull_m_kerberos_asn1_helper_ossFreePDU(int pdunum, void *data);
 int kull_m_kerberos_asn1_helper_ossPrintPDU(int pdunum, void *data);
+int kull_m_kerberos_asn1_helper_ossDecode(int pdunum, OssBuf *input, void **output);
+int kull_m_kerberos_asn1_helper_ossEncode(int pdunum, void * input, OssBuf *output);
+int kull_m_kerberos_asn1_helper_ossCpyValue(int pdunum, void *source, void **destination);
+char * kull_m_kerberos_asn1_helper_ossGetErrMsg();
 
 void kull_m_kerberos_asn1_helper_init_PrincipalName(PrincipalName * name, INT name_type, DWORD count, ...);
 void kull_m_kerberos_asn1_helper_init_KerberosTime(KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037);
+void kull_m_kerberos_asn1_helper_init_KerberosTime2(KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037);
+void kull_m_kerberos_asn1_helper_init_KerberosTime3(KerberosTime *time, time_t uTime);
+
+void kull_m_kerberos_asn1_helper_get_KerberosTime(KerberosTime *time, PSYSTEMTIME pSystemTime);
+void kull_m_kerberos_asn1_helper_get_KerberosTime2(KerberosTime *time, PFILETIME pFileTime);
+void kull_m_kerberos_asn1_helper_get_KerberosTime3(KerberosTime *time, time_t * uTime);
+
 int kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(PA_DATA *data, EncryptionKey *key);
 int kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(PA_DATA *data, BOOL request);
 BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(PA_DATA *data, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key);

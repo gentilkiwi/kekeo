@@ -4,7 +4,7 @@
 	Licence : http://creativecommons.org/licenses/by/3.0/fr/
 */
 #pragma once
-#include "globals.h"
+#include "superglobals.h"
 
 typedef CONST char *PCSZ;
 typedef STRING ANSI_STRING;

@@ -5,6 +5,8 @@
 */
 #pragma once
 #include "superglobals.h"
+#include "../modules/kull_m_kerberos_asn1_helper.h"
+#include "../modules/kull_m_kerberos_helper.h"
 
-BOOL kull_m_file_writeData(PCSTR fileName, LPCVOID data, DWORD lenght);
-BOOL kull_m_file_readData(PCSTR fileName, PBYTE * data, PDWORD lenght);
+#define MIMIKATZ				"KiRBikator"
+#define MIMIKATZ_VERSION		"1.0"

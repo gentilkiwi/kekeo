@@ -81,7 +81,8 @@ Checksum        ::= SEQUENCE {
         cksumtype       [0] Int32,
         checksum        [1] OCTET STRING
 }
- 
+
+--<ASN1.PDU KerberosV5Spec2.Ticket>--
 Ticket          ::= [APPLICATION 1] SEQUENCE {
         tkt-vno         [0] INTEGER (5),
         realm           [1] Realm,

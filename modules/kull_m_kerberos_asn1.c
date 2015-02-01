@@ -12,7 +12,7 @@
 
 /* Generated for: N/A (Trial), License: 70098Z. */
 /* Abstract syntax: kull_m_kerberos_asn1 */
-/* Created: Sun Jan 11 13:36:06 2015 */
+/* Created: Sun Jan 25 20:47:15 2015 */
 /* ASN.1 compiler version: 10.0 */
 /* Code generated for runtime version 10.0 or later */
 /* Compiler operating system: Windows */
@@ -149,6 +149,14 @@ void DLL_ENTRY_FDEF _ossinit_kull_m_kerberos_asn1(struct ossGlobal *world) {
     _oss_post_init(world);
 }
 
+static long _edTicket(OssGlobal * _g, char ** _out_pos, long * _max_len, Ticket * _in_data);
+static void _d_Ticket(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, Ticket * _out_data);
+#if (OSS_TOED_API_LEVEL < 22 ) || !defined(OSSNOFREEPDU)
+static void _f_Ticket(OssGlobal * _g, Ticket * _data_ptr);
+#endif
+#ifdef OSSPRINT
+static void _p_Ticket(OssGlobal * _g, Ticket * _data_ptr);
+#endif
 static long _ed_seqof1(OssGlobal * _g, char ** _out_pos, long * _max_len, _seqof1 * _in_data);
 static void _d__seqof1(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, _seqof1 * _out_data);
 #if (OSS_TOED_API_LEVEL < 22 ) || !defined(OSSNOFREEPDU)
@@ -220,14 +228,6 @@ static void _f_Checksum(OssGlobal * _g, Checksum * _data_ptr);
 #endif
 #ifdef OSSPRINT
 static void _p_Checksum(OssGlobal * _g, Checksum * _data_ptr);
-#endif
-static long _edTicket(OssGlobal * _g, char ** _out_pos, long * _max_len, Ticket * _in_data);
-static void _d_Ticket(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, Ticket * _out_data);
-#if (OSS_TOED_API_LEVEL < 22 ) || !defined(OSSNOFREEPDU)
-static void _f_Ticket(OssGlobal * _g, Ticket * _data_ptr);
-#endif
-#ifdef OSSPRINT
-static void _p_Ticket(OssGlobal * _g, Ticket * _data_ptr);
 #endif
 static long _ed_seqof2(OssGlobal * _g, char ** _out_pos, long * _max_len, _seqof2 * _in_data);
 static void _d__seqof2(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, _seqof2 * _out_data);
@@ -308,6 +308,14 @@ static void _f_LastReq(OssGlobal * _g, LastReq * _data_ptr);
 #endif
 #ifdef OSSPRINT
 static void _p_LastReq(OssGlobal * _g, LastReq * _data_ptr);
+#endif
+static void _eTicket(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _outlen, unsigned int _flags);
+static void * _dTicket(OssGlobal * _g);
+#if (OSS_TOED_API_LEVEL < 22 ) || !defined(OSSNOFREEPDU)
+static void _fTicket(OssGlobal * _g, void * _data);
+#endif
+#ifdef OSSPRINT
+static int _pTicket(OssGlobal * _g, void * _data);
 #endif
 static void _eEncTicketPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _outlen, unsigned int _flags);
 static void * _dEncTicketPart(OssGlobal * _g);
@@ -553,6 +561,7 @@ int DLL_ENTRY _pmKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void * _dat
 
 
 #ifdef OSS_COPY_VALUE
+static Ticket * _cpTicket(OssGlobal * _g, Ticket * psVal, Ticket * pdVal);
 static _seqof1 * _cp_seqof1(OssGlobal * _g, _seqof1 * psVal, _seqof1 * pdVal);
 static PrincipalName * _cpPrincipalName(OssGlobal * _g, PrincipalName * psVal, PrincipalName * pdVal);
 static HostAddress * _cpHostAddress(OssGlobal * _g, HostAddress * psVal, HostAddress * pdVal);
@@ -562,7 +571,6 @@ static PA_DATA * _cpPA_DATA(OssGlobal * _g, PA_DATA * psVal, PA_DATA * pdVal);
 static EncryptedData * _cpEncryptedData(OssGlobal * _g, EncryptedData * psVal, EncryptedData * pdVal);
 static EncryptionKey * _cpEncryptionKey(OssGlobal * _g, EncryptionKey * psVal, EncryptionKey * pdVal);
 static Checksum * _cpChecksum(OssGlobal * _g, Checksum * psVal, Checksum * pdVal);
-static Ticket * _cpTicket(OssGlobal * _g, Ticket * psVal, Ticket * pdVal);
 static _seqof3 * _cp_seqof3(OssGlobal * _g, _seqof3 * psVal, _seqof3 * pdVal);
 static KDC_REQ_BODY * _cpKDC_REQ_BODY(OssGlobal * _g, KDC_REQ_BODY * psVal, KDC_REQ_BODY * pdVal);
 static _seqof4 * _cp_seqof4(OssGlobal * _g, _seqof4 * psVal, _seqof4 * pdVal);
@@ -572,6 +580,7 @@ static EncKDCRepPart * _cpEncKDCRepPart(OssGlobal * _g, EncKDCRepPart * psVal, E
 #endif /* OSS_COPY_VALUE */
 
 #ifdef OSS_COMPARE_VALUE
+static int _cmTicket(OssGlobal * _g, Ticket * _odata, Ticket * _cdata);
 static int _cm_seqof1(OssGlobal * _g, _seqof1 * _odata, _seqof1 * _cdata);
 static int _cmPrincipalName(OssGlobal * _g, PrincipalName * _odata, PrincipalName * _cdata);
 static int _cmHostAddress(OssGlobal * _g, HostAddress * _odata, HostAddress * _cdata);
@@ -581,7 +590,6 @@ static int _cmPA_DATA(OssGlobal * _g, PA_DATA * _odata, PA_DATA * _cdata);
 static int _cmEncryptedData(OssGlobal * _g, EncryptedData * _odata, EncryptedData * _cdata);
 static int _cmEncryptionKey(OssGlobal * _g, EncryptionKey * _odata, EncryptionKey * _cdata);
 static int _cmChecksum(OssGlobal * _g, Checksum * _odata, Checksum * _cdata);
-static int _cmTicket(OssGlobal * _g, Ticket * _odata, Ticket * _cdata);
 static int _cm_seqof2(OssGlobal * _g, _seqof2 * _odata, _seqof2 * _cdata);
 static int _cm_seqof3(OssGlobal * _g, _seqof3 * _odata, _seqof3 * _cdata);
 static int _cmKDC_REQ_BODY(OssGlobal * _g, KDC_REQ_BODY * _odata, KDC_REQ_BODY * _cdata);
@@ -592,7 +600,8 @@ static int _cmEncKDCRepPart(OssGlobal * _g, EncKDCRepPart * _odata, EncKDCRepPar
 static int _cmLastReq(OssGlobal * _g, LastReq * _odata, LastReq * _cdata);
 #endif /* OSS_COMPARE_VALUE */
 
-static void (*_Encoders[29])(OssGlobal *, void *, char **, long *, unsigned int) = {
+static void (*_Encoders[30])(OssGlobal *, void *, char **, long *, unsigned int) = {
+    _eTicket,
     _eEncTicketPart,
     _eAS_REQ,
     _eTGS_REQ,
@@ -623,7 +632,8 @@ static void (*_Encoders[29])(OssGlobal *, void *, char **, long *, unsigned int)
     _eKERB_PA_PAC_REQUEST,
     _eChangePasswdData
 };
-static void *(*_Decoders[29])(OssGlobal *) = {
+static void *(*_Decoders[30])(OssGlobal *) = {
+    _dTicket,
     _dEncTicketPart,
     _dAS_REQ,
     _dTGS_REQ,
@@ -655,7 +665,8 @@ static void *(*_Decoders[29])(OssGlobal *) = {
     _dChangePasswdData
 };
 #if (OSS_TOED_API_LEVEL < 22 ) || !defined(OSSNOFREEPDU)
-static void (*_FreePDU[29])(OssGlobal *, void *) = {
+static void (*_FreePDU[30])(OssGlobal *, void *) = {
+    _fTicket,
     _fEncTicketPart,
     _fAS_REQ,
     _fTGS_REQ,
@@ -688,7 +699,8 @@ static void (*_FreePDU[29])(OssGlobal *, void *) = {
 };
 #endif
 #ifdef OSSPRINT
-static _print_pdu_ _PrintPDU[29] = {
+static _print_pdu_ _PrintPDU[30] = {
+    { _pTicket, "Ticket" },
     { _pEncTicketPart, "EncTicketPart" },
     { _pAS_REQ, "AS-REQ" },
     { _pTGS_REQ, "TGS-REQ" },
@@ -723,6 +735,10 @@ static _print_pdu_ _PrintPDU[29] = {
 
 #if OSSDEBUG > 1
 static const _Context_Id _context_id[] = {
+    {"enc-part", "EncryptedData", _sequence_type},
+    {"sname", "PrincipalName", _sequence_type},
+    {"realm", "Realm", _charstring_type},
+    {"tkt-vno", "INTEGER", _integer_type},
     {NULL, "KerberosString", _charstring_type},
     {"name-string", "SEQUENCE OF", _sequence_of_type},
     {"name-type", "Int32", _integer_type},
@@ -741,10 +757,6 @@ static const _Context_Id _context_id[] = {
     {"keytype", "Int32", _integer_type},
     {"checksum", "OCTET STRING", _octetstring_type},
     {"cksumtype", "Int32", _integer_type},
-    {"enc-part", "EncryptedData", _sequence_type},
-    {"sname", "PrincipalName", _sequence_type},
-    {"realm", "Realm", _charstring_type},
-    {"tkt-vno", "INTEGER", _integer_type},
     {NULL, "Int32", _integer_type},
     {NULL, "Ticket", _sequence_type},
     {"additional-tickets", "SEQUENCE OF", _sequence_of_type},
@@ -777,6 +789,7 @@ static const _Context_Id _context_id[] = {
     {"key", "EncryptionKey", _sequence_type},
     {"lr-value", "KerberosTime", _time_type},
     {"lr-type", "Int32", _integer_type},
+    {"Ticket", "SEQUENCE", _sequence_type},
     {"EncTicketPart", "SEQUENCE", _sequence_type},
     {"authorization-data", "AuthorizationData", _sequence_of_type},
     {"transited", "TransitedEncoding", _sequence_type},
@@ -872,6 +885,51 @@ void * DLL_ENTRY_FDEF _odKerberosV5Spec2(OssGlobal * _g, int _pdunum)
 }
 
 #endif
+static long _edTicket(OssGlobal * _g, char ** _out_pos, long * _max_len, Ticket * _in_data)
+{
+#if OSSDEBUG > 1
+    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
+#endif
+    long _out_len = *_max_len;
+    long _data_len = 0;
+    ossBoolean _constructed = FALSE;
+
+    {
+	long _total_len = 0;
+	OSS_CNTX_INIT
+
+	OSS_CNTX_PUSH(_oss_c, 0)
+	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
+	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
+	_total_len += _data_len;
+	OSS_CNTX_SET(1)
+	_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->sname);
+	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
+	_total_len += _data_len;
+	OSS_CNTX_SET(2)
+#ifndef OSS_DO_NOT_CHECK_POINTERS
+	if (_in_data->realm == NULL)
+	    _oss_enc_error(_g, _bad_pointer, 0L);
+#endif
+	_data_len = _oss_encd_nstr(_g, _out_pos, &_out_len, _in_data->realm, -1);
+	if (_data_len < 0) {
+	    _constructed = TRUE;
+	    _data_len = -_data_len;
+	} else
+	    _constructed = FALSE;
+	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA1);
+	_total_len += _data_len;
+	OSS_CNTX_SET(3)
+	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->tkt_vno, 0x2);
+	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
+	_total_len += _data_len;
+	OSS_CNTX_POP(_oss_c)
+	_data_len = _total_len;
+    }
+    *_max_len = _out_len;
+    return _data_len;
+}
+
 static long _ed_seqof1(OssGlobal * _g, char ** _out_pos, long * _max_len, _seqof1 * _in_data)
 {
 #if OSSDEBUG > 1
@@ -888,7 +946,7 @@ static long _ed_seqof1(OssGlobal * _g, char ** _out_pos, long * _max_len, _seqof
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 0)
+	OSS_CNTX_NEW(_oss_c, 4)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -931,11 +989,11 @@ static long _edPrincipalName(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 1)
+	OSS_CNTX_PUSH(_oss_c, 5)
 	_data_len = _ed_seqof1(_g, _out_pos, &_out_len, &_in_data->name_string);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(2)
+	OSS_CNTX_SET(6)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->name_type, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -959,7 +1017,7 @@ static long _edHostAddress(OssGlobal * _g, char ** _out_pos, long * _max_len, Ho
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 3)
+	OSS_CNTX_PUSH(_oss_c, 7)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->address.value, _in_data->address.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -968,7 +1026,7 @@ static long _edHostAddress(OssGlobal * _g, char ** _out_pos, long * _max_len, Ho
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(4)
+	OSS_CNTX_SET(8)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->addr_type, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -993,7 +1051,7 @@ static long _edHostAddresses(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 5)
+	OSS_CNTX_NEW(_oss_c, 9)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -1032,7 +1090,7 @@ static long _edAuthorizationData(OssGlobal * _g, char ** _out_pos, long * _max_l
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 6)
+	OSS_CNTX_NEW(_oss_c, 10)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -1047,7 +1105,7 @@ static long _edAuthorizationData(OssGlobal * _g, char ** _out_pos, long * _max_l
 		long _total_len = 0;
 		OSS_CNTX_INIT
 
-		OSS_CNTX_PUSH(_oss_c, 7)
+		OSS_CNTX_PUSH(_oss_c, 11)
 		_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _temp->value.ad_data.value, _temp->value.ad_data.length, -1);
 		if (_data_len < 0) {
 		    _constructed = TRUE;
@@ -1056,7 +1114,7 @@ static long _edAuthorizationData(OssGlobal * _g, char ** _out_pos, long * _max_l
 		    _constructed = FALSE;
 		_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 		_total_len += _data_len;
-		OSS_CNTX_SET(8)
+		OSS_CNTX_SET(12)
 		_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _temp->value.ad_type, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 		_total_len += _data_len;
@@ -1087,7 +1145,7 @@ static long _edPA_DATA(OssGlobal * _g, char ** _out_pos, long * _max_len, PA_DAT
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 9)
+	OSS_CNTX_PUSH(_oss_c, 13)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->padata_value.value, _in_data->padata_value.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -1096,7 +1154,7 @@ static long _edPA_DATA(OssGlobal * _g, char ** _out_pos, long * _max_len, PA_DAT
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA2);
 	_total_len += _data_len;
-	OSS_CNTX_SET(10)
+	OSS_CNTX_SET(14)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->padata_type, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA1);
 	_total_len += _data_len;
@@ -1120,7 +1178,7 @@ static long _edEncryptedData(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 11)
+	OSS_CNTX_PUSH(_oss_c, 15)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->cipher.value, _in_data->cipher.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -1129,13 +1187,13 @@ static long _edEncryptedData(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA2);
 	_total_len += _data_len;
-	OSS_CNTX_SET(12)
+	OSS_CNTX_SET(16)
 	if (_in_data->bit_mask & kvno_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->kvno, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(13)
+	OSS_CNTX_SET(17)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->etype, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -1159,7 +1217,7 @@ static long _edEncryptionKey(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 14)
+	OSS_CNTX_PUSH(_oss_c, 18)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->keyvalue.value, _in_data->keyvalue.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -1168,7 +1226,7 @@ static long _edEncryptionKey(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(15)
+	OSS_CNTX_SET(19)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->keytype, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -1192,7 +1250,7 @@ static long _edChecksum(OssGlobal * _g, char ** _out_pos, long * _max_len, Check
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 16)
+	OSS_CNTX_PUSH(_oss_c, 20)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->checksum.value, _in_data->checksum.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -1201,53 +1259,8 @@ static long _edChecksum(OssGlobal * _g, char ** _out_pos, long * _max_len, Check
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(17)
-	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->cksumtype, 0x2);
-	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
-	_total_len += _data_len;
-	OSS_CNTX_POP(_oss_c)
-	_data_len = _total_len;
-    }
-    *_max_len = _out_len;
-    return _data_len;
-}
-
-static long _edTicket(OssGlobal * _g, char ** _out_pos, long * _max_len, Ticket * _in_data)
-{
-#if OSSDEBUG > 1
-    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
-#endif
-    long _out_len = *_max_len;
-    long _data_len = 0;
-    ossBoolean _constructed = FALSE;
-
-    {
-	long _total_len = 0;
-	OSS_CNTX_INIT
-
-	OSS_CNTX_PUSH(_oss_c, 18)
-	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
-	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
-	_total_len += _data_len;
-	OSS_CNTX_SET(19)
-	_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->sname);
-	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
-	_total_len += _data_len;
-	OSS_CNTX_SET(20)
-#ifndef OSS_DO_NOT_CHECK_POINTERS
-	if (_in_data->realm == NULL)
-	    _oss_enc_error(_g, _bad_pointer, 0L);
-#endif
-	_data_len = _oss_encd_nstr(_g, _out_pos, &_out_len, _in_data->realm, -1);
-	if (_data_len < 0) {
-	    _constructed = TRUE;
-	    _data_len = -_data_len;
-	} else
-	    _constructed = FALSE;
-	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA1);
-	_total_len += _data_len;
 	OSS_CNTX_SET(21)
-	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->tkt_vno, 0x2);
+	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->cksumtype, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
 	OSS_CNTX_POP(_oss_c)
@@ -1386,13 +1399,13 @@ static long _edKDC_REQ_BODY(OssGlobal * _g, char ** _out_pos, long * _max_len, K
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA4);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(19)
+	OSS_CNTX_SET(1)
 	if (_in_data->bit_mask & KDC_REQ_BODY_sname_present) {
 	    _data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->sname);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(20)
+	OSS_CNTX_SET(2)
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 	if (_in_data->realm == NULL)
 	    _oss_enc_error(_g, _bad_pointer, 0L);
@@ -1550,7 +1563,7 @@ static long _edKDC_REP(OssGlobal * _g, char ** _out_pos, long * _max_len, KDC_RE
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 18)
+	OSS_CNTX_PUSH(_oss_c, 0)
 	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA6);
 	_total_len += _data_len;
@@ -1659,7 +1672,7 @@ static long _edEncKDCRepPart(OssGlobal * _g, char ** _out_pos, long * _max_len, 
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xAB);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(19)
+	OSS_CNTX_SET(1)
 	_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->sname);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xAA);
 	_total_len += _data_len;
@@ -1744,7 +1757,7 @@ static long _edLastReq(OssGlobal * _g, char ** _out_pos, long * _max_len, LastRe
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 6)
+	OSS_CNTX_NEW(_oss_c, 10)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -1781,6 +1794,37 @@ static long _edLastReq(OssGlobal * _g, char ** _out_pos, long * _max_len, LastRe
     return _data_len;
 }
 
+static void _eTicket(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _outlen, unsigned int _flags)
+{
+    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
+    Ticket	*_in_data;
+    char *_out_buf;
+    char **_out_pos = &_out_buf;
+    long _out_len;
+    long _data_len = 0;
+    OSS_CNTX_INITZERO
+
+    _in_data = (Ticket *) _inbuf;
+    if (!_oss_c->_buffer_provided) *_outbuf = NULL;
+    _out_buf = *_outbuf;
+    _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
+    _out_buf += _out_len;
+    OSS_CNTX_ANCHOR_SET(1,54)
+    _data_len = _edTicket(_g, _out_pos, &_out_len, _in_data);
+    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x61);
+    if (!_oss_c->_buffer_provided)
+	_oss_set_outmem_d(_g, _out_len, _outlen, _outbuf);
+    else {
+	if (_flags & FRONT_ALIGN)
+	    memmove(*_outbuf, *_out_pos, (size_t) _data_len);
+	else
+	    *_outbuf = *_out_pos;
+	*_outlen = _data_len;
+    }
+
+    OSS_CNTX_POP(_oss_c)
+}
+
 static void _eEncTicketPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _outlen, unsigned int _flags)
 {
     _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
@@ -1797,12 +1841,12 @@ static void _eEncTicketPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(1,54)
+    OSS_CNTX_ANCHOR_SET(2,55)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 55)
+	OSS_CNTX_PUSH(_oss_c, 56)
 	if (_in_data->bit_mask & EncTicketPart_authorization_data_present) {
 	    _data_len = _edAuthorizationData(_g, _out_pos, &_out_len, &_in_data->authorization_data);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xAA);
@@ -1834,12 +1878,12 @@ static void _eEncTicketPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
 	_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->authtime);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA5);
 	_total_len += _data_len;
-	OSS_CNTX_SET(56)
+	OSS_CNTX_SET(57)
 	{
 	    long _total_len = 0;
 	    OSS_CNTX_INIT
 
-	    OSS_CNTX_PUSH(_oss_c, 57)
+	    OSS_CNTX_PUSH(_oss_c, 58)
 	    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->transited.contents.value, _in_data->transited.contents.length, -1);
 	    if (_data_len < 0) {
 		_constructed = TRUE;
@@ -1848,7 +1892,7 @@ static void _eEncTicketPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
 		_constructed = FALSE;
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 	    _total_len += _data_len;
-	    OSS_CNTX_SET(58)
+	    OSS_CNTX_SET(59)
 	    _data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->transited.tr_type, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	    _total_len += _data_len;
@@ -1919,7 +1963,7 @@ static void _eAS_REQ(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _out
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(2,59)
+    OSS_CNTX_ANCHOR_SET(3,60)
     _data_len = _edKDC_REQ(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x6A);
     if (!_oss_c->_buffer_provided)
@@ -1950,7 +1994,7 @@ static void _eTGS_REQ(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _ou
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(3,60)
+    OSS_CNTX_ANCHOR_SET(4,61)
     _data_len = _edKDC_REQ(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x6C);
     if (!_oss_c->_buffer_provided)
@@ -1981,7 +2025,7 @@ static void _eAS_REP(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _out
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(4,61)
+    OSS_CNTX_ANCHOR_SET(5,62)
     _data_len = _edKDC_REP(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x6B);
     if (!_oss_c->_buffer_provided)
@@ -2012,7 +2056,7 @@ static void _eTGS_REP(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _ou
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(5,62)
+    OSS_CNTX_ANCHOR_SET(6,63)
     _data_len = _edKDC_REP(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x6D);
     if (!_oss_c->_buffer_provided)
@@ -2043,7 +2087,7 @@ static void _eEncASRepPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long 
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(6,63)
+    OSS_CNTX_ANCHOR_SET(7,64)
     _data_len = _edEncKDCRepPart(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x79);
     if (!_oss_c->_buffer_provided)
@@ -2074,7 +2118,7 @@ static void _eEncTGSRepPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(7,64)
+    OSS_CNTX_ANCHOR_SET(8,65)
     _data_len = _edEncKDCRepPart(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x7A);
     if (!_oss_c->_buffer_provided)
@@ -2106,12 +2150,12 @@ static void _eAP_REQ(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _out
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(8,65)
+    OSS_CNTX_ANCHOR_SET(9,66)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 66)
+	OSS_CNTX_PUSH(_oss_c, 67)
 	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->authenticator);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA4);
 	_total_len += _data_len;
@@ -2120,7 +2164,7 @@ static void _eAP_REQ(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _out
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0x61);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 	_total_len += _data_len;
-	OSS_CNTX_SET(67)
+	OSS_CNTX_SET(68)
 	_data_len = _oss_encd_dubit_ia(_g, _out_pos, &_out_len, _in_data->ap_options.value, _in_data->ap_options.length, -1, FALSE);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -2170,38 +2214,38 @@ static void _eAuthenticator(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(9,68)
+    OSS_CNTX_ANCHOR_SET(10,69)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 55)
+	OSS_CNTX_PUSH(_oss_c, 56)
 	if (_in_data->bit_mask & Authenticator_authorization_data_present) {
 	    _data_len = _edAuthorizationData(_g, _out_pos, &_out_len, &_in_data->authorization_data);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA8);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(69)
+	OSS_CNTX_SET(70)
 	if (_in_data->bit_mask & Authenticator_seq_number_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->seq_number, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA7);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(70)
+	OSS_CNTX_SET(71)
 	if (_in_data->bit_mask & Authenticator_subkey_present) {
 	    _data_len = _edEncryptionKey(_g, _out_pos, &_out_len, &_in_data->subkey);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA6);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(71)
+	OSS_CNTX_SET(72)
 	_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->ctime);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA5);
 	_total_len += _data_len;
-	OSS_CNTX_SET(72)
+	OSS_CNTX_SET(73)
 	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->cusec, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA4);
 	_total_len += _data_len;
-	OSS_CNTX_SET(73)
+	OSS_CNTX_SET(74)
 	if (_in_data->bit_mask & cksum_present) {
 	    _data_len = _edChecksum(_g, _out_pos, &_out_len, &_in_data->cksum);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
@@ -2224,7 +2268,7 @@ static void _eAuthenticator(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
 	    _constructed = FALSE;
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(74)
+	OSS_CNTX_SET(75)
 	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->authenticator_vno, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -2260,12 +2304,12 @@ static void _eAP_REP(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _out
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(10,75)
+    OSS_CNTX_ANCHOR_SET(11,76)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 18)
+	OSS_CNTX_PUSH(_oss_c, 0)
 	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
 	_total_len += _data_len;
@@ -2309,28 +2353,28 @@ static void _eEncAPRepPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, long 
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(11,76)
+    OSS_CNTX_ANCHOR_SET(12,77)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 69)
+	OSS_CNTX_PUSH(_oss_c, 70)
 	if (_in_data->bit_mask & EncAPRepPart_seq_number_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->seq_number, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(70)
+	OSS_CNTX_SET(71)
 	if (_in_data->bit_mask & EncAPRepPart_subkey_present) {
 	    _data_len = _edEncryptionKey(_g, _out_pos, &_out_len, &_in_data->subkey);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(72)
+	OSS_CNTX_SET(73)
 	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->cusec, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(71)
+	OSS_CNTX_SET(72)
 	_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->ctime);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA0);
 	_total_len += _data_len;
@@ -2367,49 +2411,49 @@ static void _eKRB_SAFE(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _o
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(12,77)
+    OSS_CNTX_ANCHOR_SET(13,78)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 73)
+	OSS_CNTX_PUSH(_oss_c, 74)
 	_data_len = _edChecksum(_g, _out_pos, &_out_len, &_in_data->cksum);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
 	_total_len += _data_len;
-	OSS_CNTX_SET(78)
+	OSS_CNTX_SET(79)
 	{
 	    long _total_len = 0;
 	    OSS_CNTX_INIT
 
-	    OSS_CNTX_PUSH(_oss_c, 79)
+	    OSS_CNTX_PUSH(_oss_c, 80)
 	    if (_in_data->safe_body.bit_mask & KRB_SAFE_BODY_r_address_present) {
 		_data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->safe_body.r_address);
 		_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA5);
 		_total_len += _data_len;
 	    }
-	    OSS_CNTX_SET(80)
+	    OSS_CNTX_SET(81)
 	    _data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->safe_body.s_address);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA4);
 	    _total_len += _data_len;
-	    OSS_CNTX_SET(69)
+	    OSS_CNTX_SET(70)
 	    if (_in_data->safe_body.bit_mask & KRB_SAFE_BODY_seq_number_present) {
 		_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->safe_body.seq_number, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 		_total_len += _data_len;
 	    }
-	    OSS_CNTX_SET(81)
+	    OSS_CNTX_SET(82)
 	    if (_in_data->safe_body.bit_mask & KRB_SAFE_BODY_usec_present) {
 		_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->safe_body.usec, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA2);
 		_total_len += _data_len;
 	    }
-	    OSS_CNTX_SET(82)
+	    OSS_CNTX_SET(83)
 	    if (_in_data->safe_body.bit_mask & KRB_SAFE_BODY_timestamp_present) {
 		_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->safe_body.timestamp);
 		_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA1);
 		_total_len += _data_len;
 	    }
-	    OSS_CNTX_SET(83)
+	    OSS_CNTX_SET(84)
 	    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->safe_body.user_data.value, _in_data->safe_body.user_data.length, -1);
 	    if (_data_len < 0) {
 		_constructed = TRUE;
@@ -2463,12 +2507,12 @@ static void _eKRB_PRIV(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _o
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(13,84)
+    OSS_CNTX_ANCHOR_SET(14,85)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 18)
+	OSS_CNTX_PUSH(_oss_c, 0)
 	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
 	_total_len += _data_len;
@@ -2513,40 +2557,40 @@ static void _eEncKrbPrivPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(14,85)
+    OSS_CNTX_ANCHOR_SET(15,86)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 79)
+	OSS_CNTX_PUSH(_oss_c, 80)
 	if (_in_data->bit_mask & EncKrbPrivPart_r_address_present) {
 	    _data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->r_address);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA5);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(80)
+	OSS_CNTX_SET(81)
 	_data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->s_address);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA4);
 	_total_len += _data_len;
-	OSS_CNTX_SET(69)
+	OSS_CNTX_SET(70)
 	if (_in_data->bit_mask & EncKrbPrivPart_seq_number_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->seq_number, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(81)
+	OSS_CNTX_SET(82)
 	if (_in_data->bit_mask & EncKrbPrivPart_usec_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->usec, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA2);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(82)
+	OSS_CNTX_SET(83)
 	if (_in_data->bit_mask & EncKrbPrivPart_timestamp_present) {
 	    _data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->timestamp);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(83)
+	OSS_CNTX_SET(84)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->user_data.value, _in_data->user_data.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -2587,16 +2631,16 @@ static void _eKRB_CRED(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _o
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(15,86)
+    OSS_CNTX_ANCHOR_SET(16,87)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 18)
+	OSS_CNTX_PUSH(_oss_c, 0)
 	_data_len = _edEncryptedData(_g, _out_pos, &_out_len, &_in_data->enc_part);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
 	_total_len += _data_len;
-	OSS_CNTX_SET(87)
+	OSS_CNTX_SET(88)
 	{
 	    struct _seqof3 * _temp;
 	    unsigned long count;
@@ -2667,30 +2711,30 @@ static void _eEncKrbCredPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(16,88)
+    OSS_CNTX_ANCHOR_SET(17,89)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 79)
+	OSS_CNTX_PUSH(_oss_c, 80)
 	if (_in_data->bit_mask & EncKrbCredPart_r_address_present) {
 	    _data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->r_address);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA5);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(80)
+	OSS_CNTX_SET(81)
 	if (_in_data->bit_mask & s_address_present) {
 	    _data_len = _edHostAddress(_g, _out_pos, &_out_len, &_in_data->s_address);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA4);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(81)
+	OSS_CNTX_SET(82)
 	if (_in_data->bit_mask & EncKrbCredPart_usec_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->usec, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(82)
+	OSS_CNTX_SET(83)
 	if (_in_data->bit_mask & EncKrbCredPart_timestamp_present) {
 	    _data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->timestamp);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA2);
@@ -2702,7 +2746,7 @@ static void _eEncKrbCredPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(89)
+	OSS_CNTX_SET(90)
 	{
 	    struct _seqof5 * _temp;
 	    unsigned long count;
@@ -2710,7 +2754,7 @@ static void _eEncKrbCredPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
 	    long _total_len = 0;
 	    OSS_UINT32 _sp;
 	    void **_st = _oss_load_enc_stack(_g, &_sp);
-	    OSS_CNTX_NEW(_oss_c, 90)
+	    OSS_CNTX_NEW(_oss_c, 91)
 	    for (_temp = _in_data->ticket_info, count = 0; _temp; _temp = _temp->next) {
 		OSS_CNTX_SETOCC(count + 1)
 		if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -2732,7 +2776,7 @@ static void _eEncKrbCredPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
 			_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xAA);
 			_total_len += _data_len;
 		    }
-		    OSS_CNTX_SET(19)
+		    OSS_CNTX_SET(1)
 		    if (_temp->value.bit_mask & KrbCredInfo_sname_present) {
 			_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_temp->value.sname);
 			_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA9);
@@ -2788,13 +2832,13 @@ static void _eEncKrbCredPart(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
 			_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x23 : 0x3, 0xA3);
 			_total_len += _data_len;
 		    }
-		    OSS_CNTX_SET(91)
+		    OSS_CNTX_SET(92)
 		    if (_temp->value.bit_mask & pname_present) {
 			_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_temp->value.pname);
 			_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
 			_total_len += _data_len;
 		    }
-		    OSS_CNTX_SET(92)
+		    OSS_CNTX_SET(93)
 		    if (_temp->value.prealm) {
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 			if (_temp->value.prealm == NULL)
@@ -2858,12 +2902,12 @@ static void _eKRB_ERROR(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(17,93)
+    OSS_CNTX_ANCHOR_SET(18,94)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 94)
+	OSS_CNTX_PUSH(_oss_c, 95)
 	if (_in_data->bit_mask & e_data_present) {
 	    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->e_data.value, _in_data->e_data.length, -1);
 	    if (_data_len < 0) {
@@ -2874,7 +2918,7 @@ static void _eKRB_ERROR(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xAC);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(95)
+	OSS_CNTX_SET(96)
 	if (_in_data->e_text) {
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 	    if (_in_data->e_text == NULL)
@@ -2889,11 +2933,11 @@ static void _eKRB_ERROR(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xAB);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(19)
+	OSS_CNTX_SET(1)
 	_data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->sname);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xAA);
 	_total_len += _data_len;
-	OSS_CNTX_SET(20)
+	OSS_CNTX_SET(2)
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 	if (_in_data->realm == NULL)
 	    _oss_enc_error(_g, _bad_pointer, 0L);
@@ -2927,25 +2971,25 @@ static void _eKRB_ERROR(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA7);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(96)
+	OSS_CNTX_SET(97)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->error_code, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA6);
 	_total_len += _data_len;
-	OSS_CNTX_SET(97)
+	OSS_CNTX_SET(98)
 	_data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->susec, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA5);
 	_total_len += _data_len;
-	OSS_CNTX_SET(98)
+	OSS_CNTX_SET(99)
 	_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->stime);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA4);
 	_total_len += _data_len;
-	OSS_CNTX_SET(72)
+	OSS_CNTX_SET(73)
 	if (_in_data->bit_mask & cusec_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->cusec, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA3);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(71)
+	OSS_CNTX_SET(72)
 	if (_in_data->bit_mask & ctime_present) {
 	    _data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->ctime);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA2);
@@ -2991,7 +3035,7 @@ static void _eMETHOD_DATA(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(18,99)
+    OSS_CNTX_ANCHOR_SET(19,100)
     {
 	struct METHOD_DATA * _temp;
 	unsigned long count;
@@ -3048,7 +3092,7 @@ static void _eTYPED_DATA(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(19,100)
+    OSS_CNTX_ANCHOR_SET(20,101)
     {
 	struct TYPED_DATA * _temp;
 	unsigned long count;
@@ -3056,7 +3100,7 @@ static void _eTYPED_DATA(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 6)
+	OSS_CNTX_NEW(_oss_c, 10)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -3071,7 +3115,7 @@ static void _eTYPED_DATA(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 		long _total_len = 0;
 		OSS_CNTX_INIT
 
-		OSS_CNTX_PUSH(_oss_c, 101)
+		OSS_CNTX_PUSH(_oss_c, 102)
 		if (_temp->value.bit_mask & data_value_present) {
 		    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _temp->value.data_value.value, _temp->value.data_value.length, -1);
 		    if (_data_len < 0) {
@@ -3082,7 +3126,7 @@ static void _eTYPED_DATA(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 		    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 		    _total_len += _data_len;
 		}
-		OSS_CNTX_SET(102)
+		OSS_CNTX_SET(103)
 		_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _temp->value.data_type, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 		_total_len += _data_len;
@@ -3125,7 +3169,7 @@ static void _ePA_ENC_TIMESTAMP(OssGlobal * _g, void * _inbuf, char ** _outbuf, l
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(20,103)
+    OSS_CNTX_ANCHOR_SET(21,104)
     _data_len = _edEncryptedData(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0x30);
     if (!_oss_c->_buffer_provided)
@@ -3156,18 +3200,18 @@ static void _ePA_ENC_TS_ENC(OssGlobal * _g, void * _inbuf, char ** _outbuf, long
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(21,104)
+    OSS_CNTX_ANCHOR_SET(22,105)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 105)
+	OSS_CNTX_PUSH(_oss_c, 106)
 	if (_in_data->bit_mask & pausec_present) {
 	    _data_len = _oss_encd_uint_tl(_g, _out_pos, &_out_len, _in_data->pausec, 0x2);
 	    _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(106)
+	OSS_CNTX_SET(107)
 	_data_len = _oss_encd_gtime(_g, _out_pos, &_out_len, &_in_data->patimestamp);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x18, 0xA0);
 	_total_len += _data_len;
@@ -3204,7 +3248,7 @@ static void _eETYPE_INFO(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(22,107)
+    OSS_CNTX_ANCHOR_SET(23,108)
     {
 	struct ETYPE_INFO * _temp;
 	unsigned long count;
@@ -3212,7 +3256,7 @@ static void _eETYPE_INFO(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 108)
+	OSS_CNTX_NEW(_oss_c, 109)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -3227,7 +3271,7 @@ static void _eETYPE_INFO(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 		long _total_len = 0;
 		OSS_CNTX_INIT
 
-		OSS_CNTX_PUSH(_oss_c, 109)
+		OSS_CNTX_PUSH(_oss_c, 110)
 		if (_temp->value.bit_mask & salt_present) {
 		    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _temp->value.salt.value, _temp->value.salt.length, -1);
 		    if (_data_len < 0) {
@@ -3238,7 +3282,7 @@ static void _eETYPE_INFO(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * 
 		    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA1);
 		    _total_len += _data_len;
 		}
-		OSS_CNTX_SET(13)
+		OSS_CNTX_SET(17)
 		_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _temp->value.etype, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 		_total_len += _data_len;
@@ -3282,7 +3326,7 @@ static void _eETYPE_INFO2(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(23,110)
+    OSS_CNTX_ANCHOR_SET(24,111)
     {
 	struct ETYPE_INFO2 * _temp;
 	unsigned long count;
@@ -3290,7 +3334,7 @@ static void _eETYPE_INFO2(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
 	long _total_len = 0;
 	OSS_UINT32 _sp;
 	void **_st = _oss_load_enc_stack(_g, &_sp);
-	OSS_CNTX_NEW(_oss_c, 111)
+	OSS_CNTX_NEW(_oss_c, 112)
 	for (_temp = *_in_data, count = 0; _temp; _temp = _temp->next) {
 	    OSS_CNTX_SETOCC(count + 1)
 	    if (_sp == _MEM_ARRAY_SIZE) { _st = _oss_increment_enc_stack(_g); _sp = 0; }
@@ -3305,7 +3349,7 @@ static void _eETYPE_INFO2(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
 		long _total_len = 0;
 		OSS_CNTX_INIT
 
-		OSS_CNTX_PUSH(_oss_c, 112)
+		OSS_CNTX_PUSH(_oss_c, 113)
 		if (_temp->value.bit_mask & s2kparams_present) {
 		    _data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _temp->value.s2kparams.value, _temp->value.s2kparams.length, -1);
 		    if (_data_len < 0) {
@@ -3316,7 +3360,7 @@ static void _eETYPE_INFO2(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
 		    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x24 : 0x4, 0xA2);
 		    _total_len += _data_len;
 		}
-		OSS_CNTX_SET(113)
+		OSS_CNTX_SET(114)
 		if (_temp->value.salt) {
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 		    if (_temp->value.salt == NULL)
@@ -3331,7 +3375,7 @@ static void _eETYPE_INFO2(OssGlobal * _g, void * _inbuf, char ** _outbuf, long *
 		    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA1);
 		    _total_len += _data_len;
 		}
-		OSS_CNTX_SET(13)
+		OSS_CNTX_SET(17)
 		_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _temp->value.etype, 0x2);
 		_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 		_total_len += _data_len;
@@ -3374,7 +3418,7 @@ static void _eAD_IF_RELEVANT(OssGlobal * _g, void * _inbuf, char ** _outbuf, lon
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(24,114)
+    OSS_CNTX_ANCHOR_SET(25,115)
     _data_len = _edAuthorizationData(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0x30);
     if (!_oss_c->_buffer_provided)
@@ -3406,22 +3450,22 @@ static void _eAD_KDCIssued(OssGlobal * _g, void * _inbuf, char ** _outbuf, long 
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(25,115)
+    OSS_CNTX_ANCHOR_SET(26,116)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 116)
+	OSS_CNTX_PUSH(_oss_c, 117)
 	_data_len = _edAuthorizationData(_g, _out_pos, &_out_len, &_in_data->elements);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA3);
 	_total_len += _data_len;
-	OSS_CNTX_SET(117)
+	OSS_CNTX_SET(118)
 	if (_in_data->bit_mask & i_sname_present) {
 	    _data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->i_sname);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA2);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(118)
+	OSS_CNTX_SET(119)
 	if (_in_data->i_realm) {
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 	    if (_in_data->i_realm == NULL)
@@ -3436,7 +3480,7 @@ static void _eAD_KDCIssued(OssGlobal * _g, void * _inbuf, char ** _outbuf, long 
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(119)
+	OSS_CNTX_SET(120)
 	_data_len = _edChecksum(_g, _out_pos, &_out_len, &_in_data->ad_checksum);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA0);
 	_total_len += _data_len;
@@ -3472,16 +3516,16 @@ static void _eAD_AND_OR(OssGlobal * _g, void * _inbuf, char ** _outbuf, long * _
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(26,120)
+    OSS_CNTX_ANCHOR_SET(27,121)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 116)
+	OSS_CNTX_PUSH(_oss_c, 117)
 	_data_len = _edAuthorizationData(_g, _out_pos, &_out_len, &_in_data->elements);
 	_data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA1);
 	_total_len += _data_len;
-	OSS_CNTX_SET(121)
+	OSS_CNTX_SET(122)
 	_data_len = _oss_encd_int_tl(_g, _out_pos, &_out_len, _in_data->condition_count, 0x2);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -3517,7 +3561,7 @@ static void _eAD_MANDATORY_FOR_KDC(OssGlobal * _g, void * _inbuf, char ** _outbu
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(27,122)
+    OSS_CNTX_ANCHOR_SET(28,123)
     _data_len = _edAuthorizationData(_g, _out_pos, &_out_len, _in_data);
     _data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0x30);
     if (!_oss_c->_buffer_provided)
@@ -3548,12 +3592,12 @@ static void _eKERB_PA_PAC_REQUEST(OssGlobal * _g, void * _inbuf, char ** _outbuf
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(28,123)
+    OSS_CNTX_ANCHOR_SET(29,124)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 124)
+	OSS_CNTX_PUSH(_oss_c, 125)
 	_data_len = _oss_encd_bool_tl(_g, _out_pos, &_out_len, 0x1, _in_data->include_pac);
 	_data_len += _oss_encd_tag_length(_g, _out_pos, &_out_len, _data_len, 0xA0);
 	_total_len += _data_len;
@@ -3590,12 +3634,12 @@ static void _eChangePasswdData(OssGlobal * _g, void * _inbuf, char ** _outbuf, l
     _out_buf = *_outbuf;
     _out_len = _oss_c->_oss_outbuflen = (_oss_c->_buffer_provided) ? *_outlen : 0;
     _out_buf += _out_len;
-    OSS_CNTX_ANCHOR_SET(29,125)
+    OSS_CNTX_ANCHOR_SET(30,126)
     {
 	long _total_len = 0;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 126)
+	OSS_CNTX_PUSH(_oss_c, 127)
 	if (_in_data->targrealm) {
 #ifndef OSS_DO_NOT_CHECK_POINTERS
 	    if (_in_data->targrealm == NULL)
@@ -3610,13 +3654,13 @@ static void _eChangePasswdData(OssGlobal * _g, void * _inbuf, char ** _outbuf, l
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, _constructed ? 0x3B : 0x1B, 0xA2);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(127)
+	OSS_CNTX_SET(128)
 	if (_in_data->bit_mask & targname_present) {
 	    _data_len = _edPrincipalName(_g, _out_pos, &_out_len, &_in_data->targname);
 	    _data_len += _oss_encd_tag_length2(_g, _out_pos, &_out_len, _data_len, 0x30, 0xA1);
 	    _total_len += _data_len;
 	}
-	OSS_CNTX_SET(128)
+	OSS_CNTX_SET(129)
 	_data_len = _oss_encd_uoct_ia(_g, _out_pos, &_out_len, _in_data->newpasswd.value, _in_data->newpasswd.length, -1);
 	if (_data_len < 0) {
 	    _constructed = TRUE;
@@ -3657,7 +3701,7 @@ void DLL_ENTRY_FDEF _emKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void 
     _oss_c->_oss_err_msg = NULL;
 #endif
 
-    if (_pdunum < 1 || _pdunum > 29)
+    if (_pdunum < 1 || _pdunum > 30)
 	_oss_enc_error(_g, _pdu_range, _pdunum);
     else
 	_Encoders[_pdunum - 1](_g, _inbuf, _outbuf, _outlen, _flags);
@@ -3666,6 +3710,165 @@ void DLL_ENTRY_FDEF _emKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void 
     if (_oss_c->reserved.fields.ext->debug_flags)
 	_oss_db_e_post(_g, 0, *_outbuf, *_outlen);
 #endif
+}
+
+static void _d_Ticket(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, Ticket * _out_data)
+{
+    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
+    char *_bufpos = *_in_pos;
+    long _buflen = *_buf_len;
+
+#ifndef OSS_NO_NESTING_CONTROL
+    if (_oss_c->reserved.fields.ext->seqSetNestingLimit &&
+	    ++_oss_c->reserved.fields.ext->seqSetNestingCounter >
+	    _oss_c->reserved.fields.ext->seqSetNestingLimit)
+	_oss_dec_error(_g, _seq_set_nesting_limit_exceeded, 0L);
+#endif
+    {
+	int _indef_tags = 0;
+	long _total_len = _data_length;
+	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
+	OSS_CNTX_INIT
+
+	OSS_CNTX_PUSH(_oss_c, 3)
+	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else {
+	    if (!_oss_c->_tag_decoded || _data_tag == 0x8000) {
+		_data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, !_oss_c->_tag_decoded ? 0x80 : 0);
+	    } else
+		_oss_dec_error(_g, _tag_mismatch, _data_tag | 0x80000000);
+	    _oss_c->_tag_decoded = FALSE;
+	}
+	_data_tag = 0x8000;
+	if (_data_length < 0) ++_indef_tags;
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 2 && (_data_length = (unsigned char)_bufpos[1]) < 0x80) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x2);
+	_data_tag = 0x2;
+	if (_data_length == 1 && _buflen) {
+	    _out_data->tkt_vno = (unsigned char)_bufpos[0];
+	    _bufpos++;
+	    _buflen--;
+	} else
+	    _out_data->tkt_vno = _oss_dec_usint(_g, &_bufpos, &_buflen, _data_length);
+	while (_indef_tags > 0) {
+	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
+		_buflen -= 2;
+		_bufpos += 2;
+	    } else
+		if (!_buflen || _bufpos[0])
+		    _oss_dec_error(_g, _expec_eoc, 0L);
+		else
+		    _oss_dec_error(_g, _non_std_eoc, 0L);
+	    _indef_tags--;
+	}
+	OSS_CNTX_SET(2)
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x81);
+	_data_tag = 0x8001;
+	if (_data_length < 0) ++_indef_tags;
+	if (_buflen >= 2 && ((unsigned char)_bufpos[0] & 0xDF) == 27 && (_data_length = (unsigned char)_bufpos[1]) < 0x80) {
+	    _buflen -= 2;
+	    _oss_c->_bitpos = _bufpos[0] & 0x20;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x1B);
+	_data_tag = 0x1B;
+	_oss_dec_nstr_ptr(_g, &_bufpos, &_buflen, _data_length, &_out_data->realm, -1);
+	while (_indef_tags > 0) {
+	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
+		_buflen -= 2;
+		_bufpos += 2;
+	    } else
+		if (!_buflen || _bufpos[0])
+		    _oss_dec_error(_g, _expec_eoc, 0L);
+		else
+		    _oss_dec_error(_g, _non_std_eoc, 0L);
+	    _indef_tags--;
+	}
+	OSS_CNTX_SET(1)
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x82);
+	_data_tag = 0x8002;
+	if (_data_length < 0) ++_indef_tags;
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x10);
+	_data_tag = 0x10;
+	_d_PrincipalName(_g, &_bufpos, &_buflen, _data_length, _data_tag, &_out_data->sname);
+	while (_indef_tags > 0) {
+	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
+		_buflen -= 2;
+		_bufpos += 2;
+	    } else
+		if (!_buflen || _bufpos[0])
+		    _oss_dec_error(_g, _expec_eoc, 0L);
+		else
+		    _oss_dec_error(_g, _non_std_eoc, 0L);
+	    _indef_tags--;
+	}
+	OSS_CNTX_SET(0)
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x83);
+	_data_tag = 0x8003;
+	if (_data_length < 0) ++_indef_tags;
+	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x10);
+	_data_tag = 0x10;
+	_d_EncryptedData(_g, &_bufpos, &_buflen, _data_length, _data_tag, &_out_data->enc_part);
+	while (_indef_tags > 0) {
+	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
+		_buflen -= 2;
+		_bufpos += 2;
+	    } else
+		if (!_buflen || _bufpos[0])
+		    _oss_dec_error(_g, _expec_eoc, 0L);
+		else
+		    _oss_dec_error(_g, _non_std_eoc, 0L);
+	    _indef_tags--;
+	}
+	OSS_CNTX_POP(_oss_c)
+	if (_bufpos != _end_pos) {
+	    if (_total_len < 0) {
+		if (_buflen >= 1 && (_data_tag = _bufpos[0]) == 0) {
+		    _buflen--;
+		    _bufpos++;
+		} else
+		    _data_tag = _oss_dec_tag(_g, &_bufpos, &_buflen);
+
+		if (_data_tag)
+		    _oss_dec_error(_g, _expec_eoc, 0L);
+		if (_oss_dec_length(_g, &_bufpos, &_buflen))
+		    _oss_dec_error(_g, _non_std_eoc, 0L);
+		_oss_c->_tag_decoded = FALSE;
+	    } else
+		_oss_dec_error(_g, _inconsis_len, 0L);
+	}
+    }
+#ifndef OSS_NO_NESTING_CONTROL
+    if (_oss_c->reserved.fields.ext->seqSetNestingLimit)
+	_oss_c->reserved.fields.ext->seqSetNestingCounter--;
+#endif
+    *_in_pos = _bufpos;
+    *_buf_len = _buflen;
 }
 
 static void _d__seqof1(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, _seqof1 * _out_data)
@@ -3689,7 +3892,7 @@ static void _d__seqof1(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 0)
+	OSS_CNTX_PUSH(_oss_c, 4)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -3757,7 +3960,7 @@ static void _d_PrincipalName(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 2)
+	OSS_CNTX_PUSH(_oss_c, 6)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -3788,7 +3991,7 @@ static void _d_PrincipalName(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(1)
+	OSS_CNTX_SET(5)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -3858,7 +4061,7 @@ static void _d_HostAddress(OssGlobal * _g, char ** _in_pos, long * _buf_len, lon
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 4)
+	OSS_CNTX_PUSH(_oss_c, 8)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -3889,7 +4092,7 @@ static void _d_HostAddress(OssGlobal * _g, char ** _in_pos, long * _buf_len, lon
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(3)
+	OSS_CNTX_SET(7)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -3963,7 +4166,7 @@ static void _d_HostAddresses(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 5)
+	OSS_CNTX_PUSH(_oss_c, 9)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -4033,7 +4236,7 @@ static void _d_AuthorizationData(OssGlobal * _g, char ** _in_pos, long * _buf_le
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 6)
+	OSS_CNTX_PUSH(_oss_c, 10)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -4081,7 +4284,7 @@ static void _d_AuthorizationData(OssGlobal * _g, char ** _in_pos, long * _buf_le
 		char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 		OSS_CNTX_INIT
 
-		OSS_CNTX_PUSH(_oss_c, 8)
+		OSS_CNTX_PUSH(_oss_c, 12)
 		if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -4107,7 +4310,7 @@ static void _d_AuthorizationData(OssGlobal * _g, char ** _in_pos, long * _buf_le
 			    _oss_dec_error(_g, _non_std_eoc, 0L);
 		    _indef_tags--;
 		}
-		OSS_CNTX_SET(7)
+		OSS_CNTX_SET(11)
 		if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -4186,7 +4389,7 @@ static void _d_PA_DATA(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 10)
+	OSS_CNTX_PUSH(_oss_c, 14)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4217,7 +4420,7 @@ static void _d_PA_DATA(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(9)
+	OSS_CNTX_SET(13)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4289,7 +4492,7 @@ static void _d_EncryptedData(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 13)
+	OSS_CNTX_PUSH(_oss_c, 17)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4335,7 +4538,7 @@ static void _d_EncryptedData(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 	    _out_data->bit_mask &= ~kvno_present;
 	else {
 	    _out_data->bit_mask |= kvno_present;
-	    OSS_CNTX_PUSH(_oss_c, 12)
+	    OSS_CNTX_PUSH(_oss_c, 16)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -4368,7 +4571,7 @@ static void _d_EncryptedData(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 11)
+	OSS_CNTX_PUSH(_oss_c, 15)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4444,7 +4647,7 @@ static void _d_EncryptionKey(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 15)
+	OSS_CNTX_PUSH(_oss_c, 19)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4475,7 +4678,7 @@ static void _d_EncryptionKey(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(14)
+	OSS_CNTX_SET(18)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4546,7 +4749,7 @@ static void _d_Checksum(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 17)
+	OSS_CNTX_PUSH(_oss_c, 21)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4577,7 +4780,7 @@ static void _d_Checksum(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(16)
+	OSS_CNTX_SET(20)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -4593,165 +4796,6 @@ static void _d_Checksum(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _
 	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x4);
 	_data_tag = 0x4;
 	_out_data->checksum.length = _oss_dec_uoct_ia(_g, &_bufpos, &_buflen, _data_length, &_out_data->checksum.value, 0);
-	while (_indef_tags > 0) {
-	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
-		_buflen -= 2;
-		_bufpos += 2;
-	    } else
-		if (!_buflen || _bufpos[0])
-		    _oss_dec_error(_g, _expec_eoc, 0L);
-		else
-		    _oss_dec_error(_g, _non_std_eoc, 0L);
-	    _indef_tags--;
-	}
-	OSS_CNTX_POP(_oss_c)
-	if (_bufpos != _end_pos) {
-	    if (_total_len < 0) {
-		if (_buflen >= 1 && (_data_tag = _bufpos[0]) == 0) {
-		    _buflen--;
-		    _bufpos++;
-		} else
-		    _data_tag = _oss_dec_tag(_g, &_bufpos, &_buflen);
-
-		if (_data_tag)
-		    _oss_dec_error(_g, _expec_eoc, 0L);
-		if (_oss_dec_length(_g, &_bufpos, &_buflen))
-		    _oss_dec_error(_g, _non_std_eoc, 0L);
-		_oss_c->_tag_decoded = FALSE;
-	    } else
-		_oss_dec_error(_g, _inconsis_len, 0L);
-	}
-    }
-#ifndef OSS_NO_NESTING_CONTROL
-    if (_oss_c->reserved.fields.ext->seqSetNestingLimit)
-	_oss_c->reserved.fields.ext->seqSetNestingCounter--;
-#endif
-    *_in_pos = _bufpos;
-    *_buf_len = _buflen;
-}
-
-static void _d_Ticket(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _data_length, unsigned int _data_tag, Ticket * _out_data)
-{
-    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
-    char *_bufpos = *_in_pos;
-    long _buflen = *_buf_len;
-
-#ifndef OSS_NO_NESTING_CONTROL
-    if (_oss_c->reserved.fields.ext->seqSetNestingLimit &&
-	    ++_oss_c->reserved.fields.ext->seqSetNestingCounter >
-	    _oss_c->reserved.fields.ext->seqSetNestingLimit)
-	_oss_dec_error(_g, _seq_set_nesting_limit_exceeded, 0L);
-#endif
-    {
-	int _indef_tags = 0;
-	long _total_len = _data_length;
-	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
-	OSS_CNTX_INIT
-
-	OSS_CNTX_PUSH(_oss_c, 21)
-	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else {
-	    if (!_oss_c->_tag_decoded || _data_tag == 0x8000) {
-		_data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, !_oss_c->_tag_decoded ? 0x80 : 0);
-	    } else
-		_oss_dec_error(_g, _tag_mismatch, _data_tag | 0x80000000);
-	    _oss_c->_tag_decoded = FALSE;
-	}
-	_data_tag = 0x8000;
-	if (_data_length < 0) ++_indef_tags;
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 2 && (_data_length = (unsigned char)_bufpos[1]) < 0x80) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x2);
-	_data_tag = 0x2;
-	if (_data_length == 1 && _buflen) {
-	    _out_data->tkt_vno = (unsigned char)_bufpos[0];
-	    _bufpos++;
-	    _buflen--;
-	} else
-	    _out_data->tkt_vno = _oss_dec_usint(_g, &_bufpos, &_buflen, _data_length);
-	while (_indef_tags > 0) {
-	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
-		_buflen -= 2;
-		_bufpos += 2;
-	    } else
-		if (!_buflen || _bufpos[0])
-		    _oss_dec_error(_g, _expec_eoc, 0L);
-		else
-		    _oss_dec_error(_g, _non_std_eoc, 0L);
-	    _indef_tags--;
-	}
-	OSS_CNTX_SET(20)
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x81);
-	_data_tag = 0x8001;
-	if (_data_length < 0) ++_indef_tags;
-	if (_buflen >= 2 && ((unsigned char)_bufpos[0] & 0xDF) == 27 && (_data_length = (unsigned char)_bufpos[1]) < 0x80) {
-	    _buflen -= 2;
-	    _oss_c->_bitpos = _bufpos[0] & 0x20;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x1B);
-	_data_tag = 0x1B;
-	_oss_dec_nstr_ptr(_g, &_bufpos, &_buflen, _data_length, &_out_data->realm, -1);
-	while (_indef_tags > 0) {
-	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
-		_buflen -= 2;
-		_bufpos += 2;
-	    } else
-		if (!_buflen || _bufpos[0])
-		    _oss_dec_error(_g, _expec_eoc, 0L);
-		else
-		    _oss_dec_error(_g, _non_std_eoc, 0L);
-	    _indef_tags--;
-	}
-	OSS_CNTX_SET(19)
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x82);
-	_data_tag = 0x8002;
-	if (_data_length < 0) ++_indef_tags;
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x10);
-	_data_tag = 0x10;
-	_d_PrincipalName(_g, &_bufpos, &_buflen, _data_length, _data_tag, &_out_data->sname);
-	while (_indef_tags > 0) {
-	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
-		_buflen -= 2;
-		_bufpos += 2;
-	    } else
-		if (!_buflen || _bufpos[0])
-		    _oss_dec_error(_g, _expec_eoc, 0L);
-		else
-		    _oss_dec_error(_g, _non_std_eoc, 0L);
-	    _indef_tags--;
-	}
-	OSS_CNTX_SET(18)
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x83);
-	_data_tag = 0x8003;
-	if (_data_length < 0) ++_indef_tags;
-	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
-	    _buflen -= 2;
-	    _bufpos += 2;
-	} else
-	    _data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x10);
-	_data_tag = 0x10;
-	_d_EncryptedData(_g, &_bufpos, &_buflen, _data_length, _data_tag, &_out_data->enc_part);
 	while (_indef_tags > 0) {
 	    if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
 		_buflen -= 2;
@@ -5049,7 +5093,7 @@ static void _d_KDC_REQ_BODY(OssGlobal * _g, char ** _in_pos, long * _buf_len, lo
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 20)
+	OSS_CNTX_PUSH(_oss_c, 2)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -5096,7 +5140,7 @@ static void _d_KDC_REQ_BODY(OssGlobal * _g, char ** _in_pos, long * _buf_len, lo
 	    _out_data->bit_mask &= ~KDC_REQ_BODY_sname_present;
 	else {
 	    _out_data->bit_mask |= KDC_REQ_BODY_sname_present;
-	    OSS_CNTX_PUSH(_oss_c, 19)
+	    OSS_CNTX_PUSH(_oss_c, 1)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -6036,7 +6080,7 @@ static void _d_KDC_REP(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(18)
+	OSS_CNTX_SET(0)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 166 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -6526,7 +6570,7 @@ static void _d_EncKDCRepPart(OssGlobal * _g, char ** _in_pos, long * _buf_len, l
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(19)
+	OSS_CNTX_SET(1)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 170 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -6692,7 +6736,7 @@ static void _d_LastReq(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 6)
+	OSS_CNTX_PUSH(_oss_c, 10)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -6826,6 +6870,51 @@ static void _d_LastReq(OssGlobal * _g, char ** _in_pos, long * _buf_len, long _d
     *_buf_len = _buflen;
 }
 
+static void * _dTicket(OssGlobal * _g)
+{
+    _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
+    Ticket *_out_data;
+    char *_bufpos = _oss_c->_oss_inbufpos;
+    long _buflen = _oss_c->_oss_inbuflen;
+    long _data_length;
+    int _indef_tags = 0;
+    unsigned int _data_tag;
+    OSS_CNTX_INITZERO
+
+    OSS_CNTX_ANCHOR_SET(1,54)
+    _out_data = (struct Ticket *)_oss_dec_const_alloc(_g, sizeof(struct Ticket));
+    _oss_c->_tag_decoded = FALSE;
+    if (_buflen >= 2 && (unsigned char)_bufpos[0] == 97 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	_buflen -= 2;
+	_bufpos += 2;
+    } else
+	_data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x41);
+    _data_tag = 0x4001;
+    if (_data_length < 0) ++_indef_tags;
+    if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
+	_buflen -= 2;
+	_bufpos += 2;
+    } else
+	_data_length = _oss_dec_tag_length(_g, &_bufpos, &_buflen, 0x10);
+    _data_tag = 0x10;
+    _d_Ticket(_g, &_bufpos, &_buflen, _data_length, _data_tag, _out_data);
+    while (_indef_tags > 0) {
+	if (_buflen >= 2 && !_bufpos[0] && !_bufpos[1]) {
+	    _buflen -= 2;
+	    _bufpos += 2;
+	} else
+	    if (!_buflen || _bufpos[0])
+		_oss_dec_error(_g, _expec_eoc, 0L);
+	    else
+		_oss_dec_error(_g, _non_std_eoc, 0L);
+	_indef_tags--;
+    }
+    OSS_CNTX_POP(_oss_c)
+    _oss_c->_oss_inbufpos = _bufpos;
+    _oss_c->_oss_inbuflen = _buflen;
+    return _out_data;
+}
+
 static void * _dEncTicketPart(OssGlobal * _g)
 {
     _EncDecGlobals *_oss_c = (_EncDecGlobals *)_g->encDecVar;
@@ -6837,7 +6926,7 @@ static void * _dEncTicketPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(1,54)
+    OSS_CNTX_ANCHOR_SET(2,55)
     _out_data = (struct EncTicketPart *)_oss_dec_const_alloc(_g, sizeof(struct EncTicketPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 99 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -6973,7 +7062,7 @@ static void * _dEncTicketPart(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(56)
+	OSS_CNTX_SET(57)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -6999,7 +7088,7 @@ static void * _dEncTicketPart(OssGlobal * _g)
 	    char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	    OSS_CNTX_INIT
 
-	    OSS_CNTX_PUSH(_oss_c, 58)
+	    OSS_CNTX_PUSH(_oss_c, 59)
 	    if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -7025,7 +7114,7 @@ static void * _dEncTicketPart(OssGlobal * _g)
 			_oss_dec_error(_g, _non_std_eoc, 0L);
 		_indef_tags--;
 	    }
-	    OSS_CNTX_SET(57)
+	    OSS_CNTX_SET(58)
 	    if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -7300,7 +7389,7 @@ static void * _dEncTicketPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncTicketPart_authorization_data_present;
 	else {
 	    _out_data->bit_mask |= EncTicketPart_authorization_data_present;
-	    OSS_CNTX_PUSH(_oss_c, 55)
+	    OSS_CNTX_PUSH(_oss_c, 56)
 	    _out_data->authorization_data = NULL;
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 170 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
@@ -7380,7 +7469,7 @@ static void * _dAS_REQ(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(2,59)
+    OSS_CNTX_ANCHOR_SET(3,60)
     _out_data = (struct KDC_REQ *)_oss_dec_const_alloc(_g, sizeof(struct KDC_REQ));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 106 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7425,7 +7514,7 @@ static void * _dTGS_REQ(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(3,60)
+    OSS_CNTX_ANCHOR_SET(4,61)
     _out_data = (struct KDC_REQ *)_oss_dec_const_alloc(_g, sizeof(struct KDC_REQ));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 108 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7470,7 +7559,7 @@ static void * _dAS_REP(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(4,61)
+    OSS_CNTX_ANCHOR_SET(5,62)
     _out_data = (struct KDC_REP *)_oss_dec_const_alloc(_g, sizeof(struct KDC_REP));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 107 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7515,7 +7604,7 @@ static void * _dTGS_REP(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(5,62)
+    OSS_CNTX_ANCHOR_SET(6,63)
     _out_data = (struct KDC_REP *)_oss_dec_const_alloc(_g, sizeof(struct KDC_REP));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 109 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7560,7 +7649,7 @@ static void * _dEncASRepPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(6,63)
+    OSS_CNTX_ANCHOR_SET(7,64)
     _out_data = (struct EncKDCRepPart *)_oss_dec_const_alloc(_g, sizeof(struct EncKDCRepPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 121 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7605,7 +7694,7 @@ static void * _dEncTGSRepPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(7,64)
+    OSS_CNTX_ANCHOR_SET(8,65)
     _out_data = (struct EncKDCRepPart *)_oss_dec_const_alloc(_g, sizeof(struct EncKDCRepPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 122 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7650,7 +7739,7 @@ static void * _dAP_REQ(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(8,65)
+    OSS_CNTX_ANCHOR_SET(9,66)
     _out_data = (struct AP_REQ *)_oss_dec_const_alloc(_g, sizeof(struct AP_REQ));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 110 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7740,7 +7829,7 @@ static void * _dAP_REQ(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(67)
+	OSS_CNTX_SET(68)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -7801,7 +7890,7 @@ static void * _dAP_REQ(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(66)
+	OSS_CNTX_SET(67)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -7877,7 +7966,7 @@ static void * _dAuthenticator(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(9,68)
+    OSS_CNTX_ANCHOR_SET(10,69)
     _out_data = (struct Authenticator *)_oss_dec_const_alloc(_g, sizeof(struct Authenticator));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 98 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -7906,7 +7995,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 74)
+	OSS_CNTX_PUSH(_oss_c, 75)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8005,7 +8094,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	    _out_data->bit_mask &= ~cksum_present;
 	else {
 	    _out_data->bit_mask |= cksum_present;
-	    OSS_CNTX_PUSH(_oss_c, 73)
+	    OSS_CNTX_PUSH(_oss_c, 74)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8038,7 +8127,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 72)
+	OSS_CNTX_PUSH(_oss_c, 73)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8069,7 +8158,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(71)
+	OSS_CNTX_SET(72)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 165 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8110,7 +8199,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	    _out_data->bit_mask &= ~Authenticator_subkey_present;
 	else {
 	    _out_data->bit_mask |= Authenticator_subkey_present;
-	    OSS_CNTX_PUSH(_oss_c, 70)
+	    OSS_CNTX_PUSH(_oss_c, 71)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 166 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8157,7 +8246,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	    _out_data->bit_mask &= ~Authenticator_seq_number_present;
 	else {
 	    _out_data->bit_mask |= Authenticator_seq_number_present;
-	    OSS_CNTX_PUSH(_oss_c, 69)
+	    OSS_CNTX_PUSH(_oss_c, 70)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 167 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8204,7 +8293,7 @@ static void * _dAuthenticator(OssGlobal * _g)
 	    _out_data->bit_mask &= ~Authenticator_authorization_data_present;
 	else {
 	    _out_data->bit_mask |= Authenticator_authorization_data_present;
-	    OSS_CNTX_PUSH(_oss_c, 55)
+	    OSS_CNTX_PUSH(_oss_c, 56)
 	    _out_data->authorization_data = NULL;
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 168 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
@@ -8284,7 +8373,7 @@ static void * _dAP_REP(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(10,75)
+    OSS_CNTX_ANCHOR_SET(11,76)
     _out_data = (struct AP_REP *)_oss_dec_const_alloc(_g, sizeof(struct AP_REP));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 111 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -8374,7 +8463,7 @@ static void * _dAP_REP(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(18)
+	OSS_CNTX_SET(0)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8450,7 +8539,7 @@ static void * _dEncAPRepPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(11,76)
+    OSS_CNTX_ANCHOR_SET(12,77)
     _out_data = (struct EncAPRepPart *)_oss_dec_const_alloc(_g, sizeof(struct EncAPRepPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 123 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -8479,7 +8568,7 @@ static void * _dEncAPRepPart(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 71)
+	OSS_CNTX_PUSH(_oss_c, 72)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8505,7 +8594,7 @@ static void * _dEncAPRepPart(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(72)
+	OSS_CNTX_SET(73)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8546,7 +8635,7 @@ static void * _dEncAPRepPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncAPRepPart_subkey_present;
 	else {
 	    _out_data->bit_mask |= EncAPRepPart_subkey_present;
-	    OSS_CNTX_PUSH(_oss_c, 70)
+	    OSS_CNTX_PUSH(_oss_c, 71)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8593,7 +8682,7 @@ static void * _dEncAPRepPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncAPRepPart_seq_number_present;
 	else {
 	    _out_data->bit_mask |= EncAPRepPart_seq_number_present;
-	    OSS_CNTX_PUSH(_oss_c, 69)
+	    OSS_CNTX_PUSH(_oss_c, 70)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8672,7 +8761,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(12,77)
+    OSS_CNTX_ANCHOR_SET(13,78)
     _out_data = (struct KRB_SAFE *)_oss_dec_const_alloc(_g, sizeof(struct KRB_SAFE));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 116 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -8762,7 +8851,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(78)
+	OSS_CNTX_SET(79)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -8789,7 +8878,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 	    OSS_CNTX_INIT
 
 	    _out_data->safe_body.bit_mask = 0;
-	    OSS_CNTX_PUSH(_oss_c, 83)
+	    OSS_CNTX_PUSH(_oss_c, 84)
 	    if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -8831,7 +8920,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		_out_data->safe_body.bit_mask &= ~KRB_SAFE_BODY_timestamp_present;
 	    else {
 		_out_data->safe_body.bit_mask |= KRB_SAFE_BODY_timestamp_present;
-		OSS_CNTX_PUSH(_oss_c, 82)
+		OSS_CNTX_PUSH(_oss_c, 83)
 		if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -8878,7 +8967,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		_out_data->safe_body.bit_mask &= ~KRB_SAFE_BODY_usec_present;
 	    else {
 		_out_data->safe_body.bit_mask |= KRB_SAFE_BODY_usec_present;
-		OSS_CNTX_PUSH(_oss_c, 81)
+		OSS_CNTX_PUSH(_oss_c, 82)
 		if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -8925,7 +9014,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		_out_data->safe_body.bit_mask &= ~KRB_SAFE_BODY_seq_number_present;
 	    else {
 		_out_data->safe_body.bit_mask |= KRB_SAFE_BODY_seq_number_present;
-		OSS_CNTX_PUSH(_oss_c, 69)
+		OSS_CNTX_PUSH(_oss_c, 70)
 		if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -8958,7 +9047,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		}
 		OSS_CNTX_POP(_oss_c)
 	    }
-	    OSS_CNTX_PUSH(_oss_c, 80)
+	    OSS_CNTX_PUSH(_oss_c, 81)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -9004,7 +9093,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		_out_data->safe_body.bit_mask &= ~KRB_SAFE_BODY_r_address_present;
 	    else {
 		_out_data->safe_body.bit_mask |= KRB_SAFE_BODY_r_address_present;
-		OSS_CNTX_PUSH(_oss_c, 79)
+		OSS_CNTX_PUSH(_oss_c, 80)
 		if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 165 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -9066,7 +9155,7 @@ static void * _dKRB_SAFE(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(73)
+	OSS_CNTX_SET(74)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9142,7 +9231,7 @@ static void * _dKRB_PRIV(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(13,84)
+    OSS_CNTX_ANCHOR_SET(14,85)
     _out_data = (struct KRB_PRIV *)_oss_dec_const_alloc(_g, sizeof(struct KRB_PRIV));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 117 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -9232,7 +9321,7 @@ static void * _dKRB_PRIV(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(18)
+	OSS_CNTX_SET(0)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9308,7 +9397,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(14,85)
+    OSS_CNTX_ANCHOR_SET(15,86)
     _out_data = (struct EncKrbPrivPart *)_oss_dec_const_alloc(_g, sizeof(struct EncKrbPrivPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 124 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -9337,7 +9426,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 83)
+	OSS_CNTX_PUSH(_oss_c, 84)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9379,7 +9468,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbPrivPart_timestamp_present;
 	else {
 	    _out_data->bit_mask |= EncKrbPrivPart_timestamp_present;
-	    OSS_CNTX_PUSH(_oss_c, 82)
+	    OSS_CNTX_PUSH(_oss_c, 83)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -9426,7 +9515,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbPrivPart_usec_present;
 	else {
 	    _out_data->bit_mask |= EncKrbPrivPart_usec_present;
-	    OSS_CNTX_PUSH(_oss_c, 81)
+	    OSS_CNTX_PUSH(_oss_c, 82)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -9473,7 +9562,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbPrivPart_seq_number_present;
 	else {
 	    _out_data->bit_mask |= EncKrbPrivPart_seq_number_present;
-	    OSS_CNTX_PUSH(_oss_c, 69)
+	    OSS_CNTX_PUSH(_oss_c, 70)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -9506,7 +9595,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 80)
+	OSS_CNTX_PUSH(_oss_c, 81)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9552,7 +9641,7 @@ static void * _dEncKrbPrivPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbPrivPart_r_address_present;
 	else {
 	    _out_data->bit_mask |= EncKrbPrivPart_r_address_present;
-	    OSS_CNTX_PUSH(_oss_c, 79)
+	    OSS_CNTX_PUSH(_oss_c, 80)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 165 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -9631,7 +9720,7 @@ static void * _dKRB_CRED(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(15,86)
+    OSS_CNTX_ANCHOR_SET(16,87)
     _out_data = (struct KRB_CRED *)_oss_dec_const_alloc(_g, sizeof(struct KRB_CRED));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 118 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -9721,7 +9810,7 @@ static void * _dKRB_CRED(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(87)
+	OSS_CNTX_SET(88)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9826,7 +9915,7 @@ static void * _dKRB_CRED(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(18)
+	OSS_CNTX_SET(0)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9902,7 +9991,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(16,88)
+    OSS_CNTX_ANCHOR_SET(17,89)
     _out_data = (struct EncKrbCredPart *)_oss_dec_const_alloc(_g, sizeof(struct EncKrbCredPart));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 125 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -9931,7 +10020,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 89)
+	OSS_CNTX_PUSH(_oss_c, 90)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -9960,7 +10049,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 #endif
 	    OSS_CNTX_INIT
 
-	    OSS_CNTX_PUSH(_oss_c, 90)
+	    OSS_CNTX_PUSH(_oss_c, 91)
 	    for (;;) {
 		if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -10049,7 +10138,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 		    if (_data_tag != 0x8001 || _bufpos >= _end_pos)
 			_temp->value.prealm = NULL;
 		    else {
-			OSS_CNTX_PUSH(_oss_c, 92)
+			OSS_CNTX_PUSH(_oss_c, 93)
 			_temp->value.prealm = NULL;
 			if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			    _buflen -= 2;
@@ -10098,7 +10187,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 			_temp->value.bit_mask &= ~pname_present;
 		    else {
 			_temp->value.bit_mask |= pname_present;
-			OSS_CNTX_PUSH(_oss_c, 91)
+			OSS_CNTX_PUSH(_oss_c, 92)
 			if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			    _buflen -= 2;
 			    _bufpos += 2;
@@ -10430,7 +10519,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 			_temp->value.bit_mask &= ~KrbCredInfo_sname_present;
 		    else {
 			_temp->value.bit_mask |= KrbCredInfo_sname_present;
-			OSS_CNTX_PUSH(_oss_c, 19)
+			OSS_CNTX_PUSH(_oss_c, 1)
 			if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 169 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			    _buflen -= 2;
 			    _bufpos += 2;
@@ -10610,7 +10699,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbCredPart_timestamp_present;
 	else {
 	    _out_data->bit_mask |= EncKrbCredPart_timestamp_present;
-	    OSS_CNTX_PUSH(_oss_c, 82)
+	    OSS_CNTX_PUSH(_oss_c, 83)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -10657,7 +10746,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbCredPart_usec_present;
 	else {
 	    _out_data->bit_mask |= EncKrbCredPart_usec_present;
-	    OSS_CNTX_PUSH(_oss_c, 81)
+	    OSS_CNTX_PUSH(_oss_c, 82)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -10704,7 +10793,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~s_address_present;
 	else {
 	    _out_data->bit_mask |= s_address_present;
-	    OSS_CNTX_PUSH(_oss_c, 80)
+	    OSS_CNTX_PUSH(_oss_c, 81)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -10751,7 +10840,7 @@ static void * _dEncKrbCredPart(OssGlobal * _g)
 	    _out_data->bit_mask &= ~EncKrbCredPart_r_address_present;
 	else {
 	    _out_data->bit_mask |= EncKrbCredPart_r_address_present;
-	    OSS_CNTX_PUSH(_oss_c, 79)
+	    OSS_CNTX_PUSH(_oss_c, 80)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 165 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -10830,7 +10919,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(17,93)
+    OSS_CNTX_ANCHOR_SET(18,94)
     _out_data = (struct KRB_ERROR *)_oss_dec_const_alloc(_g, sizeof(struct KRB_ERROR));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 126 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -10936,7 +11025,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	    _out_data->bit_mask &= ~ctime_present;
 	else {
 	    _out_data->bit_mask |= ctime_present;
-	    OSS_CNTX_PUSH(_oss_c, 71)
+	    OSS_CNTX_PUSH(_oss_c, 72)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -10983,7 +11072,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	    _out_data->bit_mask &= ~cusec_present;
 	else {
 	    _out_data->bit_mask |= cusec_present;
-	    OSS_CNTX_PUSH(_oss_c, 72)
+	    OSS_CNTX_PUSH(_oss_c, 73)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -11016,7 +11105,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 98)
+	OSS_CNTX_PUSH(_oss_c, 99)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 164 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11047,7 +11136,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(97)
+	OSS_CNTX_SET(98)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 165 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11073,7 +11162,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(96)
+	OSS_CNTX_SET(97)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 166 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11195,7 +11284,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 20)
+	OSS_CNTX_PUSH(_oss_c, 2)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 169 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11227,7 +11316,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(19)
+	OSS_CNTX_SET(1)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 170 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11267,7 +11356,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	if (_data_tag != 0x800B || _bufpos >= _end_pos)
 	    _out_data->e_text = NULL;
 	else {
-	    OSS_CNTX_PUSH(_oss_c, 95)
+	    OSS_CNTX_PUSH(_oss_c, 96)
 	    _out_data->e_text = NULL;
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 171 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
@@ -11316,7 +11405,7 @@ static void * _dKRB_ERROR(OssGlobal * _g)
 	    _out_data->bit_mask &= ~e_data_present;
 	else {
 	    _out_data->bit_mask |= e_data_present;
-	    OSS_CNTX_PUSH(_oss_c, 94)
+	    OSS_CNTX_PUSH(_oss_c, 95)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 172 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -11395,7 +11484,7 @@ static void * _dMETHOD_DATA(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(18,99)
+    OSS_CNTX_ANCHOR_SET(19,100)
     _out_data = (struct METHOD_DATA **)_oss_dec_const_init_alloc(_g, sizeof(struct METHOD_DATA *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -11480,7 +11569,7 @@ static void * _dTYPED_DATA(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(19,100)
+    OSS_CNTX_ANCHOR_SET(20,101)
     _out_data = (struct TYPED_DATA **)_oss_dec_const_init_alloc(_g, sizeof(struct TYPED_DATA *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -11504,7 +11593,7 @@ static void * _dTYPED_DATA(OssGlobal * _g)
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 6)
+	OSS_CNTX_PUSH(_oss_c, 10)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -11553,7 +11642,7 @@ static void * _dTYPED_DATA(OssGlobal * _g)
 		OSS_CNTX_INIT
 
 		_temp->value.bit_mask = 0;
-		OSS_CNTX_PUSH(_oss_c, 102)
+		OSS_CNTX_PUSH(_oss_c, 103)
 		if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -11594,7 +11683,7 @@ static void * _dTYPED_DATA(OssGlobal * _g)
 		    _temp->value.bit_mask &= ~data_value_present;
 		else {
 		    _temp->value.bit_mask |= data_value_present;
-		    OSS_CNTX_PUSH(_oss_c, 101)
+		    OSS_CNTX_PUSH(_oss_c, 102)
 		    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			_buflen -= 2;
 			_bufpos += 2;
@@ -11670,7 +11759,7 @@ static void * _dPA_ENC_TIMESTAMP(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(20,103)
+    OSS_CNTX_ANCHOR_SET(21,104)
     _out_data = (struct EncryptedData *)_oss_dec_const_alloc(_g, sizeof(struct EncryptedData));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -11696,7 +11785,7 @@ static void * _dPA_ENC_TS_ENC(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(21,104)
+    OSS_CNTX_ANCHOR_SET(22,105)
     _out_data = (struct PA_ENC_TS_ENC *)_oss_dec_const_alloc(_g, sizeof(struct PA_ENC_TS_ENC));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -11718,7 +11807,7 @@ static void * _dPA_ENC_TS_ENC(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 106)
+	OSS_CNTX_PUSH(_oss_c, 107)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -11759,7 +11848,7 @@ static void * _dPA_ENC_TS_ENC(OssGlobal * _g)
 	    _out_data->bit_mask &= ~pausec_present;
 	else {
 	    _out_data->bit_mask |= pausec_present;
-	    OSS_CNTX_PUSH(_oss_c, 105)
+	    OSS_CNTX_PUSH(_oss_c, 106)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -11826,7 +11915,7 @@ static void * _dETYPE_INFO(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(22,107)
+    OSS_CNTX_ANCHOR_SET(23,108)
     _out_data = (struct ETYPE_INFO **)_oss_dec_const_init_alloc(_g, sizeof(struct ETYPE_INFO *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -11850,7 +11939,7 @@ static void * _dETYPE_INFO(OssGlobal * _g)
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 108)
+	OSS_CNTX_PUSH(_oss_c, 109)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -11899,7 +11988,7 @@ static void * _dETYPE_INFO(OssGlobal * _g)
 		OSS_CNTX_INIT
 
 		_temp->value.bit_mask = 0;
-		OSS_CNTX_PUSH(_oss_c, 13)
+		OSS_CNTX_PUSH(_oss_c, 17)
 		if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -11940,7 +12029,7 @@ static void * _dETYPE_INFO(OssGlobal * _g)
 		    _temp->value.bit_mask &= ~salt_present;
 		else {
 		    _temp->value.bit_mask |= salt_present;
-		    OSS_CNTX_PUSH(_oss_c, 109)
+		    OSS_CNTX_PUSH(_oss_c, 110)
 		    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			_buflen -= 2;
 			_bufpos += 2;
@@ -12016,7 +12105,7 @@ static void * _dETYPE_INFO2(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(23,110)
+    OSS_CNTX_ANCHOR_SET(24,111)
     _out_data = (struct ETYPE_INFO2 **)_oss_dec_const_init_alloc(_g, sizeof(struct ETYPE_INFO2 *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12040,7 +12129,7 @@ static void * _dETYPE_INFO2(OssGlobal * _g)
 #endif
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 111)
+	OSS_CNTX_PUSH(_oss_c, 112)
 	for (;;) {
 	    if (_bufpos >= _end_pos) {
 #ifndef OSS_NO_STRICT_ENCODING_DECODING_CHECKING
@@ -12089,7 +12178,7 @@ static void * _dETYPE_INFO2(OssGlobal * _g)
 		OSS_CNTX_INIT
 
 		_temp->value.bit_mask = 0;
-		OSS_CNTX_PUSH(_oss_c, 13)
+		OSS_CNTX_PUSH(_oss_c, 17)
 		if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		    _buflen -= 2;
 		    _bufpos += 2;
@@ -12129,7 +12218,7 @@ static void * _dETYPE_INFO2(OssGlobal * _g)
 		if (_data_tag != 0x8001 || _bufpos >= _end_pos)
 		    _temp->value.salt = NULL;
 		else {
-		    OSS_CNTX_PUSH(_oss_c, 113)
+		    OSS_CNTX_PUSH(_oss_c, 114)
 		    _temp->value.salt = NULL;
 		    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			_buflen -= 2;
@@ -12178,7 +12267,7 @@ static void * _dETYPE_INFO2(OssGlobal * _g)
 		    _temp->value.bit_mask &= ~s2kparams_present;
 		else {
 		    _temp->value.bit_mask |= s2kparams_present;
-		    OSS_CNTX_PUSH(_oss_c, 112)
+		    OSS_CNTX_PUSH(_oss_c, 113)
 		    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 			_buflen -= 2;
 			_bufpos += 2;
@@ -12254,7 +12343,7 @@ static void * _dAD_IF_RELEVANT(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(24,114)
+    OSS_CNTX_ANCHOR_SET(25,115)
     _out_data = (struct AuthorizationData **)_oss_dec_const_init_alloc(_g, sizeof(struct AuthorizationData *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12280,7 +12369,7 @@ static void * _dAD_KDCIssued(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(25,115)
+    OSS_CNTX_ANCHOR_SET(26,116)
     _out_data = (struct AD_KDCIssued *)_oss_dec_const_alloc(_g, sizeof(struct AD_KDCIssued));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12302,7 +12391,7 @@ static void * _dAD_KDCIssued(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 119)
+	OSS_CNTX_PUSH(_oss_c, 120)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12342,7 +12431,7 @@ static void * _dAD_KDCIssued(OssGlobal * _g)
 	if (_data_tag != 0x8001 || _bufpos >= _end_pos)
 	    _out_data->i_realm = NULL;
 	else {
-	    OSS_CNTX_PUSH(_oss_c, 118)
+	    OSS_CNTX_PUSH(_oss_c, 119)
 	    _out_data->i_realm = NULL;
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
@@ -12391,7 +12480,7 @@ static void * _dAD_KDCIssued(OssGlobal * _g)
 	    _out_data->bit_mask &= ~i_sname_present;
 	else {
 	    _out_data->bit_mask |= i_sname_present;
-	    OSS_CNTX_PUSH(_oss_c, 117)
+	    OSS_CNTX_PUSH(_oss_c, 118)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -12424,7 +12513,7 @@ static void * _dAD_KDCIssued(OssGlobal * _g)
 	    }
 	    OSS_CNTX_POP(_oss_c)
 	}
-	OSS_CNTX_PUSH(_oss_c, 116)
+	OSS_CNTX_PUSH(_oss_c, 117)
 	if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 163 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12493,7 +12582,7 @@ static void * _dAD_AND_OR(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(26,120)
+    OSS_CNTX_ANCHOR_SET(27,121)
     _out_data = (struct AD_AND_OR *)_oss_dec_const_alloc(_g, sizeof(struct AD_AND_OR));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12514,7 +12603,7 @@ static void * _dAD_AND_OR(OssGlobal * _g)
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 121)
+	OSS_CNTX_PUSH(_oss_c, 122)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12540,7 +12629,7 @@ static void * _dAD_AND_OR(OssGlobal * _g)
 		    _oss_dec_error(_g, _non_std_eoc, 0L);
 	    _indef_tags--;
 	}
-	OSS_CNTX_SET(116)
+	OSS_CNTX_SET(117)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12604,7 +12693,7 @@ static void * _dAD_MANDATORY_FOR_KDC(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(27,122)
+    OSS_CNTX_ANCHOR_SET(28,123)
     _out_data = (struct AuthorizationData **)_oss_dec_const_init_alloc(_g, sizeof(struct AuthorizationData *));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12630,7 +12719,7 @@ static void * _dKERB_PA_PAC_REQUEST(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(28,123)
+    OSS_CNTX_ANCHOR_SET(29,124)
     _out_data = (struct KERB_PA_PAC_REQUEST *)_oss_dec_const_alloc(_g, sizeof(struct KERB_PA_PAC_REQUEST));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12651,7 +12740,7 @@ static void * _dKERB_PA_PAC_REQUEST(OssGlobal * _g)
 	char *_end_pos = _total_len < 0 ? (char *)OSS_PTR_MAX : _bufpos + _total_len;
 	OSS_CNTX_INIT
 
-	OSS_CNTX_PUSH(_oss_c, 124)
+	OSS_CNTX_PUSH(_oss_c, 125)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12715,7 +12804,7 @@ static void * _dChangePasswdData(OssGlobal * _g)
     unsigned int _data_tag;
     OSS_CNTX_INITZERO
 
-    OSS_CNTX_ANCHOR_SET(29,125)
+    OSS_CNTX_ANCHOR_SET(30,126)
     _out_data = (struct ChangePasswdData *)_oss_dec_const_alloc(_g, sizeof(struct ChangePasswdData));
     _oss_c->_tag_decoded = FALSE;
     if (_buflen >= 2 && (unsigned char)_bufpos[0] == 48 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
@@ -12737,7 +12826,7 @@ static void * _dChangePasswdData(OssGlobal * _g)
 	OSS_CNTX_INIT
 
 	_out_data->bit_mask = 0;
-	OSS_CNTX_PUSH(_oss_c, 128)
+	OSS_CNTX_PUSH(_oss_c, 129)
 	if (_buflen >= 2 && (unsigned char)_bufpos[0] == 160 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 	    _buflen -= 2;
 	    _bufpos += 2;
@@ -12779,7 +12868,7 @@ static void * _dChangePasswdData(OssGlobal * _g)
 	    _out_data->bit_mask &= ~targname_present;
 	else {
 	    _out_data->bit_mask |= targname_present;
-	    OSS_CNTX_PUSH(_oss_c, 127)
+	    OSS_CNTX_PUSH(_oss_c, 128)
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 161 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
 		_bufpos += 2;
@@ -12825,7 +12914,7 @@ static void * _dChangePasswdData(OssGlobal * _g)
 	if (_data_tag != 0x8002 || _bufpos >= _end_pos)
 	    _out_data->targrealm = NULL;
 	else {
-	    OSS_CNTX_PUSH(_oss_c, 126)
+	    OSS_CNTX_PUSH(_oss_c, 127)
 	    _out_data->targrealm = NULL;
 	    if (!_oss_c->_tag_decoded && _buflen >= 2 && (unsigned char)_bufpos[0] == 162 && (_data_length = (signed char)_bufpos[1]) - 1 >= 0) {
 		_buflen -= 2;
@@ -12897,7 +12986,7 @@ void DLL_ENTRY_FDEF _dmKerberosV5Spec2(struct ossGlobal * _g, int * _pdunum, voi
     _oss_c->_oss_err_msg = NULL;
 #endif
 
-    if (*_pdunum < 1 || *_pdunum > 29)
+    if (*_pdunum < 1 || *_pdunum > 30)
 	_oss_dec_error(_g, _pdu_range, *_pdunum);
     *_outbuf = _Decoders[*_pdunum - 1](_g);
 
@@ -12909,6 +12998,13 @@ void DLL_ENTRY_FDEF _dmKerberosV5Spec2(struct ossGlobal * _g, int * _pdunum, voi
 }
 
 #if (OSS_TOED_API_LEVEL < 22) || !defined(OSSNOFREEPDU)
+static void _f_Ticket(OssGlobal * _g, Ticket * _data_ptr)
+{
+    _oss_dec_free(_g, _data_ptr->realm);
+    _f_PrincipalName(_g, &_data_ptr->sname);
+    _f_EncryptedData(_g, &_data_ptr->enc_part);
+}
+
 static void _f__seqof1(OssGlobal * _g, _seqof1 * _data_ptr)
 {
     if (*_data_ptr) {
@@ -12985,13 +13081,6 @@ static void _f_Checksum(OssGlobal * _g, Checksum * _data_ptr)
 {
     if (_data_ptr->checksum.value)
 	_oss_dec_free(_g, _data_ptr->checksum.value);
-}
-
-static void _f_Ticket(OssGlobal * _g, Ticket * _data_ptr)
-{
-    _oss_dec_free(_g, _data_ptr->realm);
-    _f_PrincipalName(_g, &_data_ptr->sname);
-    _f_EncryptedData(_g, &_data_ptr->enc_part);
 }
 
 static void _f__seqof2(OssGlobal * _g, _seqof2 * _data_ptr)
@@ -13132,6 +13221,14 @@ static void _f_LastReq(OssGlobal * _g, LastReq * _data_ptr)
 	    _tempa = _tempb;
 	}
     }
+}
+
+static void _fTicket(OssGlobal * _g, void * _data)
+{
+    Ticket	*_data_ptr;
+    _data_ptr = (Ticket *)_data;
+    _f_Ticket(_g, _data_ptr);
+    _oss_dec_free(_g, _data_ptr);
 }
 
 static void _fEncTicketPart(OssGlobal * _g, void * _data)
@@ -13524,7 +13621,7 @@ static void _fChangePasswdData(OssGlobal * _g, void * _data)
 
 int DLL_ENTRY_FDEF _fmKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void * _data)
 {
-    if (_pdunum < 1 || _pdunum > 29)
+    if (_pdunum < 1 || _pdunum > 30)
 	return PDU_RANGE;
     else
 	_FreePDU[_pdunum - 1](_g, _data);
@@ -13534,6 +13631,40 @@ int DLL_ENTRY_FDEF _fmKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void *
 
 #endif
 #ifdef OSSPRINT
+static void _p_Ticket(OssGlobal * _g, Ticket * _data_ptr)
+{
+    {
+	_oss_indent(_g, 1);
+	ossPrint(_g, "{");
+	_oss_indent(_g, 0);
+	ossPrint(_g, "tkt-vno ");
+	{
+	    ULONG_LONG value = _data_ptr->tkt_vno;
+	    ossPrint(_g, ULLONG_FMT, value);
+	}
+	ossPrint(_g, ",");
+	_oss_indent(_g, 0);
+	ossPrint(_g, "realm ");
+#ifndef OSS_DO_NOT_CHECK_POINTERS
+	if (_data_ptr->realm == NULL)
+	    ossPrint(_g, "<<<<<<NULL>>>>>>");
+	else
+#endif
+	    _oss_prt_nchar(_g, (char *)_data_ptr->realm);
+	ossPrint(_g, ",");
+	_oss_indent(_g, 0);
+	ossPrint(_g, "sname ");
+	_p_PrincipalName(_g, &_data_ptr->sname);
+	ossPrint(_g, ",");
+	_oss_indent(_g, 0);
+	ossPrint(_g, "enc-part ");
+	_p_EncryptedData(_g, &_data_ptr->enc_part);
+	_oss_indent(_g, -1);
+	ossPrint(_g, "}");
+    }
+
+}
+
 static void _p__seqof1(OssGlobal * _g, _seqof1 * _data_ptr)
 {
     _oss_indent(_g, 1);
@@ -13751,40 +13882,6 @@ static void _p_Checksum(OssGlobal * _g, Checksum * _data_ptr)
 	_oss_indent(_g, 0);
 	ossPrint(_g, "checksum ");
 	_oss_prt_oct(_g, _data_ptr->checksum.value, _data_ptr->checksum.length);
-	_oss_indent(_g, -1);
-	ossPrint(_g, "}");
-    }
-
-}
-
-static void _p_Ticket(OssGlobal * _g, Ticket * _data_ptr)
-{
-    {
-	_oss_indent(_g, 1);
-	ossPrint(_g, "{");
-	_oss_indent(_g, 0);
-	ossPrint(_g, "tkt-vno ");
-	{
-	    ULONG_LONG value = _data_ptr->tkt_vno;
-	    ossPrint(_g, ULLONG_FMT, value);
-	}
-	ossPrint(_g, ",");
-	_oss_indent(_g, 0);
-	ossPrint(_g, "realm ");
-#ifndef OSS_DO_NOT_CHECK_POINTERS
-	if (_data_ptr->realm == NULL)
-	    ossPrint(_g, "<<<<<<NULL>>>>>>");
-	else
-#endif
-	    _oss_prt_nchar(_g, (char *)_data_ptr->realm);
-	ossPrint(_g, ",");
-	_oss_indent(_g, 0);
-	ossPrint(_g, "sname ");
-	_p_PrincipalName(_g, &_data_ptr->sname);
-	ossPrint(_g, ",");
-	_oss_indent(_g, 0);
-	ossPrint(_g, "enc-part ");
-	_p_EncryptedData(_g, &_data_ptr->enc_part);
 	_oss_indent(_g, -1);
 	ossPrint(_g, "}");
     }
@@ -14175,6 +14272,15 @@ static void _p_LastReq(OssGlobal * _g, LastReq * _data_ptr)
     _oss_indent(_g, -1);
     ossPrint(_g, "}");
 
+}
+
+static int _pTicket(OssGlobal * _g, void * _data)
+{
+    Ticket	*_data_ptr;
+    _data_ptr = (Ticket *)_data;
+    _p_Ticket(_g, _data_ptr);
+
+    return PDU_PRINTED;
 }
 
 static int _pEncTicketPart(OssGlobal * _g, void * _data)
@@ -15288,7 +15394,7 @@ int DLL_ENTRY_FDEF _pmKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void *
 
     if (_rc)
 	_pdunum = -_pdunum;
-    if (_pdunum < 1 || _pdunum > 29 || !_PrintPDU[_pdunum - 1]._pf)
+    if (_pdunum < 1 || _pdunum > 30 || !_PrintPDU[_pdunum - 1]._pf)
 	return PDU_RANGE;
     else {
 	if (_rc) {
@@ -15308,6 +15414,28 @@ int DLL_ENTRY_FDEF _pmKerberosV5Spec2(struct ossGlobal * _g, int _pdunum, void *
 
 #ifdef OSS_COPY_VALUE
 #define _oss_c ((_EncDecGlobals*)_g->encDecVar)
+
+static Ticket * _cpTicket(OssGlobal * _g, Ticket * psVal, Ticket * pdVal)
+{
+    if (!pdVal) {
+	pdVal = (Ticket *)_oss_dec_const_alloc(_g, sizeof(Ticket));
+    }
+    memcpy(pdVal, psVal, sizeof(*pdVal));
+    {
+	size_t  len_1 = (size_t)sizeof(char) * (strlen((*psVal).realm) + 1);
+
+	(*pdVal).realm = (KerberosString)_oss_dec_getmem_internal(_g, (long)len_1);
+	strcpy((*pdVal).realm, (*psVal).realm);
+    }
+    {
+	_cpPrincipalName(_g, &((*psVal).sname), &((*pdVal).sname));
+    }
+    {
+	_cpEncryptedData(_g, &((*psVal).enc_part), &((*pdVal).enc_part));
+    }
+    return pdVal;
+}
+
 
 static _seqof1 * _cp_seqof1(OssGlobal * _g, _seqof1 * psVal, _seqof1 * pdVal)
 {
@@ -15465,28 +15593,6 @@ static Checksum * _cpChecksum(OssGlobal * _g, Checksum * psVal, Checksum * pdVal
     memcpy(pdVal, psVal, sizeof(*pdVal));
     {
 	_oss_cpy_unbnd_octet_ia(_g, &((*psVal).checksum), &((*pdVal).checksum), sizeof(((*pdVal).checksum).length), sizeof(((*pdVal).checksum).value[0]), (unsigned int)((char *)&((*psVal).checksum).value - (char *)&((*psVal).checksum)));
-    }
-    return pdVal;
-}
-
-
-static Ticket * _cpTicket(OssGlobal * _g, Ticket * psVal, Ticket * pdVal)
-{
-    if (!pdVal) {
-	pdVal = (Ticket *)_oss_dec_const_alloc(_g, sizeof(Ticket));
-    }
-    memcpy(pdVal, psVal, sizeof(*pdVal));
-    {
-	size_t  len_1 = (size_t)sizeof(char) * (strlen((*psVal).realm) + 1);
-
-	(*pdVal).realm = (KerberosString)_oss_dec_getmem_internal(_g, (long)len_1);
-	strcpy((*pdVal).realm, (*psVal).realm);
-    }
-    {
-	_cpPrincipalName(_g, &((*psVal).sname), &((*pdVal).sname));
-    }
-    {
-	_cpEncryptedData(_g, &((*psVal).enc_part), &((*pdVal).enc_part));
     }
     return pdVal;
 }
@@ -15664,10 +15770,13 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
     int res = 0;
     void *pdVal = NULL;
 
-    if (pduNum <= 0 || pduNum > 30)
+    if (pduNum <= 0 || pduNum > 31)
 	return PDU_RANGE;
     switch (pduNum) {
 	case 1: {
+	    pdVal = _cpTicket(_g, (Ticket *)src, (Ticket *)pdVal);
+	} break;
+	case 2: {
 	    pdVal = (EncTicketPart *)_oss_dec_const_alloc(_g, sizeof(EncTicketPart));
 	    memcpy((EncTicketPart *)pdVal, (EncTicketPart *)src, sizeof(*(EncTicketPart *)pdVal));
 	    {
@@ -15697,25 +15806,25 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpAuthorizationData(_g, &((*(EncTicketPart *)src).authorization_data), &((*(EncTicketPart *)pdVal).authorization_data));
 	    }
 	} break;
-	case 2: {
-	    pdVal = _cpKDC_REQ(_g, (KDC_REQ *)src, (KDC_REQ *)pdVal);
-	} break;
 	case 3: {
 	    pdVal = _cpKDC_REQ(_g, (KDC_REQ *)src, (KDC_REQ *)pdVal);
 	} break;
 	case 4: {
-	    pdVal = _cpKDC_REP(_g, (KDC_REP *)src, (KDC_REP *)pdVal);
+	    pdVal = _cpKDC_REQ(_g, (KDC_REQ *)src, (KDC_REQ *)pdVal);
 	} break;
 	case 5: {
 	    pdVal = _cpKDC_REP(_g, (KDC_REP *)src, (KDC_REP *)pdVal);
 	} break;
 	case 6: {
-	    pdVal = _cpEncKDCRepPart(_g, (EncKDCRepPart *)src, (EncKDCRepPart *)pdVal);
+	    pdVal = _cpKDC_REP(_g, (KDC_REP *)src, (KDC_REP *)pdVal);
 	} break;
 	case 7: {
 	    pdVal = _cpEncKDCRepPart(_g, (EncKDCRepPart *)src, (EncKDCRepPart *)pdVal);
 	} break;
 	case 8: {
+	    pdVal = _cpEncKDCRepPart(_g, (EncKDCRepPart *)src, (EncKDCRepPart *)pdVal);
+	} break;
+	case 9: {
 	    pdVal = (AP_REQ *)_oss_dec_const_alloc(_g, sizeof(AP_REQ));
 	    memcpy((AP_REQ *)pdVal, (AP_REQ *)src, sizeof(*(AP_REQ *)pdVal));
 	    {
@@ -15728,7 +15837,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpEncryptedData(_g, &((*(AP_REQ *)src).authenticator), &((*(AP_REQ *)pdVal).authenticator));
 	    }
 	} break;
-	case 9: {
+	case 10: {
 	    pdVal = (Authenticator *)_oss_dec_const_alloc(_g, sizeof(Authenticator));
 	    memcpy((Authenticator *)pdVal, (Authenticator *)src, sizeof(*(Authenticator *)pdVal));
 	    {
@@ -15750,21 +15859,21 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpAuthorizationData(_g, &((*(Authenticator *)src).authorization_data), &((*(Authenticator *)pdVal).authorization_data));
 	    }
 	} break;
-	case 10: {
+	case 11: {
 	    pdVal = (AP_REP *)_oss_dec_const_alloc(_g, sizeof(AP_REP));
 	    memcpy((AP_REP *)pdVal, (AP_REP *)src, sizeof(*(AP_REP *)pdVal));
 	    {
 		_cpEncryptedData(_g, &((*(AP_REP *)src).enc_part), &((*(AP_REP *)pdVal).enc_part));
 	    }
 	} break;
-	case 11: {
+	case 12: {
 	    pdVal = (EncAPRepPart *)_oss_dec_const_alloc(_g, sizeof(EncAPRepPart));
 	    memcpy((EncAPRepPart *)pdVal, (EncAPRepPart *)src, sizeof(*(EncAPRepPart *)pdVal));
 	    if ((*(EncAPRepPart *)src).bit_mask & EncAPRepPart_subkey_present) {
 		_cpEncryptionKey(_g, &((*(EncAPRepPart *)src).subkey), &((*(EncAPRepPart *)pdVal).subkey));
 	    }
 	} break;
-	case 12: {
+	case 13: {
 	    pdVal = (KRB_SAFE *)_oss_dec_const_alloc(_g, sizeof(KRB_SAFE));
 	    memcpy((KRB_SAFE *)pdVal, (KRB_SAFE *)src, sizeof(*(KRB_SAFE *)pdVal));
 	    {
@@ -15782,14 +15891,14 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpChecksum(_g, &((*(KRB_SAFE *)src).cksum), &((*(KRB_SAFE *)pdVal).cksum));
 	    }
 	} break;
-	case 13: {
+	case 14: {
 	    pdVal = (KRB_PRIV *)_oss_dec_const_alloc(_g, sizeof(KRB_PRIV));
 	    memcpy((KRB_PRIV *)pdVal, (KRB_PRIV *)src, sizeof(*(KRB_PRIV *)pdVal));
 	    {
 		_cpEncryptedData(_g, &((*(KRB_PRIV *)src).enc_part), &((*(KRB_PRIV *)pdVal).enc_part));
 	    }
 	} break;
-	case 14: {
+	case 15: {
 	    pdVal = (EncKrbPrivPart *)_oss_dec_const_alloc(_g, sizeof(EncKrbPrivPart));
 	    memcpy((EncKrbPrivPart *)pdVal, (EncKrbPrivPart *)src, sizeof(*(EncKrbPrivPart *)pdVal));
 	    {
@@ -15802,7 +15911,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpHostAddress(_g, &((*(EncKrbPrivPart *)src).r_address), &((*(EncKrbPrivPart *)pdVal).r_address));
 	    }
 	} break;
-	case 15: {
+	case 16: {
 	    pdVal = (KRB_CRED *)_oss_dec_const_alloc(_g, sizeof(KRB_CRED));
 	    memcpy((KRB_CRED *)pdVal, (KRB_CRED *)src, sizeof(*(KRB_CRED *)pdVal));
 	    {
@@ -15812,7 +15921,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpEncryptedData(_g, &((*(KRB_CRED *)src).enc_part), &((*(KRB_CRED *)pdVal).enc_part));
 	    }
 	} break;
-	case 16: {
+	case 17: {
 	    pdVal = (EncKrbCredPart *)_oss_dec_const_alloc(_g, sizeof(EncKrbCredPart));
 	    memcpy((EncKrbCredPart *)pdVal, (EncKrbCredPart *)src, sizeof(*(EncKrbCredPart *)pdVal));
 	    {
@@ -15871,7 +15980,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpHostAddress(_g, &((*(EncKrbCredPart *)src).r_address), &((*(EncKrbCredPart *)pdVal).r_address));
 	    }
 	} break;
-	case 17: {
+	case 18: {
 	    pdVal = (KRB_ERROR *)_oss_dec_const_alloc(_g, sizeof(KRB_ERROR));
 	    memcpy((KRB_ERROR *)pdVal, (KRB_ERROR *)src, sizeof(*(KRB_ERROR *)pdVal));
 	    if ((*(KRB_ERROR *)src).crealm) {
@@ -15902,7 +16011,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_oss_cpy_unbnd_octet_ia(_g, &((*(KRB_ERROR *)src).e_data), &((*(KRB_ERROR *)pdVal).e_data), sizeof(((*(KRB_ERROR *)pdVal).e_data).length), sizeof(((*(KRB_ERROR *)pdVal).e_data).value[0]), (unsigned int)((char *)&((*(KRB_ERROR *)src).e_data).value - (char *)&((*(KRB_ERROR *)src).e_data)));
 	    }
 	} break;
-	case 18: {
+	case 19: {
 	    pdVal = (METHOD_DATA *)_oss_dec_const_alloc(_g, sizeof(METHOD_DATA));
 	    *(METHOD_DATA *)pdVal = NULL;
 	    if (*(METHOD_DATA *)src) {
@@ -15922,7 +16031,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		} while (s_oss_tmp_1);
 	    }
 	} break;
-	case 19: {
+	case 20: {
 	    pdVal = (TYPED_DATA *)_oss_dec_const_alloc(_g, sizeof(TYPED_DATA));
 	    *(TYPED_DATA *)pdVal = NULL;
 	    if (*(TYPED_DATA *)src) {
@@ -15944,14 +16053,14 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		} while (s_oss_tmp_1);
 	    }
 	} break;
-	case 20: {
+	case 21: {
 	    pdVal = _cpEncryptedData(_g, (EncryptedData *)src, (EncryptedData *)pdVal);
 	} break;
-	case 21: {
+	case 22: {
 	    pdVal = (PA_ENC_TS_ENC *)_oss_dec_const_alloc(_g, sizeof(PA_ENC_TS_ENC));
 	    memcpy((PA_ENC_TS_ENC *)pdVal, (PA_ENC_TS_ENC *)src, sizeof(*(PA_ENC_TS_ENC *)pdVal));
 	} break;
-	case 22: {
+	case 23: {
 	    pdVal = (ETYPE_INFO *)_oss_dec_const_alloc(_g, sizeof(ETYPE_INFO));
 	    *(ETYPE_INFO *)pdVal = NULL;
 	    if (*(ETYPE_INFO *)src) {
@@ -15973,7 +16082,7 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		} while (s_oss_tmp_1);
 	    }
 	} break;
-	case 23: {
+	case 24: {
 	    pdVal = (ETYPE_INFO2 *)_oss_dec_const_alloc(_g, sizeof(ETYPE_INFO2));
 	    *(ETYPE_INFO2 *)pdVal = NULL;
 	    if (*(ETYPE_INFO2 *)src) {
@@ -16001,10 +16110,10 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		} while (s_oss_tmp_1);
 	    }
 	} break;
-	case 24: {
+	case 25: {
 	    pdVal = _cpAuthorizationData(_g, (AuthorizationData *)src, (AuthorizationData *)pdVal);
 	} break;
-	case 25: {
+	case 26: {
 	    pdVal = (AD_KDCIssued *)_oss_dec_const_alloc(_g, sizeof(AD_KDCIssued));
 	    memcpy((AD_KDCIssued *)pdVal, (AD_KDCIssued *)src, sizeof(*(AD_KDCIssued *)pdVal));
 	    {
@@ -16023,21 +16132,21 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 		_cpAuthorizationData(_g, &((*(AD_KDCIssued *)src).elements), &((*(AD_KDCIssued *)pdVal).elements));
 	    }
 	} break;
-	case 26: {
+	case 27: {
 	    pdVal = (AD_AND_OR *)_oss_dec_const_alloc(_g, sizeof(AD_AND_OR));
 	    memcpy((AD_AND_OR *)pdVal, (AD_AND_OR *)src, sizeof(*(AD_AND_OR *)pdVal));
 	    {
 		_cpAuthorizationData(_g, &((*(AD_AND_OR *)src).elements), &((*(AD_AND_OR *)pdVal).elements));
 	    }
 	} break;
-	case 27: {
+	case 28: {
 	    pdVal = _cpAuthorizationData(_g, (AuthorizationData *)src, (AuthorizationData *)pdVal);
 	} break;
-	case 28: {
+	case 29: {
 	    pdVal = (KERB_PA_PAC_REQUEST *)_oss_dec_const_alloc(_g, sizeof(KERB_PA_PAC_REQUEST));
 	    memcpy((KERB_PA_PAC_REQUEST *)pdVal, (KERB_PA_PAC_REQUEST *)src, sizeof(*(KERB_PA_PAC_REQUEST *)pdVal));
 	} break;
-	case 29: {
+	case 30: {
 	    pdVal = (ChangePasswdData *)_oss_dec_const_alloc(_g, sizeof(ChangePasswdData));
 	    memcpy((ChangePasswdData *)pdVal, (ChangePasswdData *)src, sizeof(*(ChangePasswdData *)pdVal));
 	    {
@@ -16063,6 +16172,25 @@ int DLL_ENTRY_FDEF _CPKerberosV5Spec2(struct ossGlobal * _g, int pduNum, void * 
 #endif /* OSS_COPY_VALUE */
 
 #ifdef OSS_COMPARE_VALUE
+static int _cmTicket(OssGlobal * _g, Ticket * _odata, Ticket * _cdata)
+{
+    int _res = 0;
+
+    if ((*_cdata).tkt_vno != (*_odata).tkt_vno)
+	return 1;
+    if (strcmp((*_cdata).realm, (*_odata).realm))
+	return 1;
+    _res = _cmPrincipalName(_g, &((*_odata).sname), &((*_cdata).sname));
+    if (_res)
+	return _res;
+    _res = _cmEncryptedData(_g, &((*_odata).enc_part), &((*_cdata).enc_part));
+    if (_res)
+	return _res;
+
+    return _res;
+}
+
+
 static int _cm_seqof1(OssGlobal * _g, _seqof1 * _odata, _seqof1 * _cdata)
 {
     int _res = 0;
@@ -16212,25 +16340,6 @@ static int _cmChecksum(OssGlobal * _g, Checksum * _odata, Checksum * _cdata)
 	return 1;
     if (_oss_cmp_unbnd_octet_ia(&((*_odata).checksum), &((*_cdata).checksum), sizeof(((*_cdata).checksum).length), sizeof(((*_cdata).checksum).value[0]), (unsigned int)((char *)&((*_odata).checksum).value - (char *)&((*_odata).checksum))))
 	return 1;
-
-    return _res;
-}
-
-
-static int _cmTicket(OssGlobal * _g, Ticket * _odata, Ticket * _cdata)
-{
-    int _res = 0;
-
-    if ((*_cdata).tkt_vno != (*_odata).tkt_vno)
-	return 1;
-    if (strcmp((*_cdata).realm, (*_odata).realm))
-	return 1;
-    _res = _cmPrincipalName(_g, &((*_odata).sname), &((*_cdata).sname));
-    if (_res)
-	return _res;
-    _res = _cmEncryptedData(_g, &((*_odata).enc_part), &((*_cdata).enc_part));
-    if (_res)
-	return _res;
 
     return _res;
 }
@@ -16513,10 +16622,15 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 {
     int _res = 0;
 
-    if (_pduNum <= 0 || _pduNum > 30)
+    if (_pduNum <= 0 || _pduNum > 31)
 	return PDU_RANGE;
     switch (_pduNum) {
 	case 1: {
+	    _res = _cmTicket(_g, (Ticket *)_odata, (Ticket *)_cdata);
+	    if (_res)
+		return _res;
+	} break;
+	case 2: {
 	    if (_oss_cmp_arrbits(((*(EncTicketPart *)_odata).flags).value, ((*(EncTicketPart *)_cdata).flags).value, ((*(EncTicketPart *)_odata).flags).length, ((*(EncTicketPart *)_cdata).flags).length))
 		return 1;
 	    _res = _cmEncryptionKey(_g, &((*(EncTicketPart *)_odata).key), &((*(EncTicketPart *)_cdata).key));
@@ -16562,18 +16676,13 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return _res;
 	    }
 	} break;
-	case 2: {
-	    _res = _cmKDC_REQ(_g, (KDC_REQ *)_odata, (KDC_REQ *)_cdata);
-	    if (_res)
-		return _res;
-	} break;
 	case 3: {
 	    _res = _cmKDC_REQ(_g, (KDC_REQ *)_odata, (KDC_REQ *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
 	case 4: {
-	    _res = _cmKDC_REP(_g, (KDC_REP *)_odata, (KDC_REP *)_cdata);
+	    _res = _cmKDC_REQ(_g, (KDC_REQ *)_odata, (KDC_REQ *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
@@ -16583,7 +16692,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		return _res;
 	} break;
 	case 6: {
-	    _res = _cmEncKDCRepPart(_g, (EncKDCRepPart *)_odata, (EncKDCRepPart *)_cdata);
+	    _res = _cmKDC_REP(_g, (KDC_REP *)_odata, (KDC_REP *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
@@ -16593,6 +16702,11 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		return _res;
 	} break;
 	case 8: {
+	    _res = _cmEncKDCRepPart(_g, (EncKDCRepPart *)_odata, (EncKDCRepPart *)_cdata);
+	    if (_res)
+		return _res;
+	} break;
+	case 9: {
 	    if ((*(AP_REQ *)_cdata).pvno != (*(AP_REQ *)_odata).pvno)
 		return 1;
 	    if ((*(AP_REQ *)_cdata).msg_type != (*(AP_REQ *)_odata).msg_type)
@@ -16606,7 +16720,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 9: {
+	case 10: {
 	    if ((*(Authenticator *)_cdata).authenticator_vno != (*(Authenticator *)_odata).authenticator_vno)
 		return 1;
 	    if (strcmp((*(Authenticator *)_cdata).crealm, (*(Authenticator *)_odata).crealm))
@@ -16646,7 +16760,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return _res;
 	    }
 	} break;
-	case 10: {
+	case 11: {
 	    if ((*(AP_REP *)_cdata).pvno != (*(AP_REP *)_odata).pvno)
 		return 1;
 	    if ((*(AP_REP *)_cdata).msg_type != (*(AP_REP *)_odata).msg_type)
@@ -16655,7 +16769,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 11: {
+	case 12: {
 	    if (memcmp(&((*(EncAPRepPart *)_cdata).ctime), &((*(EncAPRepPart *)_odata).ctime), sizeof(short)*8 + sizeof(ossBoolean)))
 		return 1;
 	    if ((*(EncAPRepPart *)_cdata).cusec != (*(EncAPRepPart *)_odata).cusec)
@@ -16674,7 +16788,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 12: {
+	case 13: {
 	    if ((*(KRB_SAFE *)_cdata).pvno != (*(KRB_SAFE *)_odata).pvno)
 		return 1;
 	    if ((*(KRB_SAFE *)_cdata).msg_type != (*(KRB_SAFE *)_odata).msg_type)
@@ -16713,7 +16827,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 13: {
+	case 14: {
 	    if ((*(KRB_PRIV *)_cdata).pvno != (*(KRB_PRIV *)_odata).pvno)
 		return 1;
 	    if ((*(KRB_PRIV *)_cdata).msg_type != (*(KRB_PRIV *)_odata).msg_type)
@@ -16722,7 +16836,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 14: {
+	case 15: {
 	    if (_oss_cmp_unbnd_octet_ia(&((*(EncKrbPrivPart *)_odata).user_data), &((*(EncKrbPrivPart *)_cdata).user_data), sizeof(((*(EncKrbPrivPart *)_cdata).user_data).length), sizeof(((*(EncKrbPrivPart *)_cdata).user_data).value[0]), (unsigned int)((char *)&((*(EncKrbPrivPart *)_odata).user_data).value - (char *)&((*(EncKrbPrivPart *)_odata).user_data))))
 		return 1;
 	    if (((*(EncKrbPrivPart *)_odata).bit_mask ^ (*(EncKrbPrivPart *)_cdata).bit_mask) & EncKrbPrivPart_timestamp_present)
@@ -16754,7 +16868,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return _res;
 	    }
 	} break;
-	case 15: {
+	case 16: {
 	    if ((*(KRB_CRED *)_cdata).pvno != (*(KRB_CRED *)_odata).pvno)
 		return 1;
 	    if ((*(KRB_CRED *)_cdata).msg_type != (*(KRB_CRED *)_odata).msg_type)
@@ -16766,7 +16880,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 16: {
+	case 17: {
 	    {
 		struct _seqof5 *  _s_oss_tmp_2 = (*(EncKrbCredPart *)_odata).ticket_info;
 		struct _seqof5 *  _d_oss_tmp_2 = (*(EncKrbCredPart *)_cdata).ticket_info;
@@ -16877,7 +16991,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return _res;
 	    }
 	} break;
-	case 17: {
+	case 18: {
 	    if ((*(KRB_ERROR *)_cdata).pvno != (*(KRB_ERROR *)_odata).pvno)
 		return 1;
 	    if ((*(KRB_ERROR *)_cdata).msg_type != (*(KRB_ERROR *)_odata).msg_type)
@@ -16931,7 +17045,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 18: {
+	case 19: {
 	    {
 		struct METHOD_DATA *  _s_oss_tmp_1 = *(METHOD_DATA *)_odata;
 		struct METHOD_DATA *  _d_oss_tmp_1 = *(METHOD_DATA *)_cdata;
@@ -16947,7 +17061,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 19: {
+	case 20: {
 	    {
 		struct TYPED_DATA *  _s_oss_tmp_1 = *(TYPED_DATA *)_odata;
 		struct TYPED_DATA *  _d_oss_tmp_1 = *(TYPED_DATA *)_cdata;
@@ -16968,12 +17082,12 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 20: {
+	case 21: {
 	    _res = _cmEncryptedData(_g, (EncryptedData *)_odata, (EncryptedData *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
-	case 21: {
+	case 22: {
 	    if (memcmp(&((*(PA_ENC_TS_ENC *)_cdata).patimestamp), &((*(PA_ENC_TS_ENC *)_odata).patimestamp), sizeof(short)*8 + sizeof(ossBoolean)))
 		return 1;
 	    if (((*(PA_ENC_TS_ENC *)_odata).bit_mask ^ (*(PA_ENC_TS_ENC *)_cdata).bit_mask) & pausec_present)
@@ -16983,7 +17097,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 22: {
+	case 23: {
 	    {
 		struct ETYPE_INFO *  _s_oss_tmp_1 = *(ETYPE_INFO *)_odata;
 		struct ETYPE_INFO *  _d_oss_tmp_1 = *(ETYPE_INFO *)_cdata;
@@ -17004,7 +17118,7 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 23: {
+	case 24: {
 	    {
 		struct ETYPE_INFO2 *  _s_oss_tmp_1 = *(ETYPE_INFO2 *)_odata;
 		struct ETYPE_INFO2 *  _d_oss_tmp_1 = *(ETYPE_INFO2 *)_cdata;
@@ -17031,12 +17145,12 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 		    return 1;
 	    }
 	} break;
-	case 24: {
+	case 25: {
 	    _res = _cmAuthorizationData(_g, (AuthorizationData *)_odata, (AuthorizationData *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
-	case 25: {
+	case 26: {
 	    _res = _cmChecksum(_g, &((*(AD_KDCIssued *)_odata).ad_checksum), &((*(AD_KDCIssued *)_cdata).ad_checksum));
 	    if (_res)
 		return _res;
@@ -17057,23 +17171,23 @@ int DLL_ENTRY_FDEF _CMKerberosV5Spec2(struct ossGlobal * _g, int _pduNum, void *
 	    if (_res)
 		return _res;
 	} break;
-	case 26: {
+	case 27: {
 	    if ((*(AD_AND_OR *)_cdata).condition_count != (*(AD_AND_OR *)_odata).condition_count)
 		return 1;
 	    _res = _cmAuthorizationData(_g, &((*(AD_AND_OR *)_odata).elements), &((*(AD_AND_OR *)_cdata).elements));
 	    if (_res)
 		return _res;
 	} break;
-	case 27: {
+	case 28: {
 	    _res = _cmAuthorizationData(_g, (AuthorizationData *)_odata, (AuthorizationData *)_cdata);
 	    if (_res)
 		return _res;
 	} break;
-	case 28: {
+	case 29: {
 	    if (((*(KERB_PA_PAC_REQUEST *)_cdata).include_pac ^ (*(KERB_PA_PAC_REQUEST *)_odata).include_pac) & 0x01)
 		return 1;
 	} break;
-	case 29: {
+	case 30: {
 	    if (_oss_cmp_unbnd_octet_ia(&((*(ChangePasswdData *)_odata).newpasswd), &((*(ChangePasswdData *)_cdata).newpasswd), sizeof(((*(ChangePasswdData *)_cdata).newpasswd).length), sizeof(((*(ChangePasswdData *)_cdata).newpasswd).value[0]), (unsigned int)((char *)&((*(ChangePasswdData *)_odata).newpasswd).value - (char *)&((*(ChangePasswdData *)_odata).newpasswd))))
 		return 1;
 	    if (((*(ChangePasswdData *)_odata).bit_mask ^ (*(ChangePasswdData *)_cdata).bit_mask) & targname_present)
@@ -17114,17 +17228,17 @@ NULL
 };
 static void _oss_post_init(struct ossGlobal *world) {
     static const unsigned char _oss_typeinfo[] = {
-        0x00, 0x68, 0x34, 0x38, 0xf8, 0x5e, 0x13, 0xa5, 0x1a, 0x18,
-        0x3b, 0xa7, 0x1a, 0x1b, 0x3b, 0x21, 0x36, 0x79, 0x14, 0xbc,
-        0x87, 0xa3, 0x1b, 0xec, 0x20, 0x99, 0x62, 0xc6, 0x8e, 0x7c,
-        0x8c, 0xd4, 0x61, 0xc9, 0x8a, 0xe8, 0x44, 0xf1, 0xda, 0xaa,
-        0x91, 0xd9, 0xd2, 0xbf, 0xcb, 0xd1, 0x68, 0xc7, 0x0a, 0x17,
-        0x86, 0x8b, 0x19, 0x52, 0xc1, 0x88, 0x1f, 0xc1, 0x34, 0xa8,
-        0x9e, 0xbb, 0x42, 0x38, 0xca, 0x1a, 0x4e, 0x8f, 0x35, 0xd0,
-        0x62, 0xbc, 0xb7, 0xaf, 0xdd, 0xd6, 0x94, 0x27, 0x73, 0x18,
-        0xa1, 0x22, 0x50, 0xf8, 0xbf, 0xd8, 0x77, 0xc3, 0xea, 0x9a,
-        0xa6, 0x40, 0x4f, 0x5d, 0x52, 0x97, 0x40, 0xc5, 0x0a, 0x8e,
-        0x85, 0x8b, 0x5c, 0xa8, 0xc7, 0x1a
+        0x00, 0x67, 0x34, 0x39, 0xf8, 0x5e, 0x13, 0xa4, 0x1a, 0x18,
+        0x3b, 0xa6, 0x1a, 0x1b, 0x3b, 0xbd, 0xad, 0x3c, 0x86, 0xb6,
+        0xf8, 0x98, 0xf8, 0x8b, 0x02, 0xe4, 0xa4, 0x79, 0x5d, 0x88,
+        0x92, 0x32, 0x1b, 0xf8, 0x69, 0xc4, 0xd3, 0x62, 0xc8, 0x0d,
+        0xae, 0xa5, 0x9b, 0x4d, 0x49, 0x4c, 0x71, 0xad, 0xcf, 0x6f,
+        0xf6, 0xb6, 0xcf, 0x52, 0x95, 0xea, 0x79, 0x2e, 0x46, 0xe4,
+        0x71, 0xe6, 0xe5, 0xea, 0x9c, 0x24, 0x6d, 0x32, 0xaf, 0x59,
+        0x5f, 0xd0, 0x8d, 0xa0, 0x10, 0x2b, 0xf4, 0x87, 0x06, 0x47,
+        0xbe, 0x2a, 0xc9, 0x5c, 0xf4, 0xe0, 0x50, 0xf8, 0x3d, 0x99,
+        0x3c, 0x06, 0xaf, 0xd0, 0x0a, 0x59, 0xaf, 0xcf, 0xf6, 0xf5,
+        0xb6, 0x05, 0x5e, 0x0b, 0xc7
     };
     ossInitRootContext1(world, (unsigned char *)_oss_typeinfo);
 }

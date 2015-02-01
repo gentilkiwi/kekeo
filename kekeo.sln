@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{979399AD-9EB
 		lib\toedcode.lib = lib\toedcode.lib
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kirbikator", "kirbikator\kirbikator.vcxproj", "{11C16712-C291-4D57-87FC-6A3E83EFDE2F}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -39,6 +41,8 @@ Global
 		{2F4CBDD4-E97A-4708-A829-600230C3E977}.Release|Win32.Build.0 = Release|Win32
 		{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}.Release|Win32.ActiveCfg = Release|Win32
 		{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}.Release|Win32.Build.0 = Release|Win32
+		{11C16712-C291-4D57-87FC-6A3E83EFDE2F}.Release|Win32.ActiveCfg = Release|Win32
+		{11C16712-C291-4D57-87FC-6A3E83EFDE2F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -39,6 +39,26 @@ int kull_m_kerberos_asn1_helper_ossPrintPDU(int pdunum, void *data)
 	return ossPrintPDU(&world, pdunum, data);
 }
 
+int kull_m_kerberos_asn1_helper_ossDecode(int pdunum, OssBuf *input, void **output)
+{
+	return ossDecode(&world, &pdunum, input, output);
+}
+
+int kull_m_kerberos_asn1_helper_ossEncode(int pdunum, void * input, OssBuf *output)
+{
+	return ossEncode(&world, pdunum,  input, output);
+}
+
+int kull_m_kerberos_asn1_helper_ossCpyValue(int pdunum, void *source, void **destination)
+{
+	return ossCpyValue(&world, pdunum, source, destination);
+}
+
+char * kull_m_kerberos_asn1_helper_ossGetErrMsg()
+{
+	return ossGetErrMsg(&world);
+}
+
 void kull_m_kerberos_asn1_helper_init_PrincipalName(PrincipalName * name, INT name_type, DWORD count, ...)
 {
 	DWORD i;
@@ -81,6 +101,48 @@ void kull_m_kerberos_asn1_helper_init_KerberosTime(KerberosTime *time, PSYSTEMTI
 		time->mindiff = 0;
 		time->utc = TRUE;
 	}
+}
+
+void kull_m_kerberos_asn1_helper_init_KerberosTime2(KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037)
+{
+	SYSTEMTIME systemTime;
+	BOOL isPtr = FALSE;
+	if(!isMaxMs2037 && pFileTime)
+		isPtr = FileTimeToSystemTime(pFileTime, &systemTime);
+	kull_m_kerberos_asn1_helper_init_KerberosTime(time, isPtr ? &systemTime : NULL, isMaxMs2037);
+}
+
+void kull_m_kerberos_asn1_helper_init_KerberosTime3(KerberosTime *time, time_t uTime)
+{
+	FILETIME fileTime;
+	*(PLONGLONG) &fileTime = Int32x32To64(uTime, 10000000) + 116444736000000000;
+	kull_m_kerberos_asn1_helper_init_KerberosTime2(time, &fileTime, FALSE);
+}
+
+void kull_m_kerberos_asn1_helper_get_KerberosTime(KerberosTime *time, PSYSTEMTIME pSystemTime)
+{
+	pSystemTime->wYear = time->year;
+	pSystemTime->wMonth = time->month;
+	pSystemTime->wDay = time->day;
+	pSystemTime->wHour = time->hour;
+	pSystemTime->wMinute = time->minute;
+	pSystemTime->wSecond = time->second;
+	pSystemTime->wMilliseconds = 0;
+	pSystemTime->wDayOfWeek = 0;
+}
+
+void kull_m_kerberos_asn1_helper_get_KerberosTime2(KerberosTime *time, PFILETIME pFileTime)
+{
+	SYSTEMTIME systemTime;
+	kull_m_kerberos_asn1_helper_get_KerberosTime(time, &systemTime);
+	SystemTimeToFileTime(&systemTime, pFileTime);
+}
+
+void kull_m_kerberos_asn1_helper_get_KerberosTime3(KerberosTime *time, time_t * uTime)
+{
+	FILETIME fileTime;
+	kull_m_kerberos_asn1_helper_get_KerberosTime2(time, &fileTime);
+	*uTime = (*(PLONGLONG) &fileTime - 116444736000000000) / 10000000; 
 }
 
 int kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(PA_DATA *data, EncryptionKey *key)

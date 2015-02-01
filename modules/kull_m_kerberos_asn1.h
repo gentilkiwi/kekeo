@@ -12,7 +12,7 @@
 
 /* Generated for: N/A (Trial), License: 70098Z. */
 /* Abstract syntax: kull_m_kerberos_asn1 */
-/* Created: Sun Jan 11 13:36:06 2015 */
+/* Created: Sun Jan 25 20:47:15 2015 */
 /* ASN.1 compiler version: 10.0 */
 /* Code generated for runtime version 10.0 or later */
 /* Compiler operating system: Windows */
@@ -30,35 +30,36 @@
 
 #include "ossasn1.h"
 
-#define          EncTicketPart_PDU 1
-#define          AS_REQ_PDU 2
-#define          TGS_REQ_PDU 3
-#define          AS_REP_PDU 4
-#define          TGS_REP_PDU 5
-#define          EncASRepPart_PDU 6
-#define          EncTGSRepPart_PDU 7
-#define          AP_REQ_PDU 8
-#define          Authenticator_PDU 9
-#define          AP_REP_PDU 10
-#define          EncAPRepPart_PDU 11
-#define          KRB_SAFE_PDU 12
-#define          KRB_PRIV_PDU 13
-#define          EncKrbPrivPart_PDU 14
-#define          KRB_CRED_PDU 15
-#define          EncKrbCredPart_PDU 16
-#define          KRB_ERROR_PDU 17
-#define          METHOD_DATA_PDU 18
-#define          TYPED_DATA_PDU 19
-#define          PA_ENC_TIMESTAMP_PDU 20
-#define          PA_ENC_TS_ENC_PDU 21
-#define          ETYPE_INFO_PDU 22
-#define          ETYPE_INFO2_PDU 23
-#define          AD_IF_RELEVANT_PDU 24
-#define          AD_KDCIssued_PDU 25
-#define          AD_AND_OR_PDU 26
-#define          AD_MANDATORY_FOR_KDC_PDU 27
-#define          KERB_PA_PAC_REQUEST_PDU 28
-#define          ChangePasswdData_PDU 29
+#define          Ticket_PDU 1
+#define          EncTicketPart_PDU 2
+#define          AS_REQ_PDU 3
+#define          TGS_REQ_PDU 4
+#define          AS_REP_PDU 5
+#define          TGS_REP_PDU 6
+#define          EncASRepPart_PDU 7
+#define          EncTGSRepPart_PDU 8
+#define          AP_REQ_PDU 9
+#define          Authenticator_PDU 10
+#define          AP_REP_PDU 11
+#define          EncAPRepPart_PDU 12
+#define          KRB_SAFE_PDU 13
+#define          KRB_PRIV_PDU 14
+#define          EncKrbPrivPart_PDU 15
+#define          KRB_CRED_PDU 16
+#define          EncKrbCredPart_PDU 17
+#define          KRB_ERROR_PDU 18
+#define          METHOD_DATA_PDU 19
+#define          TYPED_DATA_PDU 20
+#define          PA_ENC_TIMESTAMP_PDU 21
+#define          PA_ENC_TS_ENC_PDU 22
+#define          ETYPE_INFO_PDU 23
+#define          ETYPE_INFO2_PDU 24
+#define          AD_IF_RELEVANT_PDU 25
+#define          AD_KDCIssued_PDU 26
+#define          AD_AND_OR_PDU 27
+#define          AD_MANDATORY_FOR_KDC_PDU 28
+#define          KERB_PA_PAC_REQUEST_PDU 29
+#define          ChangePasswdData_PDU 30
 
 typedef struct ObjectID {
     unsigned short  length;

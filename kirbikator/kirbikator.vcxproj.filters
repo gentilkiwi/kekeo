@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="kirbikator.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="codecs\ccache.h">
+      <Filter>codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="codecs\krbcred.h">
+      <Filter>codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="codecs\lsa.h">
+      <Filter>codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_file.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_kerberos_asn1.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_kerberos_asn1_helper.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_string.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_crypto_system.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_kerberos_helper.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_sock.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="kirbikator.c" />
+    <ClCompile Include="codecs\ccache.c">
+      <Filter>codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\krbcred.c">
+      <Filter>codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\lsa.c">
+      <Filter>codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_file.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_string.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_kerberos_helper.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_sock.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="common modules">
+      <UniqueIdentifier>{c37e7d68-c797-4f17-987e-c58802e747ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codecs">
+      <UniqueIdentifier>{8dc27375-d545-4393-9b1a-496c17fd4044}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.asn">
+      <Filter>common modules</Filter>
+    </None>
+  </ItemGroup>
+</Project>
