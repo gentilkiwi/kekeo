@@ -63,5 +63,8 @@
     <None Include="..\modules\kull_m_kerberos_asn1.asn">
       <Filter>common modules</Filter>
     </None>
+    <None Include="..\modules\kull_m_kerberos_asn1.a1sproj">
+      <Filter>common modules</Filter>
+    </None>
   </ItemGroup>
 </Project>

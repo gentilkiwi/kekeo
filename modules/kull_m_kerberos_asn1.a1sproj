@@ -1,0 +1,34 @@
+<OssGuiProject version="2.0" compilerVersionLastUsed="10.1" product="ASN.1 Studio" productVersion="7.1" compilerVersionInitial="10.0 T" compilerSettingsChangeTime="2015-01-11T13:35:41" compiler="ASN.1/C">
+ <Asn1Files>
+  <File>kull_m_kerberos_asn1.asn</File>
+ </Asn1Files>
+ <CompilerSettings>
+  <Setting name="disablCAGLMessagesCheckBox" present="true"/>
+  <Setting name="headerGroupBox" present="true"/>
+  <Setting name="toedRadioButton" present="true"/>
+  <Setting name="modListRadioButton" present="false"/>
+  <Setting name="sampleDefaultRadioButton" present="true"/>
+  <Setting name="commentsNativeRadioButton" present="true"/>
+  <Setting name="helperApiRadioButton" present="false"/>
+  <Setting name="encOnlyRadioButton" present="false"/>
+ </CompilerSettings>
+ <EncodingFiles/>
+ <GeneratedFiles>
+  <File>kull_m_kerberos_asn1.h</File>
+  <File>kull_m_kerberos_asn1.c</File>
+ </GeneratedFiles>
+ <Settings>
+  <Setting name="-noRelaxedMode" present="false"/>
+  <Setting name="-root"/>
+  <Setting name="-relaySafe" present="false"/>
+  <Setting name="AUTOMATIC_ENCDEC"/>
+  <Setting name="OSS_AUTO_ENCODE_WITHOUT_CHECKING_CONSTRAINT"/>
+  <Setting name="DEBUGPDU"/>
+  <Setting name="OSS_PRINT_TYPE_INFO"/>
+  <Setting name="OSS_PRINT_OFFSET"/>
+  <Setting name="OSS_PRINT_COMMENTS"/>
+  <Setting name="OSS_HEXBYTES"/>
+  <Setting name="-der"/>
+ </Settings>
+ <UserFiles/>
+</OssGuiProject>

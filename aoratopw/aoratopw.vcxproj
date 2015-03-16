@@ -93,6 +93,7 @@
     <ClCompile Include="aoratopw.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
     <None Include="..\modules\kull_m_kerberos_asn1.asn" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

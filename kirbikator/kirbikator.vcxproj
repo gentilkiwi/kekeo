@@ -95,6 +95,7 @@
     <ClCompile Include="kirbikator.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
     <None Include="..\modules\kull_m_kerberos_asn1.asn">
       <FileType>Document</FileType>
     </None>
