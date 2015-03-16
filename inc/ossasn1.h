@@ -1,11 +1,13 @@
 /*****************************************************************************/
-/* Copyright (C) 2013 OSS Nokalva, Inc.  All rights reserved.                */
+/* Copyright (C) 2014 OSS Nokalva, Inc.  All rights reserved.                */
 /*****************************************************************************/
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.                    */
 /* AND MAY BE USED ONLY BY DIRECT LICENSEES OF OSS NOKALVA, INC.             */
 /* THIS FILE MAY NOT BE DISTRIBUTED.                                         */
+/* THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED.                              */
 /*****************************************************************************/
-/* FILE: @(#)ossasn1.hh	16.140  13/02/25                                     */
+/*****************************************************************************/
+/* FILE: @(#)ossasn1.hh	17.5  14/07/11                                     */
 /*****************************************************************************/
 
 
@@ -112,7 +114,7 @@ typedef char ossBoolean;
 #endif
 
 #ifndef LONG_LONG
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__WATCOMC__)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(MINGW_WIN32)
 #define LONG_LONG __int64
 #define LLONG_FMT "%I64d"
 #elif defined(__IBMC__)
@@ -125,7 +127,7 @@ typedef char ossBoolean;
 #endif
 
 #ifndef ULONG_LONG
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__WATCOMC__)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(MINGW_WIN32)
 #define ULONG_LONG unsigned __int64
 #define ULLONG_FMT "%I64u"
 #elif defined(__IBMC__)
@@ -138,7 +140,7 @@ typedef char ossBoolean;
 #endif
 
 #ifndef LLONG_MAX
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__WATCOMC__)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(MINGW_WIN32)
 #define LLONG_MAX _I64_MAX
 #elif defined(__IBMC__)
 #define LLONG_MAX LONGLONG_MAX
@@ -148,7 +150,7 @@ typedef char ossBoolean;
 #endif
 
 #ifndef LLONG_MIN
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__WATCOMC__)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(MINGW_WIN32)
 #define LLONG_MIN _I64_MIN
 #elif defined(__IBMC__)
 #define LLONG_MIN LONGLONG_MIN
@@ -158,7 +160,7 @@ typedef char ossBoolean;
 #endif
 
 #ifndef ULLONG_MAX
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__WATCOMC__)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(MINGW_WIN32)
 #define ULLONG_MAX _UI64_MAX
 #elif defined(__IBMC__)
 #define ULLONG_MAX ULONGLONG_MAX
@@ -373,6 +375,7 @@ typedef enum  {
     OSS_CER,
     OSS_EXER
     , OSS_OER
+    , OSS_COER
 } ossEncodingRules;
 #endif /* !OSSNAS_H */
 
@@ -389,22 +392,12 @@ typedef enum  {
 #pragma pack(push, ossPacking, 8)
 #elif defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32))
 #pragma pack(push, ossPacking, 4)
-#elif defined(_MSC_VER) && (defined(_WINDOWS) || defined(_MSDOS))
-#pragma pack(1)
-#elif defined(__BORLANDC__) && defined(__MSDOS__)
-#ifdef _BC31
-#pragma option -a-
-#else
-#pragma option -a1
-#endif /* _BC31 */
 #elif defined(__BORLANDC__) && defined(__WIN32__)
 #pragma option -a4
 #elif defined(__IBMC__) && defined(__WIN32__)
 #pragma pack(4)
 #elif defined(__WATCOMC__) && defined(__NT__)
 #pragma pack(push, 4)
-#elif defined(__WATCOMC__) && (defined(__WINDOWS__) || defined(__DOS__))
-#pragma pack(push, 1)
 #endif /* _MSC_VER && (WINCE || _WIN64) */
 
 #if defined(macintosh) && defined(__CFM68K__)
@@ -430,7 +423,7 @@ extern "C"
 #define CDECL_ENTRY_FDEF
 #define CDECL_ENTRY_FPTR
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
 #if defined(_DLL) && !defined(ONE_DLL) && !defined(WIN32_DRIVER) && \
     !defined(OSS_SOED_BER) && !defined(OSS_SOED_PER) && \
@@ -520,26 +513,12 @@ typedef long           LONG;
 #endif /* OSS_EXPORT_DLL_DATA */
 #endif /* __BORLANDC__ */
 #define _System
-#elif defined(_WINDOWS)
-#define PUBLIC
-#undef OSS_EXPORT_DLL_DATA
-#define OSS_EXPORT_DLL_DATA
-#ifdef DPMI_DLL
-#define DLL_ENTRY      FAR PASCAL __export
-#define DLL_ENTRY_FDEF FAR PASCAL __export
-#define DLL_ENTRY_FPTR FAR PASCAL __export
-#else
-#define DLL_ENTRY      far pascal _export
-#define DLL_ENTRY_FDEF far pascal _export
-#define DLL_ENTRY_FPTR far pascal _export
-#endif /* DPMI_DLL */
-#define _System
 #endif /* _WIN32 || WIN32 || __WIN32__ */
 #endif /* DLL_ENTRY */
 #endif /* !OSSNAS_H */
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
-#if defined(_WINDOWS) || defined(_WIN32)
+#if defined(_WIN32)
 
 /* The structure "functionTables" is used to store DLL-related information. */
 typedef struct functionTables {
@@ -598,7 +577,7 @@ typedef struct functionTables {
     void       *exerTbl;       /* EXER function table */
     void       *reserved[7];    /* Reserved for possible future use */
 } FunctionTables;
-#elif !defined(DLL_ENTRY) /* _WINDOWS || _WIN32 */
+#elif !defined(DLL_ENTRY) /* _WIN32 */
 
 #include <stdarg.h>
 #if defined(_WIN32) || defined(WIN32)
@@ -606,11 +585,6 @@ typedef struct functionTables {
 #define DLL_ENTRY      WINAPI
 #define DLL_ENTRY_FDEF WINAPI
 #define DLL_ENTRY_FPTR WINAPI
-#elif defined(__WATCOMC__) && defined(__DOS__)
-#define DLL_ENTRY __cdecl
-#define DLL_ENTRY_FDEF __cdecl
-#define DLL_ENTRY_FPTR __cdecl
-#define PUBLIC
 #else
 #define DLL_ENTRY
 #define DLL_ENTRY_FDEF
@@ -622,7 +596,7 @@ typedef struct functionTables {
 #undef  _System
 #define _System
 
-#endif /* _WINDOWS || _WIN32 */
+#endif /* _WIN32 */
 
 /*****************************************************************************/
 /*  PUBLIC section: auxiliary data structures used by OSS API functions      */
@@ -1274,8 +1248,8 @@ struct ossGlobal {
 	/*
 	 * used for storing DLL- & library NLMs-related parameters
 	 */
-#if defined(_WINDOWS) || defined(_WIN32)
-    FunctionTables    ft;
+#if defined(_WIN32)
+    FunctionTables    reserved_ft;
 #endif
 
 	/*
@@ -1338,7 +1312,7 @@ typedef enum {
     OSS_MEMORY
 } OssObjType;
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 typedef struct memManagerTbl {
     int			 (DLL_ENTRY_FPTR *_System ossMinitp)(void *);
     unsigned char	*(DLL_ENTRY_FPTR *_System dopenInp)(void *,
@@ -1454,7 +1428,7 @@ typedef struct pointerTbl {
     ossBoolean	(DLL_ENTRY_FPTR  *_System ossCmpObjectsp)(void *, void *, etypep, void *, ossBoolean);
 } PointerTbl;
 
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 /*****************************************************************************/
 /*  PUBLIC section: OSS decoder/encoder runtime flags                        */
 /*****************************************************************************/
@@ -1804,6 +1778,9 @@ typedef struct pointerTbl {
 
 #define OSS_USE_TYPE_IDENTIFICATION_ATTRIBUTE_FOR_UNION		0x200000
 #define OSS_NO_DETAIL_MM_ERROR_CODES		    0x400000
+/* Flag restores PER encoding of INTERVAL/fractionial-part as
+ * INTEGER (1..999, ..., 1000..MAX) */
+#define OSS_INTERVAL_FRACTION_1_999		    0x800000
 
 /* compatibility flags added after V.412 */
 #define OSS_VERSION_412_FL	OSS_V412_TIME_AND_WIDE_CHAR_STRINGS
@@ -1883,10 +1860,10 @@ extern FILE *asn1out;
 extern int (DLL_ENTRY_FPTR *asn1prnt) (FILE *stream, const char *format, ...);
 #endif /* EOF */
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 extern void * const    ctl_tbl;
 extern HINSTANCE hInst;
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
 extern void *(CDECL_ENTRY_FPTR *mallocp)(size_t p);  /* function which allocates memory */
 extern void  (CDECL_ENTRY_FPTR *freep)(void *p);     /* function which frees memory */
@@ -1903,14 +1880,10 @@ extern void  (CDECL_ENTRY_FPTR *freep)(void *p);     /* function which frees mem
 /*  PUBLIC section: non-API functions defined in examples or generated files */
 /*****************************************************************************/
 
-#if defined(_WINDOWS) && !defined(_WIN32) && !defined(WIN32)
-#define GWL_USERDATA 0
-#endif /* _WINDOWS && !_WIN32 && !WIN32 */
-
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 extern int CDECL_ENTRY	ossGeneric(struct ossGlobal *, HWND);
 extern int DLL_ENTRY oss_test(struct ossGlobal *);
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
 /*****************************************************************************/
 /*  PUBLIC section: OSS API FUNCTIONS                                        */
@@ -1967,7 +1940,7 @@ __declspec(dllimport) extern int _ossSetGlobalUserVar;
 PUBLIC extern int _ossSetGlobalUserVar;
 #endif /* DLL_LINKAGE */
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 #define osswinit ossWinit
 PUBLIC extern int DLL_ENTRY  ossWinit(struct ossGlobal *, void *, char *, HWND);
 PUBLIC extern void DLL_ENTRY ossWterm(struct ossGlobal *);
@@ -1976,7 +1949,7 @@ PUBLIC extern void DLL_ENTRY ossWterm(struct ossGlobal *);
 #define osswinit(world, ctl_tbl, dll_name, hwnd) ossinit(world, ctl_tbl)
 #define ossWinit(world, ctl_tbl, dll_name, hwnd) ossinit(world, ctl_tbl)
 #define ossWterm(world) ossterm(world)
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
 #if !(defined(__IBMC__) && defined(__WIN32__))  \
 	&& !defined(DYNAMICLINKING_NOTSUPPORTED)
@@ -2000,9 +1973,9 @@ PUBLIC unsigned long DLL_ENTRY ossGetFlags(struct ossGlobal *world);
 PUBLIC int DLL_ENTRY        ossOpenTraceFile(struct ossGlobal *world,
 					char          *fileName);
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 PUBLIC extern int DLL_ENTRY ossOpenTraceWindow(struct ossGlobal *);
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
 extern int                  ossPrint(struct ossGlobal *, const char *, ...);
 PUBLIC void DLL_ENTRY       ossPrintHex(struct ossGlobal *world,
@@ -2084,10 +2057,10 @@ PUBLIC void DLL_ENTRY       ossGetUserMallocFreeRealloc(struct ossGlobal *world,
 		void  (CDECL_ENTRY_FPTR **ossUserFree)(struct ossGlobal *world, void *buf),
 		void *(CDECL_ENTRY_FPTR **ossUserRealloc)(struct ossGlobal *world, void *buf,
 					    size_t size));
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 PUBLIC extern HINSTANCE DLL_ENTRY ossLoadMemoryManager(struct ossGlobal *,
 							int, char *);
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* WIN32 || WIN32 || __WIN32__ */
 
 PUBLIC void *DLL_ENTRY      ossMarkObj(struct ossGlobal *world,
 					    OssObjType objType, void *object);
@@ -2730,10 +2703,10 @@ extern int DLL_ENTRY        ossTestMultipleEncodings(struct ossGlobal *world,
 				    int            pdunum,
 				    OssBuf        *encoded_messages,
 				    int            number_of_encoded_messages);
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 PUBLIC extern int DLL_ENTRY ossVprintWin(struct ossGlobal *, const char *,
 					    va_list ap);
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
 /*****************************************************************************/
 /*  PUBLIC section: osstrace()                                               */
@@ -3085,7 +3058,7 @@ extern void DLL_ENTRY       osstrace(struct ossGlobal *g, struct traceRecord *p,
 /*  NON-PUBLIC section: apiTbl DLL definition                                */
 /*****************************************************************************/
 
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 #if defined(__alpha)
 #define ossArg LONG_LONG
 #elif defined(WINDOWS_X64) || defined(WINDOWS_ITANIUM_64BIT)
@@ -3093,11 +3066,11 @@ extern void DLL_ENTRY       osstrace(struct ossGlobal *g, struct traceRecord *p,
 #else
 #define ossArg int
 #endif /* __alpha */
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
-#if defined(_WINDOWS) || defined(_WIN32)
+#if defined(_WIN32)
 struct _string_data;
-#endif /* _WINDOWS || _WIN32 */
+#endif /* _WIN32 */
 
 
 
@@ -3222,14 +3195,11 @@ PUBLIC OssSAXStatus DLL_ENTRY ossSAXGetStatus(OssGlobal *world);
 #if defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32) \
 			|| defined(WINCE) || defined(_WIN64))
 #pragma pack(pop, ossPacking)
-#elif defined(_MSC_VER) && (defined(_WINDOWS) || defined(_MSDOS))
-#pragma pack()
-#elif defined(__BORLANDC__) && (defined(__WIN32__) || defined(__MSDOS__))
+#elif defined(__BORLANDC__) && defined(__WIN32__)
 #pragma option -a.
 #elif defined(__IBMC__) && defined(__WIN32__)
 #pragma pack()
-#elif defined(__WATCOMC__) && (defined(__NT__) || defined(__WINDOWS__) \
-			|| defined(__DOS__))
+#elif defined(__WATCOMC__) && defined(__NT__)
 #pragma pack(pop)
 #endif /* _MSC_VER && _WIN32 */
 

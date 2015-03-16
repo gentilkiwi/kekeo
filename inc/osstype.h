@@ -1,11 +1,12 @@
 /*****************************************************************************/
-/* Copyright (C) 2013 OSS Nokalva, Inc.  All rights reserved.                */ 
+/* Copyright (C) 2014 OSS Nokalva, Inc.  All rights reserved.                */ 
 /*****************************************************************************/
 /* THIS FILE IS PROPRIETARY MATERIAL OF OSS NOKALVA, INC.                    */
 /* AND MAY BE USED ONLY BY DIRECT LICENSEES OF OSS NOKALVA, INC.             */
 /* THIS FILE MAY NOT BE DISTRIBUTED.                                         */
+/* THIS COPYRIGHT STATEMENT MAY NOT BE REMOVED.                              */
 /*****************************************************************************/
-/* FILE: @(#)osstype.hh	16.126.1.1  13/11/14                                      */
+/* FILE: @(#)osstype.hh	17.19  14/07/29                                      */
 /*****************************************************************************/
 
 /*****************************************************************************/
@@ -61,16 +62,12 @@
 #pragma pack(push, ossPacking, 8)
 #elif defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32))
 #pragma pack(push, ossPacking, 4)
-#elif defined(_MSC_VER) && defined(_WINDOWS)
-#pragma pack(1)
 #elif defined(__BORLANDC__) && defined(__WIN32__)
 #pragma option -a4
 #elif defined(__IBMC__) && defined(__WIN32__)
 #pragma pack(4)
 #elif defined(__WATCOMC__) && defined(__NT__)
 #pragma pack(push, 4)
-#elif defined(__WATCOMC__) && defined(__WINDOWS__)
-#pragma pack(push, 1)
 #endif /* _MSC_VER && (WINCE || _WIN64) */
 
 #if defined(macintosh) && defined(__CFM68K__)
@@ -127,7 +124,7 @@ typedef struct ossDebugData {
 
 enum _err_index {
 /*
- * FILE: @(#)coderror.h	16.40.1.2  13/11/07
+ * FILE: @(#)coderror.h	17.4  13/11/07
  */
 _no_msg,_small_buffer,_type_not_impl,_pdu_range,_bad_argument,
 _runtime_version_mismatch,_out_stor,_bad_choice,_bad_der_time,
@@ -173,20 +170,20 @@ _too_many_optional_in_group,_extension_encode_error,
 _indef_length_der,_bad_UTF8_char,_ber_field_removed,
 _per_field_removed,_unexpected_end_of_pdu,_input_file_eof,
 _not_multiple_charwidth,_objid_is_constructed,_small_stack,
-_stack_sharing,_printper_dll_failed,_small_tmp_buffer,
-_bad_tmp_buf_free,_int_len_too_long,_uint_len_too_long,
-_pattern_constraint_string,_pattern_constraint,
-_pattern_constraint_not_linked,_nocopy_fragmented,
-_xml_start_tag_expected,_xml_start_or_empty_tag_expected,
-_xml_invalid_start_tag,_xml_zero_pdu,_xml_tags_mismatch,
-_xml_end_tag_expected,_xml_item_mismatch,_xml_invalid_bool,
-_xml_unknown_field,_xml_not_named_value,_xml_space_expected,
-_xml_no_debug_info,_xml_exp_name,_xml_bad_tag,_xml_inv_name,
-_xml_long_name,_xml_inv_comment,_xml_inv_ch_seq,
-_xml_unexp_comment,_xml_cxer_restriction,_xml_inv_cstr_char,
-_xml_invalid_element,_xml_empty_tag_expected,_xml_invalid_tag,
-_xml_inv_form,_xml_exp_eq,_bad_objid_node,
-_constructed_nesting_limit_exceeded,
+_stack_sharing,_printper_dll_failed,_constraint_violated,
+_small_tmp_buffer,_bad_tmp_buf_free,_int_len_too_long,
+_uint_len_too_long,_pattern_constraint_string,
+_pattern_constraint,_pattern_constraint_not_linked,
+_nocopy_fragmented,_xml_start_tag_expected,
+_xml_start_or_empty_tag_expected,_xml_invalid_start_tag,
+_xml_zero_pdu,_xml_tags_mismatch,_xml_end_tag_expected,
+_xml_item_mismatch,_xml_invalid_bool,_xml_unknown_field,
+_xml_not_named_value,_xml_space_expected,_xml_no_debug_info,
+_xml_exp_name,_xml_bad_tag,_xml_inv_name,_xml_long_name,
+_xml_inv_comment,_xml_inv_ch_seq,_xml_unexp_comment,
+_xml_cxer_restriction,_xml_inv_cstr_char,_xml_invalid_element,
+_xml_empty_tag_expected,_xml_invalid_tag,_xml_inv_form,
+_xml_exp_eq,_bad_objid_node,_constructed_nesting_limit_exceeded,
 _seq_set_nesting_limit_exceeded,_api_dll_failed,
 _no_valueset_cnst_support,_segment_length_is_not_0_modulo_8,
 _xml_bad_char_ref,_xml_big_char_ref,_xml_entity_not_found,
@@ -238,7 +235,7 @@ _hindmost_error
     /*************************************************************************/
     /*  DLL section (Windows and similar platforms only)                     */
     /*************************************************************************/
-#if defined(_WINDOWS) || defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 struct memblock {
     struct memblock     *_prev;
     struct memblock     *_next;
@@ -255,12 +252,12 @@ __declspec(dllimport) extern const int ossEncoderDecoderType;
 #else
 extern                       const int ossEncoderDecoderType;
 #endif /* DLL_LINKAGE */
-#endif /* _WINDOWS ||_WIN32 || WIN32 || __WIN32__ */
+#endif /* _WIN32 || WIN32 || __WIN32__ */
 
-#if defined(_WINDOWS) || defined(_WIN32)
+#if defined(_WIN32)
 
 #define CHECK_UNINITIALIZED_FPTR_FIELDS(tbl)
-#endif /* _WINDOWS || _WIN32 */
+#endif /* _WIN32 */
 
 
 
@@ -273,10 +270,10 @@ PUBLIC void DLL_ENTRY ossInitRootContext(struct ossGlobal *, unsigned char *);
 PUBLIC void DLL_ENTRY ossInitRootContext1(struct ossGlobal *, unsigned char *);
 PUBLIC void DLL_ENTRY ossInitRootContext2(struct ossGlobal *, unsigned char *);
 
-#if defined(_WINDOWS) || defined(_DLL)
+#if defined(_DLL)
 PUBLIC void DLL_ENTRY ossLinkAPI(struct ossGlobal *);
 PUBLIC void DLL_ENTRY ossLinkOid(struct ossGlobal *);
-#endif /* _WINDOWS || _DLL */
+#endif /* _DLL */
 
 PUBLIC void DLL_ENTRY ossLinkBer(struct ossGlobal *);
 PUBLIC void DLL_ENTRY ossLinkDer(struct ossGlobal *);
@@ -304,6 +301,7 @@ extern char *DLL_ENTRY _ossUintToStrLimited(char *, OSS_UINT32, OSS_UINT32);
 
 PUBLIC int DLL_ENTRY ossSetInternalFlags(struct ossGlobal *world, unsigned long flags);
 PUBLIC unsigned long DLL_ENTRY ossGetInternalFlags(struct ossGlobal *world);
+PUBLIC unsigned int DLL_ENTRY ossGetCompilerVersion(struct ossGlobal *world);
 
 
 PUBLIC void DLL_ENTRY _oss_db_e_pre(struct ossGlobal *world,
@@ -318,8 +316,6 @@ PUBLIC void DLL_ENTRY _oss_db_d_post(struct ossGlobal *world,
 
 #if defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32) || defined(WINCE) || defined(_WIN64))
 #pragma pack(push, align, 8)
-#elif defined(_MSC_VER) && defined(_WINDOWS)
-#pragma pack(8)
 #endif /* _MSC_VER && _WIN32 */
 typedef struct {
     char _oss_a;
@@ -327,8 +323,6 @@ typedef struct {
 } _oss_amax;
 #if defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32) || defined(WINCE) || defined(_WIN64))
 #pragma pack(pop, align)
-#elif defined(_MSC_VER) && defined(_WINDOWS)
-#pragma pack()
 #endif /* _MSC_VER && _WIN32 */
 
 #define _oss_asize ((unsigned)((char *)&((_oss_amax *)NULL)->_oss_b - (char *)&((_oss_amax *)NULL)->_oss_a))
@@ -904,9 +898,9 @@ struct exer_eenv {
 #define _MEM_ARRAY_SIZE       60
 #endif	/* __arm */
 
-#if defined(_WIN32) || defined(_WINDOWS)
+#if defined(_WIN32)
 #define _MEM_ARRAY_SIZE 52
-#endif /* _WIN32 || _WINDOWS */
+#endif /* _WIN32 */
 
 #ifdef _MCCPPC
 #define _MEM_ARRAY_SIZE       72
@@ -1076,7 +1070,7 @@ typedef struct _st_print_pdu_ {
 #define _oss_mem_bcount_unconstr(tsize) \
 		(tsize > 1024 ? 1 : 1024 / tsize)
 
-#define OSS_TOED_API_LEVEL 31
+#define OSS_TOED_API_LEVEL 32
 
 #define _dstd_parms_def char **_pos, long *_buf_len, long _length
 #define _dstd_parms _pos, _buf_len, _length
@@ -1511,6 +1505,7 @@ typedef struct _EncDecGlobals {
    unsigned int     relax_ber: 1;
    unsigned int     der: 1;
    unsigned int     _cxer: 1; /* TRUE when CXER encode/decode is requested */
+   unsigned int     _coer: 1; /* TRUE when COER encode/decode is requested */
     OSS_UINT32	    _genflags; /* flags for usage by generated routines */
     ossBoolean            _aligned;
     int             _bitpos;
@@ -1557,8 +1552,8 @@ typedef struct _EncDecGlobals {
 	} fields;
     } reserved;
 
-#if defined(_WIN32) || defined(_WINDOWS)
-#endif /* _WIN32 || _WINDOWS */
+#if defined(_WIN32)
+#endif /* _WIN32 */
 } _EncDecGlobals;
 
 #ifndef relax_per
@@ -1569,12 +1564,12 @@ typedef struct _EncDecGlobals {
     /*      TOED general functions section                                   */
     /*************************************************************************/
 
-#if defined(_WINDOWS) || defined(_WIN32)
+#if defined(_WIN32)
 extern BOOL CDECL_ENTRY oss_globlist(struct ossGlobal *, struct globalInfo *,
 		     struct globalInfo **);
 extern BOOL CDECL_ENTRY oss_serializeGlobalAccess(struct ossGlobal *, struct globalInfo *,
 				  struct globalInfo **);
-#endif /* _WINDOWS || _WIN32 */
+#endif /* _WIN32 */
 
 extern void *DLL_ENTRY _oss_enc_getmem(struct ossGlobal *g);
 extern void *DLL_ENTRY _oss_dec_getmem(struct ossGlobal *g, long _size);
@@ -1682,6 +1677,7 @@ extern void DLL_ENTRY _oss_prt_new_opentype(struct ossGlobal *world,
 extern void DLL_ENTRY _oss_prt_pbit(struct ossGlobal *g, void *data,
     unsigned long totalsize, unsigned long max_length);
 extern void DLL_ENTRY _oss_prt_real(struct ossGlobal *g, double d);
+extern void DLL_ENTRY _oss_prt_dreal(struct ossGlobal *g, double d);
 extern void DLL_ENTRY _oss_prt_utctime(struct ossGlobal *world,
     UTCTime *ut);
 extern void DLL_ENTRY _oss_indent(struct ossGlobal *g, int change);
@@ -1706,6 +1702,7 @@ extern char* DLL_ENTRY _oss_getdisp_oct(struct ossGlobal *g, void *data,
 extern char* DLL_ENTRY _oss_getdisp_pbit(struct ossGlobal *g, void *data,
     unsigned long totalsize, unsigned long max_length);
 extern char* DLL_ENTRY _oss_getdisp_real(struct ossGlobal *g, double d);
+extern char* DLL_ENTRY _oss_getdisp_dreal(struct ossGlobal *g, double d);
 extern char* DLL_ENTRY _oss_getdisp_utctime(struct ossGlobal *world,
     UTCTime *ut);
 extern char* DLL_ENTRY _oss_getdisp_mbchar(struct ossGlobal *world,
@@ -1780,7 +1777,7 @@ extern int DLL_ENTRY oss_get_float_special_value_kind(void *vl, int vl_sizeof);
 extern struct ossGlobal *DLL_ENTRY _oss_push_global(struct ossGlobal *g);
 extern void *DLL_ENTRY _oss_getdispmem(struct ossGlobal *g, long size);
 extern void DLL_ENTRY _oss_freedispmem(struct ossGlobal *g, void *p);
-extern unsigned char DLL_ENTRY charIsPermitted( const OSS_UINT32 *pat,
+extern unsigned char DLL_ENTRY ossCharIsPermitted( const OSS_UINT32 *pat,
 	OSS_UINT32 character );
 extern void DLL_ENTRY _oss_free_rsf_ext(struct ossGlobal *g, void *_data);
 unsigned char *DLL_ENTRY _oss_itoUTF8Char( unsigned char *value, OSS_UINT32 ch );
@@ -2077,6 +2074,9 @@ extern unsigned long DLL_ENTRY _oss_dec_voct_ia(struct ossGlobal *g,
 	_dstd_parms_def, void *data,
 	long size_c);
 
+extern void DLL_ENTRY_FDEF _oss_dec_fixed_oct(struct ossGlobal *g,
+	_dstd_parms_def, void *data, long size_c);
+
 extern void DLL_ENTRY _oss_dec_gtime(struct ossGlobal *g, _dstd_parms_def,
 			       GeneralizedTime *_data);
 extern void DLL_ENTRY _oss_dec_utime(struct ossGlobal *g, _dstd_parms_def,
@@ -2323,6 +2323,10 @@ extern void DLL_ENTRY _oss_penc_constr_oct(struct ossGlobal *g, unsigned char *v
 	 ULONG_LONG length, ULONG_LONG lb, ULONG_LONG ub);
 extern void DLL_ENTRY _oss_fast_pop_global(struct ossGlobal *g);
 extern void DLL_ENTRY _oss_fast_push_global(struct ossGlobal *g);
+extern void DLL_ENTRY _oss_end_otype_or_ext(struct ossGlobal *g,
+					struct ossExtStackElement *st);
+extern void DLL_ENTRY _oss_begin_otype_or_ext(struct ossGlobal *g,
+					struct ossExtStackElement *st);
 
 extern void DLL_ENTRY _oss_penc_objids(struct ossGlobal *g, unsigned short *value,
    unsigned long length);
@@ -2595,11 +2599,14 @@ extern unsigned long DLL_ENTRY _oss_pdec_constr_uoct_ia(struct ossGlobal *g,
 	unsigned char **value, unsigned long lb, unsigned long ub);
 
 extern unsigned long DLL_ENTRY _oss_pdec_constr_voct_ia
-    (struct ossGlobal *g,
+	(struct ossGlobal *g,
 	unsigned char *value, unsigned long lb, unsigned long ub);
 
 extern unsigned long DLL_ENTRY _oss_pdec_unconstr_voct_ia
-    (struct ossGlobal *g, unsigned char *value, unsigned long ub);
+	(struct ossGlobal *g, unsigned char *value, unsigned long ub);
+
+extern void DLL_ENTRY_FDEF _oss_pdec_fixed_oct(struct ossGlobal *g,
+	void *value, unsigned long sz);
 
 extern void DLL_ENTRY _oss_pdec_push(struct ossGlobal *g);
 extern void DLL_ENTRY _oss_pdec_pop(struct ossGlobal *g);
@@ -3004,6 +3011,9 @@ unsigned long	DLL_ENTRY _oss_tdx_octets_pvarying(_Xml_Dec_Env *env,
 			OSS_UINT32 flags);
 unsigned long	DLL_ENTRY _oss_tdx_octets_varying(_Xml_Dec_Env *env,
 			void *value, OSS_UINT32 ubound, OSS_UINT32 flags);
+
+void DLL_ENTRY_FDEF _oss_tdx_octets_fixed(_Xml_Dec_Env *env,
+			void *value, OSS_UINT32 size);
 
 unsigned long	DLL_ENTRY _oss_tdx_bits_unbounded(_Xml_Dec_Env *env,
 			void **value, OSS_UINT32 ubound, OSS_UINT32 flags);
@@ -3497,8 +3507,41 @@ extern void DLL_ENTRY _oss_oenc_gtime(struct ossGlobal *g,
 		GeneralizedTime *data);
 
 /* OER Encoding of the TIME Type */
-extern void DLL_ENTRY _oss_oenc_date_time(struct ossGlobal *g,
-		char *data, int kind);
+extern char * DLL_ENTRY _oss_oenc_t_hours(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_minutes(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_daytime(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_duration_interval(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_hours_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_daytime_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_minutes_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_daytime_fraction(OssGlobal *g, char *data,
+			unsigned int accuracy);
+extern char * DLL_ENTRY _oss_oenc_t_daytime_diff_fraction(OssGlobal *g,
+			char *data, unsigned int accuracy);
+extern char * DLL_ENTRY _oss_oenc_t_date(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_year_month(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_year(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_any_year(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_any_year_month(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_oenc_t_any_date(OssGlobal *g, char *data);
+extern void   DLL_ENTRY _oss_oenc_nlltrm_date_time(OssGlobal *g, char *data);
+extern void   DLL_ENTRY _oss_oenc_int_8byte(OssGlobal *g, OSS_INT64 value);
+extern void   DLL_ENTRY _oss_oenc_uint_8byte(OssGlobal *g, OSS_UINT64 value);
+extern void   DLL_ENTRY _oss_oenc_real_4byte(OssGlobal *g, float value);
+extern void   DLL_ENTRY _oss_oenc_real_8byte(OssGlobal *g, double value);
+extern void   DLL_ENTRY _oss_oenc_real_4decimal(struct ossGlobal *g, char *value);
+extern void   DLL_ENTRY _oss_oenc_real_8decimal(struct ossGlobal *g, char *value);
+
+#define _oss_oenc_t_utc(g, data, in) \
+   ((*(data = in) == 'Z') ? data + 1 : (_oss_enc_error(g, _bad_time, 0L), data))
+#define _oss_oenc_t_hours_utc(g, data) \
+	_oss_oenc_t_utc(g, data, _oss_oenc_t_hours(g, data))
+#define _oss_oenc_t_minutes_utc(g, data) \
+	_oss_oenc_t_utc(g, data, _oss_oenc_t_minutes(g, data))
+#define _oss_oenc_t_daytime_utc(g, data) \
+	_oss_oenc_t_utc(g, data, _oss_oenc_t_daytime(g, data))
+#define _oss_oenc_t_daytime_utc_fraction(g, data, accuracy) \
+	_oss_oenc_t_utc(g, data, _oss_oenc_t_daytime_fraction(g, data, accuracy))
 
 /* TOED OER decoder definitions and declarations */
 extern void DLL_ENTRY _oss_checkUtf8String(OssGlobal *g,
@@ -3511,6 +3554,8 @@ extern void DLL_ENTRY _oss_odec_read_octets(OssGlobal *g,
 				char *value, unsigned int length);
 extern void DLL_ENTRY _oss_odec_check_bytes(OssGlobal *g,
 				char *start, unsigned int length);
+extern void DLL_ENTRY _oss_odec_check_eapb(OssGlobal *g,
+				unsigned char *bitmap, unsigned int length);
 extern void DLL_ENTRY _oss_odec_not_supported(struct ossGlobal *g,
 				void **value, char *detail);
 
@@ -3529,9 +3574,9 @@ extern unsigned int DLL_ENTRY _oss_odec_uint(OssGlobal *g);
 extern unsigned short DLL_ENTRY _oss_odec_uint_s(OssGlobal *g);
 extern ULONG_LONG DLL_ENTRY _oss_odec_uint_ll(OssGlobal *g);
 extern unsigned int DLL_ENTRY _oss_odec_int_h(OssGlobal *g,
-		    unsigned char **value);
+		    unsigned char **value, unsigned int size);
 extern unsigned int DLL_ENTRY _oss_odec_uint_h(OssGlobal *g,
-		    unsigned char **value);
+		    unsigned char **value, unsigned int size);
 
 /* OER Decoding of an ENUMERATED Value */
 extern int DLL_ENTRY _oss_odec_enum(OssGlobal *g);
@@ -3621,11 +3666,49 @@ extern unsigned int DLL_ENTRY _oss_odec_utf8_string_universal(OssGlobal *g,
 extern void DLL_ENTRY _oss_odec_gtime(struct ossGlobal *g,
 			GeneralizedTime *value);
 extern void DLL_ENTRY _oss_odec_utime(struct ossGlobal *g, UTCTime *value);
-extern void DLL_ENTRY _oss_odec_date_time(OssGlobal *g,
-			char **value, int kind);
 
+extern char * DLL_ENTRY _oss_odec_t_hours(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_minutes(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_daytime(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_duration_interval(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_hours_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_daytime_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_minutes_diff(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_daytime_fraction(OssGlobal *g, char *data,
+			unsigned int accuracy);
+extern char * DLL_ENTRY _oss_odec_t_daytime_diff_fraction(OssGlobal *g,
+			char *data, unsigned int accuracy);
+extern char * DLL_ENTRY _oss_odec_t_date(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_year_month(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_year(OssGlobal *g, char *data);
+extern char * DLL_ENTRY _oss_odec_t_any_year(OssGlobal *g, char *data,
+			unsigned int max_d_num);
+extern char * DLL_ENTRY _oss_odec_t_any_year_month(OssGlobal *g, char *data,
+			unsigned int max_d_num);
+extern char * DLL_ENTRY _oss_odec_t_any_date(OssGlobal *g, char *data,
+			unsigned int max_d_num);
+extern OSS_INT64  DLL_ENTRY _oss_odec_int_8byte(OssGlobal *g);
+extern OSS_UINT64 DLL_ENTRY _oss_odec_uint_8byte(OssGlobal *g);
+extern float  DLL_ENTRY _oss_odec_real_4byte(OssGlobal *g);
+extern double DLL_ENTRY _oss_odec_real_8byte(OssGlobal *g);
+extern char * DLL_ENTRY _oss_odec_real_4decimal(OssGlobal *g);
+extern char * DLL_ENTRY _oss_odec_real_8decimal(OssGlobal *g);
+extern unsigned char DLL_ENTRY _oss_odec_bool(OssGlobal *g);
+
+#define _oss_odec_t_utc(data, in) (*(data = in) = 'Z', data + 1)
+#define _oss_odec_t_hours_utc(g, data) \
+	_oss_odec_t_utc(data, _oss_odec_t_hours(g, data))
+#define _oss_odec_t_minutes_utc(g, data) \
+	_oss_odec_t_utc(data, _oss_odec_t_minutes(g, data))
+#define _oss_odec_t_daytime_utc(g, data) \
+	_oss_odec_t_utc(data, _oss_odec_t_daytime(g, data))
+#define _oss_odec_t_daytime_utc_fraction(g, data, accuracy) \
+	_oss_odec_t_utc(data, _oss_odec_t_daytime_fraction(g, data, accuracy))
+
+#define USE_OUTBUF_LEN
+#define USE_INBUF_LEN
 #ifndef USE_OUTBUF_LEN
-#define OSS_outbuf_getlen(_oss_c) 	((long)((char *)_oss_c->_blockptr - _oss_c->_oss_outbufpos))
+#define OSS_outbuf_getlen(_oss_c) 	((long)((char *)_oss_c->_oss_inbufpos - _oss_c->_oss_outbufpos))
 #else
 #define OSS_outbuf_getlen(_oss_c) 	_oss_c->_oss_outbuflen
 #endif
@@ -3650,7 +3733,7 @@ extern void DLL_ENTRY _oss_odec_date_time(OssGlobal *g,
 
 
 #ifndef OSS_SPARTAN_AWARE
-#define OSS_SPARTAN_AWARE 22
+#define OSS_SPARTAN_AWARE 23
 #endif
 typedef unsigned short Etag;
 typedef struct efield *_oss_qqq;
@@ -4000,6 +4083,7 @@ extern void CDECL_ENTRY		_oss_ex_unbnd_seqof (OSS_VOIDE * ctx);
 #define _oss_ex_array_setof	_oss_ex_unbnd_seqof
 extern void CDECL_ENTRY		_oss_ex_unbnd_octet (OSS_VOIDE * ctx);
 #define _oss_ex_vary_octet	_oss_ex_unbnd_octet
+extern void CDECL_ENTRY         _oss_ex_fixed_octet (OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_ex_unbnd_char (OSS_VOIDE * ctx);
 #define _oss_ex_vary_char	_oss_ex_unbnd_char
 extern void CDECL_ENTRY         _oss_ex_nlltrm_char (OSS_VOIDE * ctx);
@@ -4055,6 +4139,7 @@ extern void CDECL_ENTRY		_oss_dx_unbnd_bit (OSS_VOIDD * ctx);
 #define _oss_dx_big_pad_bit	_oss_dx_unbnd_bit
 #define _oss_dx_unbnd_octet	_oss_dx_unbnd_bit
 #define _oss_dx_vary_octet	_oss_dx_unbnd_bit
+extern void CDECL_ENTRY         _oss_dx_fixed_octet (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY		_oss_dx_null (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY		_oss_dx_real (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY		_oss_dx_bool (OSS_VOIDD * ctx);
@@ -4252,6 +4337,7 @@ extern void CDECL_ENTRY		_oss_eex_unbnd_seqof (struct _EXEREncContext * ctx);
 #define _oss_eex_array_setof	_oss_eex_unbnd_seqof
 extern void CDECL_ENTRY		_oss_eex_unbnd_octet (struct _EXEREncContext * ctx);
 #define _oss_eex_vary_octet	_oss_eex_unbnd_octet
+#define _oss_eex_fixed_octet 	_oss_eex_unbnd_octet
 extern void CDECL_ENTRY		_oss_eex_unbnd_char (struct _EXEREncContext * ctx);
 #define _oss_eex_vary_char	_oss_eex_unbnd_char
 #define _oss_eex_nlltrm_char	_oss_eex_unbnd_char
@@ -4338,6 +4424,7 @@ extern void CDECL_ENTRY		_oss_dex_unbnd_bit (struct _EXERDecContext * ctx);
 #define _oss_dex_big_pad_bit	_oss_dex_unbnd_bit
 extern void CDECL_ENTRY		_oss_dex_unbnd_octet (struct _EXERDecContext * ctx);
 #define _oss_dex_vary_octet	_oss_dex_unbnd_octet
+#define _oss_dex_fixed_octet    _oss_dex_unbnd_octet
 extern void CDECL_ENTRY		_oss_dex_null (struct _EXERDecContext * ctx);
 extern void CDECL_ENTRY		_oss_dex_real (struct _EXERDecContext * ctx);
 extern void CDECL_ENTRY		_oss_dex_bool (struct _EXERDecContext * ctx);
@@ -4480,6 +4567,7 @@ extern void CDECL_ENTRY		_oss_eo_pad_bit (OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_eo_unbnd_octet (OSS_VOIDE * ctx);
 #define _oss_eo_unbnd_any       _oss_eo_unbnd_octet
 #define _oss_eo_vary_octet	_oss_eo_unbnd_octet
+extern void CDECL_ENTRY         _oss_eo_fixed_octet (OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_eo_unbnd_char (OSS_VOIDE * ctx);
 #define _oss_eo_vary_char	_oss_eo_unbnd_char
 extern void CDECL_ENTRY         _oss_eo_utc_time (OSS_VOIDE * ctx);
@@ -4509,8 +4597,7 @@ extern void CDECL_ENTRY		_oss_eo_unbnd_objid (OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_eo_containing(OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_eo_opentype(OSS_VOIDE * ctx);
 extern void CDECL_ENTRY         _oss_eo_not_supported (OSS_VOIDE * ctx);
-
-#define _oss_eo_nlltrm_date_time	_oss_eo_nlltrm_char
+extern void CDECL_ENTRY		_oss_eo_nlltrm_date_time(OSS_VOIDE * ctx);
 
 #define _oss_eo_one_char		_oss_eo_not_supported
 #define _oss_eo_vary_link_bit	_oss_eo_not_supported
@@ -4553,6 +4640,7 @@ extern void CDECL_ENTRY		_oss_do_pad_bit (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY         _oss_do_unbnd_octet (OSS_VOIDD * ctx);
 #define _oss_do_unbnd_any       _oss_do_unbnd_octet
 #define _oss_do_vary_octet	_oss_do_unbnd_octet
+extern void CDECL_ENTRY         _oss_do_fixed_octet (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY         _oss_do_unbnd_char (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY         _oss_do_utc_time (OSS_VOIDD * ctx);
 #define _oss_do_gen_time	_oss_do_utc_time
@@ -4580,9 +4668,9 @@ extern void CDECL_ENTRY		_oss_do_unbnd_objid (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY		_oss_do_array_objid (OSS_VOIDD * ctx);
 extern void CDECL_ENTRY         _oss_do_containing(OSS_VOIDD * ctx);
 extern void CDECL_ENTRY         _oss_do_opentype(OSS_VOIDD * ctx);
-extern void CDECL_ENTRY         _oss_do_not_supported (OSS_VOIDD * ctx);
-
-#define _oss_do_nlltrm_date_time	_oss_do_nlltrm_char
+extern void CDECL_ENTRY         _oss_do_skip_Type(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY         _oss_do_not_supported(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY         _oss_do_nlltrm_date_time(OSS_VOIDD * ctx);
 
 #define _oss_do_one_char		_oss_do_not_supported
 #define _oss_do_vary_link_bit	_oss_do_not_supported
@@ -4605,6 +4693,141 @@ extern void CDECL_ENTRY         _oss_do_not_supported (OSS_VOIDD * ctx);
 #define _oss_do_defer		_oss_do_not_supported
 #define _oss_do_defer_obj		_oss_do_not_supported
 
+	/********************************************************************/
+	/*      SOED OER time functions section                             */
+	/********************************************************************/
+
+typedef void (CDECL_ENTRY_FPTR *ossOERTimeEncodefp)(OSS_VOIDE *);
+typedef void (CDECL_ENTRY_FPTR *ossOERTimeDecodefp)(OSS_VOIDD *);
+
+/* ossLink_[E|D]OERTime routines should never be used with DLLs */
+PUBLIC void DLL_ENTRY ossLink_EOerTime (struct ossGlobal *,
+ 	unsigned short , int const * , ossOERTimeEncodefp *);
+PUBLIC void DLL_ENTRY ossLink_DOerTime (struct ossGlobal *,
+ 	unsigned short , int const * , ossOERTimeDecodefp *);
+
+/* ************************************************************* *
+ * OER TIME Encoding functions:				         *
+ * ************************************************************* */
+extern void CDECL_ENTRY _oss_eot_year(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_any_year(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_year_month(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_any_year_month(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_date(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_any_date(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_hours(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_hours_utc(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_hours_and_diff(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_minutes(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_minutes_utc(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_minutes_and_diff(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day_utc(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day_and_diff(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day_and_fraction(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day_utc_and_fraction(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_time_of_day_and_diff_and_fraction(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_date_time(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_duration_interval(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_not_supported(OSS_VOIDE * ctx);
+extern void CDECL_ENTRY _oss_eot_unoptimized_time(OSS_VOIDE * ctx);
+#define _oss_eot_year_week _oss_eot_unoptimized_time
+#define _oss_eot_century _oss_eot_unoptimized_time
+#define _oss_eot_any_century _oss_eot_unoptimized_time
+#define _oss_eot_year_day _oss_eot_unoptimized_time
+#define _oss_eot_any_year_day _oss_eot_unoptimized_time
+#define _oss_eot_any_year_week _oss_eot_unoptimized_time
+#define _oss_eot_year_week_day _oss_eot_unoptimized_time
+#define _oss_eot_any_year_week_day _oss_eot_unoptimized_time
+#define _oss_eot_minutes_and_diff_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_hours_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_hours_utc_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_hours_and_diff_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_minutes_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_minutes_utc_and_fraction _oss_eot_unoptimized_time
+#define _oss_eot_start_end_date_interval _oss_eot_unoptimized_time
+#define _oss_eot_start_end_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_start_end_date_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_start_date_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_start_time_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_start_date_time_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_duration_end_date_interval _oss_eot_unoptimized_time
+#define _oss_eot_duration_end_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_duration_end_date_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_end_date_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_end_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_end_date_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_date_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_time_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_start_date_time_duration_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_duration_end_date_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_duration_end_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_rec_duration_end_date_time_interval _oss_eot_unoptimized_time
+#define _oss_eot_mixed _oss_eot_unoptimized_time
+
+/* ************************************************************* *
+ * OER TIME decoding functions:					 *
+ * ************************************************************* */
+extern void CDECL_ENTRY _oss_dot_year(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_any_year(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_year_month(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_any_year_month(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_date(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_any_date(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_hours(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_hours_utc(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_hours_and_diff(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_minutes(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_minutes_utc(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_minutes_and_diff(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day_utc(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day_and_diff(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day_and_fraction(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day_utc_and_fraction(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_time_of_day_and_diff_and_fraction(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_date_time(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_duration_interval(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_not_supported(OSS_VOIDD * ctx);
+extern void CDECL_ENTRY _oss_dot_unoptimized_time(OSS_VOIDD * ctx);
+#define _oss_dot_year_week _oss_dot_unoptimized_time
+#define _oss_dot_century _oss_dot_unoptimized_time
+#define _oss_dot_any_century _oss_dot_unoptimized_time
+#define _oss_dot_year_day _oss_dot_unoptimized_time
+#define _oss_dot_any_year_day _oss_dot_unoptimized_time
+#define _oss_dot_any_year_week _oss_dot_unoptimized_time
+#define _oss_dot_year_week_day _oss_dot_unoptimized_time
+#define _oss_dot_any_year_week_day _oss_dot_unoptimized_time
+#define _oss_dot_minutes_and_diff_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_hours_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_hours_utc_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_hours_and_diff_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_minutes_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_minutes_utc_and_fraction _oss_dot_unoptimized_time
+#define _oss_dot_start_end_date_interval _oss_dot_unoptimized_time
+#define _oss_dot_start_end_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_start_end_date_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_start_date_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_start_time_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_start_date_time_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_duration_end_date_interval _oss_dot_unoptimized_time
+#define _oss_dot_duration_end_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_duration_end_date_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_end_date_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_end_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_end_date_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_date_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_time_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_date_time_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_duration_end_date_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_start_date_time_duration_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_duration_end_date_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_duration_end_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_rec_duration_end_date_time_interval _oss_dot_unoptimized_time
+#define _oss_dot_mixed _oss_dot_unoptimized_time
+
 #endif /* OSS_SOED_OER */
 
 
@@ -4626,13 +4849,11 @@ extern void CDECL_ENTRY         _oss_do_not_supported (OSS_VOIDD * ctx);
 #if defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32) \
 			|| defined(WINCE) || defined(_WIN64))
 #pragma pack(pop, ossPacking)
-#elif defined(_MSC_VER) && defined(_WINDOWS)
-#pragma pack()
 #elif defined(__BORLANDC__) && defined(__WIN32__)
 #pragma option -a.
 #elif defined(__IBMC__) && defined(__WIN32__)
 #pragma pack()
-#elif defined(__WATCOMC__) && (defined(__NT__) || defined(__WINDOWS__))
+#elif defined(__WATCOMC__) && defined(__NT__)
 #pragma pack(pop)
 #endif /* _MSC_VER && _WIN32 */
 

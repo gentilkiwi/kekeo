@@ -119,7 +119,7 @@ int main(int argc, char * argv[])
 		else PRINT_ERROR("init() failed\n");
 		term();
 	}
-	else PRINT_ERROR("Arguments missing!	kirbi|ccache|lsa|kirbis|ccache ticket1 [ticket2] [...]\n");
+	else PRINT_ERROR("Arguments missing! kirbi|ccache|lsa|kirbis|ccaches ticket1 [ticket2] [...]\n");
 
 	return 0;
 }
@@ -244,7 +244,7 @@ void writeData(const KERB_FORMAT_MODULE * module, BOOL multiple, KRB_CRED *cred)
 		else
 		{
 			if(!module->validHeader)
-				kprintf(" > Ticket %s@%s-%s~%s@%s : ", encKrbCredPart->ticket_info->value.pname.name_string->value, encKrbCredPart->ticket_info->value.prealm, encKrbCredPart->ticket_info->value.sname.name_string->value, encKrbCredPart->ticket_info->value.sname.name_string->next ? encKrbCredPart->ticket_info->value.sname.name_string->next->value : "-", encKrbCredPart->ticket_info->value.srealm);
+				kprintf(" > Ticket %s@%s : ", encKrbCredPart->ticket_info->value.pname.name_string->value, encKrbCredPart->ticket_info->value.prealm);
 
 			if(module->writeData(cred, &output))
 			{
