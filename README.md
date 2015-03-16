@@ -92,7 +92,7 @@ After downloading a commercial/trial version of **OSS ASN.1/C**:
 You can now build the `kekeo` solution in **Visual Studio**
 
 ## Licence
-CC BY 3.0 FR licence - http://creativecommons.org/licenses/by/3.0/fr/
+CC BY-NC-SA 4.0 licence - https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ## Acknowledgements
   * Tom Maddock - Qualcomm - @ubernerdom - MS14-068 - https://www.qualcomm.com/
