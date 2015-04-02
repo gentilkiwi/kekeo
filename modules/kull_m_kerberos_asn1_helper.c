@@ -324,7 +324,7 @@ BOOL kull_m_kerberos_asn1_helper_build_AuthorizationData(OssBuf * AuthData, _oct
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
 {
 	BOOL status = FALSE;
 	KDC_REQ req;
@@ -341,18 +341,17 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, Encr
 	req.pvno = 5;
 	req.msg_type = isTgs ? 12 : 10;
 
+	kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest);
 	if(isTgs)
 	{
 		kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(&PaTgsReq, Username, Domain, ticket, key);
-		kull_m_kerberos_asn1_helper_init_PADATAs(&req.padata, 1, &PaTgsReq);
+		kull_m_kerberos_asn1_helper_init_PADATAs(&req.padata, 2, &PaTgsReq, &PaPacRequest);
 
 		PaEncTimeStamp.padata_value.value = NULL;
-		PaPacRequest.padata_value.value = NULL;
 	}
 	else
 	{
 		kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(&PaEncTimeStamp, key);
-		kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, FALSE);
 		kull_m_kerberos_asn1_helper_init_PADATAs(&req.padata, 2, &PaEncTimeStamp, &PaPacRequest);
 
 		PaTgsReq.padata_value.value = NULL;

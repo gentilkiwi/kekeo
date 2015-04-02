@@ -35,7 +35,7 @@ void kull_m_kerberos_asn1_helper_init_PADATAs(_seqof4 *padata, DWORD count, ...)
 
 BOOL kull_m_kerberos_asn1_helper_build_ApReq(OssBuf * ApReqData, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key, ULONG keyUsage, EncryptionKey *authenticatorNewKey, UInt32 *authenticatorNewSeq);
 BOOL kull_m_kerberos_asn1_helper_build_AuthorizationData(OssBuf * AuthData, _octet1 *pac);
-BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
 BOOL kull_m_kerberos_asn1_helper_build_KrbPriv(_octet1 *data, EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, UInt32 *seq);
 BOOL kull_m_kerberos_asn1_helper_build_KrbCred(Realm *prealm, PrincipalName *pname, EncKDCRepPart *repPart, Ticket *ticket, OssBuf *OutKrbCred);
 BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(KDC_REP *rep, EncKDCRepPart ** encRepPart, EncryptionKey *key, int pdu);

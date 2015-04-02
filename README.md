@@ -98,7 +98,7 @@ CC BY-NC-SA 4.0 licence - https://creativecommons.org/licenses/by-nc-sa/4.0/
   * Tom Maddock - Qualcomm - @ubernerdom - MS14-068 - https://www.qualcomm.com/
   * Sylvain Monné - Solucom - @BiDOrD - Author of `PyKek` - https://github.com/bidord/pykek
   * Tal Be'ery - Aorato / Microsoft - @TalBeerySec - http://www.aorato.com/blog/active-directory-vulnerability-disclosure-weak-encryption-enables-attacker-change-victims-password-without-logged/
-  * Larry/Grace/... - OSS - @OSSNokalva - http://www.oss.com/
+  * Grace Sigona - OSS - @OSSNokalva - http://www.oss.com/
 
 ## Author
 Benjamin DELPY `gentilkiwi`, you can contact me on Twitter ( @gentilkiwi ) or by mail ( benjamin [at] gentilkiwi.com )
