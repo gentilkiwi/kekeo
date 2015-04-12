@@ -124,13 +124,13 @@ BOOL kull_m_kerberos_helper_util_SaveRepAsKrbCred(KDC_REP *rep, EncKDCRepPart *e
 		if(filename)
 		{
 			if(status = kull_m_file_writeData(filename, KrbCred.value, KrbCred.length))
-				kprintf("  * TGT in file \'%s\'\n", filename);
+				kprintf("  * Ticket in file \'%s\'\n", filename);
 			else PRINT_ERROR_AUTO("kull_m_file_writeData");
 		}
 		else
 		{
 			if(status = NT_SUCCESS(kull_m_kerberos_helper_util_ptt_data(KrbCred.value, KrbCred.length)))
-				kprintf("  * TGT successfully submitted for current session\n");
+				kprintf("  * Ticket successfully submitted for current session\n");
 		}
 		kull_m_kerberos_asn1_helper_ossFreeBuf(KrbCred.value);
 	}
