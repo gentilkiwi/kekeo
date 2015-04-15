@@ -382,7 +382,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, Encr
 	{
 		if(kull_m_kerberos_asn1_helper_build_AuthorizationData(&AuthData, pac))
 		{
-			if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_encrypt(KRB_KEY_USAGE_AS_REQ_AUTHORIZATION_SESSION, key, &AuthData, (OssBuf *) &req.req_body.enc_authorization_data.cipher, TRUE)))
+			if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_encrypt((ticket->enc_part.bit_mask & kvno_present) ? KRB_KEY_USAGE_AS_REQ_AUTHORIZATION_SESSION : KRB_KEY_USAGE_AS_DATA_ENCRYPTED_NO_SPEC, key, &AuthData, (OssBuf *) &req.req_body.enc_authorization_data.cipher, TRUE)))
 			{
 				req.req_body.bit_mask |= enc_authorization_data_present;
 

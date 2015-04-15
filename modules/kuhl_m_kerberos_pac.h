@@ -5,9 +5,10 @@
 */
 #pragma once
 #include "globals.h"
-#include "../modules/kull_m_rpce.h"
-#include "../modules/kull_m_crypto_system.h"
-#include "../modules/kull_m_samlib.h"
+#include "kull_m_rpce.h"
+#include "kull_m_crypto_system.h"
+#include "kull_m_samlib.h"
+#include "kull_m_kerberos_asn1_helper.h"
 
 #define KERB_NON_KERB_SALT					16
 #define KERB_NON_KERB_CKSUM_SALT			17
@@ -163,3 +164,4 @@ BOOL kuhl_m_pac_validationInfo_to_PAC(PKERB_VALIDATION_INFO validationInfo, DWOR
 BOOL kuhl_m_pac_validationInfo_to_LOGON_INFO(PKERB_VALIDATION_INFO validationInfo, PRPCE_KERB_VALIDATION_INFO * rpceValidationInfo, DWORD * rpceValidationInfoLength);
 BOOL kuhl_m_pac_validationInfo_to_CNAME_TINFO(PKERB_VALIDATION_INFO validationInfo, PPAC_CLIENT_INFO * pacClientInfo, DWORD * pacClientInfoLength);
 NTSTATUS kuhl_m_pac_signature(PPACTYPE pacType, DWORD pacLenght, DWORD SignatureType, LPCVOID key, DWORD keySize);
+BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac);

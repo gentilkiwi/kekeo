@@ -73,16 +73,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\modules\kuhl_m_kerberos_pac.c" />
     <ClCompile Include="..\modules\kull_m_file.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
     <ClCompile Include="..\modules\kull_m_sock.c" />
     <ClCompile Include="..\modules\kull_m_string.c" />
-    <ClCompile Include="kuhl_m_kerberos_pac.c" />
     <ClCompile Include="ms14068.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\modules\kuhl_m_kerberos_pac.h" />
     <ClInclude Include="..\modules\kull_m_crypto_system.h" />
     <ClInclude Include="..\modules\kull_m_file.h" />
     <ClInclude Include="..\modules\kull_m_kerberos_asn1.h" />
@@ -93,7 +94,6 @@
     <ClInclude Include="..\modules\kull_m_sock.h" />
     <ClInclude Include="..\modules\kull_m_string.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="kuhl_m_kerberos_pac.h" />
     <ClInclude Include="ms14068.h" />
   </ItemGroup>
   <ItemGroup>

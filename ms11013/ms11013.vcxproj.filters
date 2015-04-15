@@ -25,7 +25,9 @@
     <ClCompile Include="..\modules\kull_m_kerberos_helper.c">
       <Filter>common modules</Filter>
     </ClCompile>
-    <ClCompile Include="kuhl_m_kerberos_pac.c" />
+    <ClCompile Include="..\modules\kuhl_m_kerberos_pac.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\kull_m_file.h">
@@ -57,7 +59,9 @@
     <ClInclude Include="..\modules\kull_m_kerberos_helper.h">
       <Filter>common modules</Filter>
     </ClInclude>
-    <ClInclude Include="kuhl_m_kerberos_pac.h" />
+    <ClInclude Include="..\modules\kuhl_m_kerberos_pac.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\modules\kull_m_kerberos_asn1.asn">
