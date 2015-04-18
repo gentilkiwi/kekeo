@@ -324,7 +324,7 @@ BOOL kull_m_kerberos_asn1_helper_build_AuthorizationData(OssBuf * AuthData, _oct
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
 {
 	BOOL status = FALSE;
 	KDC_REQ req;
@@ -371,7 +371,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, Encr
 		kull_m_kerberos_asn1_helper_init_PrincipalName(&req.req_body.cname, KRB_NT_PRINCIPAL, 1, Username);
 	}
 	
-	req.req_body.realm = (Realm) Domain;
+	req.req_body.realm = (Realm) (sDomain ? sDomain : Domain);
 	kull_m_kerberos_asn1_helper_init_PrincipalName(&req.req_body.sname, KRB_NT_SRV_INST, 2, Service ? Service : "krbtgt", Target ? Target : Domain);
 	kull_m_kerberos_asn1_helper_init_KerberosTime(&req.req_body.till, NULL, TRUE);
 	req.req_body.nonce = 1702257953;

@@ -26,6 +26,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kirbikator", "kirbikator\ki
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms11013", "ms11013\ms11013.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E978}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asktgs", "asktgs\asktgs.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E979}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -43,6 +45,8 @@ Global
 		{11C16712-C291-4D57-87FC-6A3E83EFDE2F}.Release|Win32.Build.0 = Release|Win32
 		{2F4CBDD4-E97A-4708-A829-600230C3E978}.Release|Win32.ActiveCfg = Release|Win32
 		{2F4CBDD4-E97A-4708-A829-600230C3E978}.Release|Win32.Build.0 = Release|Win32
+		{2F4CBDD4-E97A-4708-A829-600230C3E979}.Release|Win32.ActiveCfg = Release|Win32
+		{2F4CBDD4-E97A-4708-A829-600230C3E979}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

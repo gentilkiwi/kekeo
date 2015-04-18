@@ -121,7 +121,7 @@ void makeInception(PCSTR user, PCSTR domain, PCSTR newpassword, EncryptionKey *k
 	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
 	{
 		kprintf(" [level 1] Reality       (AS-REQ)\n");
-		if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, key, "kadmin", "changepw", FALSE, NULL, NULL, &AsReq))
+		if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, key, "kadmin", "changepw", NULL, FALSE, NULL, NULL, &AsReq))
 		{
 			if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &AsReq, (LPVOID *) &AsRep, AS_REP_PDU))
 			{

@@ -6,6 +6,5 @@
 #pragma once
 #include "superglobals.h"
 
-#define MIMIKATZ				"MS11-013 POC"
+#define MIMIKATZ				"AskTGS Kerberos client"
 #define MIMIKATZ_VERSION		"1.0"
-#define TICKET_FILENAME			"tgs.kirbi"
