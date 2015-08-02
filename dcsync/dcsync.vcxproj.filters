@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common modules">
+      <UniqueIdentifier>{115c470a-a42f-43c6-b840-5acf681c0419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rpc">
+      <UniqueIdentifier>{8addc81c-e1a4-452e-99d6-a70813bae26a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules">
+      <UniqueIdentifier>{465c973d-bc7e-4751-882c-bf8592670981}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dcsync.c" />
+    <ClCompile Include="rpc\ms-drsr_c.c">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\rpc_factory.c">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kull_m_string.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dcsync.h" />
+    <ClInclude Include="..\modules\kull_m_crypto_system.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\ms-drsr_h.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\ms-dtyp.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\rpc_factory.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kull_m_string.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h" />
+  </ItemGroup>
+</Project>

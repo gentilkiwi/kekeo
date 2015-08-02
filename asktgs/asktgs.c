@@ -59,7 +59,6 @@ int main(int argc, char * argv[])
 	{	
 		if(init())
 		{
-
 			kprintf("Ticket    : %s\n", argv[1]);
 			if(kull_m_file_readData(argv[1], &ossTgtBuff.value, (PDWORD) &ossTgtBuff.length))
 			{
