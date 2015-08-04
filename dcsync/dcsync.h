@@ -136,5 +136,5 @@ void descrUser(ATTRBLOCK *attributes);
 void descrUserProperties(PUSER_PROPERTIES properties);
 PKERB_KEY_DATA kuhl_m_lsadump_lsa_keyDataInfo(PVOID base, PKERB_KEY_DATA keys, USHORT Count, PCWSTR title);
 PKERB_KEY_DATA_NEW kuhl_m_lsadump_lsa_keyDataNewInfo(PVOID base, PKERB_KEY_DATA_NEW keys, USHORT Count, PCWSTR title);
-BOOL decryptHash(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, PBYTE data);
+BOOL decrypt(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, LPCWSTR prefix, BOOL isHistory);
 PCWCHAR kuhl_m_kerberos_ticket_etype(LONG eType);

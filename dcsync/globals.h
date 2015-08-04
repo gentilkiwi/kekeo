@@ -10,6 +10,11 @@
 #include <sddl.h>
 #include <NTSecAPI.h>
 
+#define MIMIKATZ				L"DCSync"
+#define MIMIKATZ_VERSION		L"1.0"
+#define MIMIKATZ_CODENAME		L"S**c me I\'m famous"
+#define MIMIKATZ_FULL			MIMIKATZ L" " MIMIKATZ_VERSION L" \"" MIMIKATZ_CODENAME L"\" (" TEXT(__DATE__) L" " TEXT(__TIME__) L")"
+
 #define kprintf wprintf
 
 #ifndef NT_SUCCESS

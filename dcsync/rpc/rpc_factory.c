@@ -172,6 +172,9 @@ BOOL rpc_factory_getDCBind(RPC_BINDING_HANDLE *hBinding, GUID *NtdsDsaObjectGuid
 	DrsExtensionsInt.cb = sizeof(DRS_EXTENSIONS_INT) - sizeof(DWORD);
 	DrsExtensionsInt.dwFlags = 0x04408000; // DRS_EXT_GETCHGREQ_V6 | DRS_EXT_GETCHGREPLY_V6 | DRS_EXT_STRONG_ENCRYPTION
 
+	DrsExtensionsInt.dwFlags = 0xffffffff;
+	DrsExtensionsInt.dwFlagsExt = 0xffffffff;
+
 	__try
 	{
 
