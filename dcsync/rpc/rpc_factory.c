@@ -118,9 +118,9 @@ BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR Ser
 				else PRINT_ERROR(L"DomainControllerInfo: bad version (%u)\n", dcOutVersion);
 			}
 			else PRINT_ERROR(L"DomainControllerInfo: 0x%08x (%u)\n", drsStatus, drsStatus);
-
-			nameCrackReq.V1.formatOffered = 0xFFFFFFF9; // DS_NT4_ACCOUNT_NAME_SANS_DOMAIN //0; // DS_UNKNOWN_NAME
-			nameCrackReq.V1.formatDesired = 6; // DS_UNIQUE_ID_NAME
+			
+			nameCrackReq.V1.formatOffered = wcschr(User, L'\\') ? DS_NT4_ACCOUNT_NAME : wcschr(User, L'=') ? DS_FQDN_1779_NAME : DS_NT4_ACCOUNT_NAME_SANS_DOMAIN;
+			nameCrackReq.V1.formatDesired = DS_UNIQUE_ID_NAME;
 			nameCrackReq.V1.cNames = 1;
 			nameCrackReq.V1.rpNames = (LPWSTR *) &User;
 			drsStatus = IDL_DRSCrackNames(hDrs, 1, &nameCrackReq, &nameCrackOutVersion, &nameCrackRep);
@@ -144,7 +144,8 @@ BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR Ser
 		}
 
 	}
-	__except(  (RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
+	__except(
+		(RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
 		(RpcExceptionCode() != STATUS_DATATYPE_MISALIGNMENT) &&
 		(RpcExceptionCode() != STATUS_PRIVILEGED_INSTRUCTION) &&
 		(RpcExceptionCode() != STATUS_ILLEGAL_INSTRUCTION) &&
@@ -169,15 +170,15 @@ BOOL rpc_factory_getDCBind(RPC_BINDING_HANDLE *hBinding, GUID *NtdsDsaObjectGuid
 	DRS_EXTENSIONS *pDrsExtensionsOutput = NULL;
 
 	DrsExtensionsInt.cb = sizeof(DRS_EXTENSIONS_INT) - sizeof(DWORD);
-	DrsExtensionsInt.dwFlags = 0xffffffff;
-	DrsExtensionsInt.dwFlagsExt = 0xffffffff;
+	DrsExtensionsInt.dwFlags = 0x04408000; // DRS_EXT_GETCHGREQ_V6 | DRS_EXT_GETCHGREPLY_V6 | DRS_EXT_STRONG_ENCRYPTION
 
 	__try
 	{
 
 		drsStatus = IDL_DRSBind(*hBinding, NtdsDsaObjectGuid, (DRS_EXTENSIONS *) &DrsExtensionsInt, &pDrsExtensionsOutput, hDrs);
 	}
-	__except(  (RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
+	__except(
+		(RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
 		(RpcExceptionCode() != STATUS_DATATYPE_MISALIGNMENT) &&
 		(RpcExceptionCode() != STATUS_PRIVILEGED_INSTRUCTION) &&
 		(RpcExceptionCode() != STATUS_ILLEGAL_INSTRUCTION) &&

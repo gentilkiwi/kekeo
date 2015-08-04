@@ -11,7 +11,6 @@
 #include "rpc/rpc_factory.h"
 
 #define ATT_RDN							589825
-#define ATT_OBJECT_GUID					589826
 #define ATT_OBJECT_SID					589970
 #define ATT_WHEN_CREATED				131074
 #define ATT_WHEN_CHANGED				131075
@@ -45,6 +44,88 @@
 #define ATT_TRUST_PARTNER				589957
 #define ATT_TRUST_TYPE					589960
 
+#pragma pack(push, 1) 
+typedef struct _USER_PROPERTY {
+	USHORT NameLength;
+	USHORT ValueLength;
+	USHORT Reserved;
+	wchar_t PropertyName[ANYSIZE_ARRAY];
+	// PropertyValue in HEX !
+} USER_PROPERTY, *PUSER_PROPERTY;
+
+typedef struct _USER_PROPERTIES {
+	DWORD Reserved1;
+	DWORD Length;
+	USHORT Reserved2;
+	USHORT Reserved3;
+	BYTE Reserved4[96];
+	wchar_t PropertySignature;
+	USHORT PropertyCount;
+	USER_PROPERTY UserProperties[ANYSIZE_ARRAY];
+} USER_PROPERTIES, *PUSER_PROPERTIES;
+#pragma pack(pop)
+
+typedef struct _WDIGEST_CREDENTIALS {
+	BYTE	Reserverd1;
+	BYTE	Reserverd2;
+	BYTE	Version;
+	BYTE	NumberOfHashes;
+	BYTE	Reserverd3[12];
+	BYTE	Hash[ANYSIZE_ARRAY][MD5_DIGEST_LENGTH];
+} WDIGEST_CREDENTIALS, *PWDIGEST_CREDENTIALS;
+
+typedef struct _KERB_KEY_DATA {
+	USHORT	Reserverd1;
+	USHORT	Reserverd2;
+	ULONG	Reserverd3;
+	LONG	KeyType;
+	ULONG	KeyLength;
+	ULONG	KeyOffset;
+} KERB_KEY_DATA, *PKERB_KEY_DATA;
+
+typedef struct _KERB_STORED_CREDENTIAL {
+	USHORT	Revision;
+	USHORT	Flags;
+	USHORT	CredentialCount;
+	USHORT	OldCredentialCount;
+	USHORT	DefaultSaltLength;
+	USHORT	DefaultSaltMaximumLength;
+	ULONG	DefaultSaltOffset;
+	//KERB_KEY_DATA	Credentials[ANYSIZE_ARRAY];
+	//KERB_KEY_DATA	OldCredentials[ANYSIZE_ARRAY];
+	//BYTE	DefaultSalt[ANYSIZE_ARRAY];
+	//BYTE	KeyValues[ANYSIZE_ARRAY];
+} KERB_STORED_CREDENTIAL, *PKERB_STORED_CREDENTIAL;
+
+typedef struct _KERB_KEY_DATA_NEW {
+	USHORT	Reserverd1;
+	USHORT	Reserverd2;
+	ULONG	Reserverd3;
+	ULONG	IterationCount;
+	LONG	KeyType;
+	ULONG	KeyLength;
+	ULONG	KeyOffset;
+} KERB_KEY_DATA_NEW, *PKERB_KEY_DATA_NEW;
+
+typedef struct _KERB_STORED_CREDENTIAL_NEW {
+	USHORT	Revision;
+	USHORT	Flags;
+	USHORT	CredentialCount;
+	USHORT	ServiceCredentialCount;
+	USHORT	OldCredentialCount;
+	USHORT	OlderCredentialCount;
+	USHORT	DefaultSaltLength;
+	USHORT	DefaultSaltMaximumLength;
+	ULONG	DefaultSaltOffset;
+	ULONG	DefaultIterationCount;
+	//KERB_KEY_DATA_NEW	Credentials[ANYSIZE_ARRAY];
+	//KERB_KEY_DATA_NEW	ServiceCredentials[ANYSIZE_ARRAY];
+	//KERB_KEY_DATA_NEW	OldCredentials[ANYSIZE_ARRAY];
+	//KERB_KEY_DATA_NEW	OlderCredentials[ANYSIZE_ARRAY];
+	//BYTE	DefaultSalt[ANYSIZE_ARRAY];
+	//BYTE	KeyValues[ANYSIZE_ARRAY];
+} KERB_STORED_CREDENTIAL_NEW, *PKERB_STORED_CREDENTIAL_NEW;
+
 SecPkgContext_SessionKey g_sKey;
 
 int wmain(int argc, wchar_t * argv[]);
@@ -52,4 +133,8 @@ void RPC_ENTRY RpcSecurityCallback(_In_ void *Context);
 PVOID findMonoAttr(ATTRBLOCK *attributes, ATTRTYP type, PVOID data, DWORD *size);
 void findPrintMonoAttr(LPCWSTR prefix, ATTRBLOCK *attributes, ATTRTYP type, BOOL newLine);
 void descrUser(ATTRBLOCK *attributes);
+void descrUserProperties(PUSER_PROPERTIES properties);
+PKERB_KEY_DATA kuhl_m_lsadump_lsa_keyDataInfo(PVOID base, PKERB_KEY_DATA keys, USHORT Count, PCWSTR title);
+PKERB_KEY_DATA_NEW kuhl_m_lsadump_lsa_keyDataNewInfo(PVOID base, PKERB_KEY_DATA_NEW keys, USHORT Count, PCWSTR title);
 BOOL decryptHash(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, PBYTE data);
+PCWCHAR kuhl_m_kerberos_ticket_etype(LONG eType);
