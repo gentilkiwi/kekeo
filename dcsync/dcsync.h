@@ -65,6 +65,20 @@ typedef struct _USER_PROPERTIES {
 } USER_PROPERTIES, *PUSER_PROPERTIES;
 #pragma pack(pop)
 
+typedef struct _NTDS_LSA_AUTH_INFORMATION {
+    LARGE_INTEGER LastUpdateTime;
+    ULONG AuthType;
+    ULONG AuthInfoLength;
+	UCHAR AuthInfo[ANYSIZE_ARRAY]; //
+} NTDS_LSA_AUTH_INFORMATION, *PNTDS_LSA_AUTH_INFORMATION;
+
+typedef struct _NTDS_LSA_AUTH_INFORMATIONS {
+	DWORD count; // or version ?
+	DWORD offsetToAuthenticationInformation;	// PLSA_AUTH_INFORMATION
+	DWORD offsetToPreviousAuthenticationInformation;	// PLSA_AUTH_INFORMATION
+	// ...
+} NTDS_LSA_AUTH_INFORMATIONS, *PNTDS_LSA_AUTH_INFORMATIONS;
+
 typedef struct _WDIGEST_CREDENTIALS {
 	BYTE	Reserverd1;
 	BYTE	Reserverd2;
@@ -130,11 +144,19 @@ SecPkgContext_SessionKey g_sKey;
 
 int wmain(int argc, wchar_t * argv[]);
 void RPC_ENTRY RpcSecurityCallback(_In_ void *Context);
-PVOID findMonoAttr(ATTRBLOCK *attributes, ATTRTYP type, PVOID data, DWORD *size);
-void findPrintMonoAttr(LPCWSTR prefix, ATTRBLOCK *attributes, ATTRTYP type, BOOL newLine);
+
+BOOL decrypt(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, LPCWSTR prefix, BOOL isHistory);
+void descrObject(ATTRBLOCK *attributes, LPCWSTR szSrcDomain);
 void descrUser(ATTRBLOCK *attributes);
 void descrUserProperties(PUSER_PROPERTIES properties);
+void descrTrust(ATTRBLOCK *attributes, LPCWSTR szSrcDomain);
+void descrTrustAuthentication(ATTRBLOCK *attributes, ATTRTYP type, PCUNICODE_STRING domain, PCUNICODE_STRING partner);
+
+PVOID findMonoAttr(ATTRBLOCK *attributes, ATTRTYP type, PVOID data, DWORD *size);
+void findPrintMonoAttr(LPCWSTR prefix, ATTRBLOCK *attributes, ATTRTYP type, BOOL newLine);
+
 PKERB_KEY_DATA kuhl_m_lsadump_lsa_keyDataInfo(PVOID base, PKERB_KEY_DATA keys, USHORT Count, PCWSTR title);
 PKERB_KEY_DATA_NEW kuhl_m_lsadump_lsa_keyDataNewInfo(PVOID base, PKERB_KEY_DATA_NEW keys, USHORT Count, PCWSTR title);
-BOOL decrypt(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, LPCWSTR prefix, BOOL isHistory);
 PCWCHAR kuhl_m_kerberos_ticket_etype(LONG eType);
+NTSTATUS kuhl_m_kerberos_hash_data(LONG keyType, PCUNICODE_STRING pString, PCUNICODE_STRING pSalt, DWORD count);
+void kuhl_m_lsadump_trust_authinformation(PNTDS_LSA_AUTH_INFORMATION info, PCWSTR prefix, PCUNICODE_STRING from, PCUNICODE_STRING dest);

@@ -74,9 +74,9 @@ BOOL rpc_factory_delete(RPC_BINDING_HANDLE *hBinding)
 }
 
 UUID DRSUAPI_DS_BIND_UUID_Standard = {0xe24d201a, 0x4fd6, 0x11d1, {0xa3, 0xda, 0x00, 0x00, 0xf8, 0x75, 0xae, 0x0d}};
-BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR ServerName, LPCWSTR Domain, GUID *DomainGUID, LPCWSTR User, GUID *UserGuid)
+BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR ServerName, LPCWSTR Domain, GUID *DomainGUID, LPCWSTR User, LPCWSTR Guid, GUID *UserGuid)
 {
-	BOOL DomainGUIDfound = FALSE, UserGUIDfound = FALSE;
+	BOOL DomainGUIDfound = FALSE, ObjectGUIDfound = FALSE;
 	DWORD i;
 	ULONG drsStatus;
 	DRS_HANDLE hDrs = NULL;
@@ -90,7 +90,7 @@ BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR Ser
 	DRS_MSG_CRACKREPLY nameCrackRep = {0};
 	UNICODE_STRING uGuid;
 
-	__try
+	RpcTryExcept
 	{
 		DrsExtensionsInt.cb = sizeof(DRS_EXTENSIONS_INT) - sizeof(DWORD);
 		drsStatus = IDL_DRSBind(*hBinding, &DRSUAPI_DS_BIND_UUID_Standard, (DRS_EXTENSIONS *) &DrsExtensionsInt, &pDrsExtensionsOutput, &hDrs);
@@ -110,7 +110,7 @@ BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR Ser
 							DomainGUIDfound = TRUE;
 							*DomainGUID = dcInfoRep.V2.rItems[i].NtdsDsaObjectGuid;
 						}
-						// to free
+						// to free !
 					}
 					if(!DomainGUIDfound)
 						PRINT_ERROR(L"DomainControllerInfo: DC \'%s\' not found\n", ServerName);
@@ -119,47 +119,42 @@ BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR Ser
 			}
 			else PRINT_ERROR(L"DomainControllerInfo: 0x%08x (%u)\n", drsStatus, drsStatus);
 			
-			nameCrackReq.V1.formatOffered = wcschr(User, L'\\') ? DS_NT4_ACCOUNT_NAME : wcschr(User, L'=') ? DS_FQDN_1779_NAME : DS_NT4_ACCOUNT_NAME_SANS_DOMAIN;
-			nameCrackReq.V1.formatDesired = DS_UNIQUE_ID_NAME;
-			nameCrackReq.V1.cNames = 1;
-			nameCrackReq.V1.rpNames = (LPWSTR *) &User;
-			drsStatus = IDL_DRSCrackNames(hDrs, 1, &nameCrackReq, &nameCrackOutVersion, &nameCrackRep);
-			if(drsStatus == 0)
+			if(Guid)
 			{
-				if(nameCrackRep.V1.pResult->cItems == 1)
-				{
-					nameStatus = nameCrackRep.V1.pResult->rItems[0].status;
-					if(!nameStatus)
-					{
-						RtlInitUnicodeString(&uGuid, nameCrackRep.V1.pResult->rItems[0].pName);
-						UserGUIDfound = NT_SUCCESS(RtlGUIDFromString(&uGuid, UserGuid));
-						// to free !
-					}
-					else PRINT_ERROR(L"CrackNames (name status): 0x%08x (%u)\n", nameStatus, nameStatus);
-				}
-				else PRINT_ERROR(L"CrackNames: no item!\n");
+				RtlInitUnicodeString(&uGuid, Guid);
+				ObjectGUIDfound = NT_SUCCESS(RtlGUIDFromString(&uGuid, UserGuid));
 			}
-			else PRINT_ERROR(L"CrackNames: 0x%08x (%u)\n", drsStatus, drsStatus);
+			else if(User)
+			{
+				nameCrackReq.V1.formatOffered = wcschr(User, L'\\') ? DS_NT4_ACCOUNT_NAME : wcschr(User, L'=') ? DS_FQDN_1779_NAME : DS_NT4_ACCOUNT_NAME_SANS_DOMAIN;
+				nameCrackReq.V1.formatDesired = DS_UNIQUE_ID_NAME;
+				nameCrackReq.V1.cNames = 1;
+				nameCrackReq.V1.rpNames = (LPWSTR *) &User;
+				drsStatus = IDL_DRSCrackNames(hDrs, 1, &nameCrackReq, &nameCrackOutVersion, &nameCrackRep);
+				if(drsStatus == 0)
+				{
+					if(nameCrackRep.V1.pResult->cItems == 1)
+					{
+						nameStatus = nameCrackRep.V1.pResult->rItems[0].status;
+						if(!nameStatus)
+						{
+							RtlInitUnicodeString(&uGuid, nameCrackRep.V1.pResult->rItems[0].pName);
+							ObjectGUIDfound = NT_SUCCESS(RtlGUIDFromString(&uGuid, UserGuid));
+							// to free !
+						}
+						else PRINT_ERROR(L"CrackNames (name status): 0x%08x (%u)\n", nameStatus, nameStatus);
+					}
+					else PRINT_ERROR(L"CrackNames: no item!\n");
+				}
+				else PRINT_ERROR(L"CrackNames: 0x%08x (%u)\n", drsStatus, drsStatus);
+			}
 			drsStatus = IDL_DRSUnbind(&hDrs);
 		}
-
 	}
-	__except(
-		(RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
-		(RpcExceptionCode() != STATUS_DATATYPE_MISALIGNMENT) &&
-		(RpcExceptionCode() != STATUS_PRIVILEGED_INSTRUCTION) &&
-		(RpcExceptionCode() != STATUS_ILLEGAL_INSTRUCTION) &&
-		(RpcExceptionCode() != STATUS_BREAKPOINT) &&
-		(RpcExceptionCode() != STATUS_STACK_OVERFLOW) &&
-		(RpcExceptionCode() != STATUS_IN_PAGE_ERROR) &&
-		(RpcExceptionCode() != STATUS_ASSERTION_FAILURE) &&
-		(RpcExceptionCode() != STATUS_STACK_BUFFER_OVERRUN) &&
-		(RpcExceptionCode() != STATUS_GUARD_PAGE_VIOLATION)
-		)
-	{
+	RpcExcept((RpcExceptionCode() >=1700) && (RpcExceptionCode() <= 1999))
 		PRINT_ERROR(L"RPC Exception 0x%08x (%u)\n", RpcExceptionCode(), RpcExceptionCode());
-	}
-	return (DomainGUIDfound && UserGUIDfound);
+	RpcEndExcept
+	return (DomainGUIDfound && ObjectGUIDfound);
 }
 
 BOOL rpc_factory_getDCBind(RPC_BINDING_HANDLE *hBinding, GUID *NtdsDsaObjectGuid, DRS_HANDLE *hDrs)
@@ -172,28 +167,10 @@ BOOL rpc_factory_getDCBind(RPC_BINDING_HANDLE *hBinding, GUID *NtdsDsaObjectGuid
 	DrsExtensionsInt.cb = sizeof(DRS_EXTENSIONS_INT) - sizeof(DWORD);
 	DrsExtensionsInt.dwFlags = 0x04408000; // DRS_EXT_GETCHGREQ_V6 | DRS_EXT_GETCHGREPLY_V6 | DRS_EXT_STRONG_ENCRYPTION
 
-	DrsExtensionsInt.dwFlags = 0xffffffff;
-	DrsExtensionsInt.dwFlagsExt = 0xffffffff;
-
-	__try
-	{
-
+	RpcTryExcept
 		drsStatus = IDL_DRSBind(*hBinding, NtdsDsaObjectGuid, (DRS_EXTENSIONS *) &DrsExtensionsInt, &pDrsExtensionsOutput, hDrs);
-	}
-	__except(
-		(RpcExceptionCode() != STATUS_ACCESS_VIOLATION) &&
-		(RpcExceptionCode() != STATUS_DATATYPE_MISALIGNMENT) &&
-		(RpcExceptionCode() != STATUS_PRIVILEGED_INSTRUCTION) &&
-		(RpcExceptionCode() != STATUS_ILLEGAL_INSTRUCTION) &&
-		(RpcExceptionCode() != STATUS_BREAKPOINT) &&
-		(RpcExceptionCode() != STATUS_STACK_OVERFLOW) &&
-		(RpcExceptionCode() != STATUS_IN_PAGE_ERROR) &&
-		(RpcExceptionCode() != STATUS_ASSERTION_FAILURE) &&
-		(RpcExceptionCode() != STATUS_STACK_BUFFER_OVERRUN) &&
-		(RpcExceptionCode() != STATUS_GUARD_PAGE_VIOLATION)
-		)
-	{
+	RpcExcept((RpcExceptionCode() >=1700) && (RpcExceptionCode() <= 1999))
 		PRINT_ERROR(L"RPC Exception 0x%08x (%u)\n", RpcExceptionCode(), RpcExceptionCode());
-	}
+	RpcEndExcept
 	return (drsStatus == 0);
 }

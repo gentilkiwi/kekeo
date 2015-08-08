@@ -55,5 +55,5 @@ typedef enum {
 BOOL rpc_factory_create(LPCWSTR server, RPC_SECURITY_CALLBACK_FN securityCallback, RPC_BINDING_HANDLE *hBinding);
 BOOL rpc_factory_delete(RPC_BINDING_HANDLE *hBinding);
 
-BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR ServerName, LPCWSTR Domain, GUID *DomainGUID, LPCWSTR User, GUID *UserGuid);
+BOOL rpc_factory_getDomainAndUserInfos(RPC_BINDING_HANDLE *hBinding, LPCWSTR ServerName, LPCWSTR Domain, GUID *DomainGUID, LPCWSTR User, LPCWSTR Guid, GUID *UserGuid);
 BOOL rpc_factory_getDCBind(RPC_BINDING_HANDLE *hBinding, GUID *NtdsDsaObjectGuid, DRS_HANDLE *hDrs);
