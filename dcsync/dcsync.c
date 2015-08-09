@@ -177,7 +177,7 @@ void descrUser(ATTRBLOCK *attributes)
 	DWORD encodedDataSize;
 	PVOID data;
 
-	kprintf(L"** USER ACCOUNT **\n\n");
+	kprintf(L"** SAM ACCOUNT **\n\n");
 	findPrintMonoAttr(L"SAM Username         : ", attributes, ATT_SAM_ACCOUNT_NAME, TRUE);
 	findPrintMonoAttr(L"User Principal Name  : ", attributes, ATT_USER_PRINCIPAL_NAME, TRUE);
 	
@@ -264,7 +264,7 @@ void descrUserProperties(PUSER_PROPERTIES properties)
 
 			if(RtlEqualUnicodeString(&PrimaryCleartext, &Name, TRUE) || RtlEqualUnicodeString(&Packages, &Name, TRUE))
 			{
-				kprintf(L"    %.*s\n", szData / sizeof(wchar_t), data);
+				kprintf(L"    %.*s\n", szData / sizeof(wchar_t), (PWSTR) data);
 			}
 			else if(RtlEqualUnicodeString(&PrimaryWDigest, &Name, TRUE))
 			{
@@ -279,7 +279,7 @@ void descrUserProperties(PUSER_PROPERTIES properties)
 			else if(RtlEqualUnicodeString(&PrimaryKerberos, &Name, TRUE))
 			{
 				pKerb = (PKERB_STORED_CREDENTIAL) data;
-				kprintf(L"    Default Salt : %.*s\n", pKerb->DefaultSaltLength / sizeof(wchar_t), (PBYTE) pKerb + pKerb->DefaultSaltOffset);
+				kprintf(L"    Default Salt : %.*s\n", pKerb->DefaultSaltLength / sizeof(wchar_t), (PWSTR) ((PBYTE) pKerb + pKerb->DefaultSaltOffset));
 				pKeyData = (PKERB_KEY_DATA) ((PBYTE) pKerb + sizeof(KERB_STORED_CREDENTIAL));
 				pKeyData = kuhl_m_lsadump_lsa_keyDataInfo(pKerb, pKeyData, pKerb->CredentialCount, L"Credentials");
 				kuhl_m_lsadump_lsa_keyDataInfo(pKerb, pKeyData, pKerb->OldCredentialCount, L"OldCredentials");
@@ -287,7 +287,7 @@ void descrUserProperties(PUSER_PROPERTIES properties)
 			else if(RtlEqualUnicodeString(&PrimaryKerberosNew, &Name, TRUE))
 			{
 				pKerbNew = (PKERB_STORED_CREDENTIAL_NEW) data;
-				kprintf(L"    Default Salt : %.*s\n    Default Iterations : %u\n", pKerbNew->DefaultSaltLength / sizeof(wchar_t), (PBYTE) pKerbNew + pKerbNew->DefaultSaltOffset, pKerbNew->DefaultIterationCount);
+				kprintf(L"    Default Salt : %.*s\n    Default Iterations : %u\n", pKerbNew->DefaultSaltLength / sizeof(wchar_t), (PWSTR) ((PBYTE) pKerbNew + pKerbNew->DefaultSaltOffset), pKerbNew->DefaultIterationCount);
 				pKeyDataNew = (PKERB_KEY_DATA_NEW) ((PBYTE) pKerbNew + sizeof(KERB_STORED_CREDENTIAL_NEW));
 				pKeyDataNew = kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->CredentialCount, L"Credentials");
 				pKeyDataNew = kuhl_m_lsadump_lsa_keyDataNewInfo(pKerbNew, pKeyDataNew, pKerbNew->ServiceCredentialCount, L"ServiceCredentials");
@@ -307,7 +307,7 @@ void descrTrust(ATTRBLOCK *attributes, LPCWSTR szSrcDomain)
 	DWORD encodedDataSize;
 	UNICODE_STRING uPartner, uDomain, uUpcasePartner, uUpcaseDomain;
 	
-	kprintf(L"** TRUSTED DOMAIN **\n\n");
+	kprintf(L"** TRUSTED DOMAIN - Antisocial **\n\n");
 	
 	if(findMonoAttr(attributes, ATT_TRUST_PARTNER, &encodedData, &encodedDataSize))
 	{
@@ -402,7 +402,7 @@ void findPrintMonoAttr(LPCWSTR prefix, ATTRBLOCK *attributes, ATTRTYP type, BOOL
 	PVOID ptr;
 	DWORD sz;
 	if(findMonoAttr(attributes, type, &ptr, &sz))
-		kprintf(L"%s%.*s%s", prefix ? prefix : L"", sz / sizeof(wchar_t), ptr, newLine ? L"\n" : L"");
+		kprintf(L"%s%.*s%s", prefix ? prefix : L"", sz / sizeof(wchar_t), (PWSTR) ptr, newLine ? L"\n" : L"");
 }
 
 PKERB_KEY_DATA kuhl_m_lsadump_lsa_keyDataInfo(PVOID base, PKERB_KEY_DATA keys, USHORT Count, PCWSTR title)

@@ -7,7 +7,7 @@
 #include <DsGetDC.h>
 #include <LM.h>
 #include "modules/kull_m_string.h"
-#include "modules/kull_m_crypto_system.h"
+#include "../modules/kull_m_crypto_system.h"
 #include "rpc/rpc_factory.h"
 
 #define ATT_RDN							589825

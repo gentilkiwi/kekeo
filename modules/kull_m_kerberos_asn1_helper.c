@@ -6,6 +6,19 @@
 #pragma once
 #include "kull_m_kerberos_asn1_helper.h"
 
+#if _MSC_VER >= 1900
+#pragma comment(lib, "legacy_stdio_definitions.lib")
+//#pragma comment(lib, "legacy_stdio_wide_specifiers.lib")
+FILE __iob_func_data[3];
+_CRTIMP FILE * __cdecl __iob_func(void)
+{
+	__iob_func_data[0] = *__acrt_iob_func(0);
+	__iob_func_data[1] = *__acrt_iob_func(1);
+	__iob_func_data[2] = *__acrt_iob_func(2);
+	return __iob_func_data;
+}
+#endif
+
 OssGlobal	world;
 
 BOOL kull_m_kerberos_asn1_helper_init()
