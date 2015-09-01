@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
 									"rid      : %u\n", rid);
 								kprintf("groups   : *");
 								for(i = 0; i < nbGroups; i++)
-									kprintf("%u ", groups[i]);
+									kprintf("%u ", groups[i].RelativeId);
 								if(nbSids)
 								{
 									kprintf("\nesids    : ");

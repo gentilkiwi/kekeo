@@ -189,8 +189,20 @@ int main(int argc, char * argv[])
 											"target   : %s\n"
 											"service  : %s\n"
 											"rid      : %u\n"
-											"key      : "
 											, szTarget, szService, rid);
+										kprintf("groups   : *");
+										for(i = 0; i < nbGroups; i++)
+											kprintf("%u ", groups[i].RelativeId);
+										if(nbSids)
+										{
+											kprintf("\nesids    : ");
+											for(i = 0; i < nbSids; i++)
+											{
+												kull_m_string_displaySID(sids[i].Sid);
+												kprintf(" ; ");
+											}
+										}
+										kprintf("\nkey      : ");
 										kull_m_string_printf_hex(userKey.keyvalue.value, userKey.keyvalue.length, 0);
 										kprintf(" (%s)\n"
 											"ticket   : %s\n"
