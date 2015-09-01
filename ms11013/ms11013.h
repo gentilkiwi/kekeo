@@ -13,5 +13,5 @@ BOOL init();
 BOOL term();
 
 int main(int argc, char * argv[]);
-void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, PCSTR service, EncryptionKey *key, PCSTR kdc, WORD port, PCSTR filename);
+void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, PCSTR service, EncryptionKey *key, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, PCSTR kdc, WORD port, PCSTR filename);
 void impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, PSID *sid, DWORD *rid, PCSTR usingWhat);

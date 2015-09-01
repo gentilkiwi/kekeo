@@ -29,6 +29,10 @@
 #define PACINFO_ID_KERB_LOGONSERVER			0x00020020
 #define PACINFO_ID_KERB_LOGONDOMAINNAME		0x00020024
 #define PACINFO_ID_KERB_LOGONDOMAINID		0x00020028
+#define PACINFO_ID_KERB_EXTRASIDS			0x0002002c
+#define PACINFO_ID_KERB_EXTRASID			0x00020030
+#define PACINFO_ID_KERB_RESGROUPDOMAINSID	0x00020034
+#define PACINFO_ID_KERB_RESGROUPIDS			0x00020038
 
 #define USER_NORMAL_ACCOUNT			0x00000010
 #define USER_DONT_EXPIRE_PASSWORD	0x00000200
@@ -170,4 +174,4 @@ BOOL kuhl_m_pac_validationInfo_to_PAC(PKERB_VALIDATION_INFO validationInfo, DWOR
 BOOL kuhl_m_pac_validationInfo_to_LOGON_INFO(PKERB_VALIDATION_INFO validationInfo, PRPCE_KERB_VALIDATION_INFO * rpceValidationInfo, DWORD * rpceValidationInfoLength);
 BOOL kuhl_m_pac_validationInfo_to_CNAME_TINFO(PKERB_VALIDATION_INFO validationInfo, PPAC_CLIENT_INFO * pacClientInfo, DWORD * pacClientInfoLength);
 NTSTATUS kuhl_m_pac_signature(PPACTYPE pacType, DWORD pacLenght, DWORD SignatureType, LPCVOID key, DWORD keySize);
-BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac);
+BOOL kuhl_m_pac_giveMePac(PCSTR Username, PSID DomainSid, DWORD UserId, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, KerberosTime *AuthTime, DWORD SignatureType, EncryptionKey * SignatureKey, _octet1 *pac);

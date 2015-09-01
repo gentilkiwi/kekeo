@@ -7,5 +7,5 @@
 #include "superglobals.h"
 
 #define MIMIKATZ				"MS14-068 POC"
-#define MIMIKATZ_VERSION		"1.1"
+#define MIMIKATZ_VERSION		"1.2"
 #define TICKET_FILENAME			"tgt.kirbi"
