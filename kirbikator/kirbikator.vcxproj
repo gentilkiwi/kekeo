@@ -65,6 +65,7 @@
       <AssemblyDebug>false</AssemblyDebug>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalDependencies>advapi32.lib;dnsapi.lib;user32.lib;secur32.lib;ws2_32.lib;toedcode.lib;ossiphlp.lib;cryptdll.lib;ntdll.min.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

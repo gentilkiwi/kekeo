@@ -173,3 +173,167 @@ NTSTATUS kull_m_kerberos_helper_util_ptt_data(PVOID data, DWORD dataSize)
 	}
 	return status;
 }
+
+#ifdef MIMIKATZ_DS_NEEDED
+BOOL kull_m_kerberos_helper_net_getDC(LPCSTR fullDomainName, DWORD altFlags, LPSTR * fullDCName)
+{
+	BOOL status = FALSE;
+	DWORD ret, size;
+	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
+	ret = DsGetDcName(NULL, fullDomainName, NULL, NULL, altFlags | DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
+	if(ret == ERROR_SUCCESS)
+	{
+		size = (strlen(cInfo->DomainControllerName + 2) + 1) * sizeof(char);
+		if(*fullDCName = (char *) LocalAlloc(LPTR, size))
+		{
+			status = TRUE;
+			RtlCopyMemory(*fullDCName, cInfo->DomainControllerName + 2, size);
+		}
+		NetApiBufferFree(cInfo);
+	}
+	else PRINT_ERROR("DsGetDcName: %u\n", ret);
+	return status;
+}
+#endif
+
+#ifdef MIMIKATZ_SAMLIB_NEEDED
+const wchar_t PREFIX_CIFS[] = L"cifs/";
+void kull_m_kerberos_helper_util_impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, PSID *sid, DWORD *rid, DWORD *pNbDc, PDS_DOMAIN_CONTROLLER_INFO_1 *dcInfos)
+{
+	NTSTATUS status;
+	DWORD ret, *aRid, *usage, unk0 = 0, szPrefix = sizeof(PREFIX_CIFS); // includes NULL;
+	ANSI_STRING aUser, aKdc, aDomain, aPass, aProg;
+	UNICODE_STRING uUser, uKdc, uDomain, uPass, uProg;
+	SAMPR_HANDLE hServerHandle = 0, hDomainHandle = 0;
+	PSID domainSid;
+	HANDLE hToken, hNewToken, hPds;
+	RPC_AUTH_IDENTITY_HANDLE hRPCAuth;
+	LPWSTR fullServer;
+	PROCESS_INFORMATION processInfos;
+	STARTUPINFOW startupInfo = {0};
+
+	startupInfo.cb = sizeof(STARTUPINFOW);
+	RtlInitString(&aUser, user);
+	RtlInitString(&aKdc, kdc);
+	RtlInitString(&aDomain, domain);
+	RtlInitString(&aPass, password);
+#pragma warning(push)
+#pragma warning(disable:4996)
+	RtlInitString(&aProg, _pgmptr);
+#pragma warning(pop)
+	if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uUser, &aUser, TRUE)))
+	{
+		if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uKdc, &aKdc, TRUE)))
+		{
+			if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uDomain, &aDomain, TRUE)))
+			{
+				ret = DsMakePasswordCredentials(user, domain, password, &hRPCAuth);
+				if(ret == ERROR_SUCCESS)
+				{
+					if(pNbDc && dcInfos)
+					{
+						ret = DsBindWithCred(kdc, domain, hRPCAuth, &hPds);
+						if(ret == ERROR_SUCCESS)
+						{
+							ret = DsGetDomainControllerInfo(hPds, domain, 1, pNbDc, (PVOID *) dcInfos);
+							if(ret == ERROR_SUCCESS)
+								kprintf("[KDC] %u server(s) in list\n", *pNbDc);
+							else PRINT_ERROR("DsGetDomainControllerInfo: %u\n", ret);
+							DsUnBind(&hPds);
+						}
+						else PRINT_ERROR("DsBindWithCred: %u\n", ret);
+					}
+
+					if(sid || rid)
+					{
+						kprintf("[SID/RID] \'%s @ %s\' must be translated to SID/RID\n", user, domain);
+						if(fullServer = (LPWSTR) LocalAlloc(LPTR, szPrefix + uKdc.Length))
+						{
+							RtlCopyMemory(fullServer, PREFIX_CIFS, szPrefix);
+							RtlCopyMemory((PBYTE) fullServer + (szPrefix - sizeof(wchar_t)), uKdc.Buffer, uKdc.Length);
+							status = SamConnectWithCreds(&uKdc, &hServerHandle, SAM_SERVER_CONNECT | SAM_SERVER_LOOKUP_DOMAIN, NULL, hRPCAuth, fullServer, &unk0);
+							if(status == RPC_NT_UNKNOWN_AUTHN_SERVICE)
+								status = SamConnectWithCreds(&uKdc, &hServerHandle, SAM_SERVER_CONNECT | SAM_SERVER_LOOKUP_DOMAIN, NULL, hRPCAuth, NULL, &unk0);
+							else if(status == STATUS_INVALID_HANDLE) // 2000 :(
+							{
+								kprintf("[AUTH] Impersonation (Windows 2000 target ?)\n");
+								if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uPass, &aPass, TRUE)))
+								{
+									if(NT_SUCCESS(RtlAnsiStringToUnicodeString(&uProg, &aProg, TRUE)))
+									{
+										if(CreateProcessWithLogonW(uUser.Buffer, uDomain.Buffer, uPass.Buffer, LOGON_NETCREDENTIALS_ONLY, uProg.Buffer, NULL, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfos))
+										{
+											if(OpenProcessToken(processInfos.hProcess, TOKEN_DUPLICATE, &hToken))
+											{
+												if(DuplicateTokenEx(hToken, TOKEN_QUERY | TOKEN_IMPERSONATE, NULL, SecurityDelegation, TokenImpersonation, &hNewToken))
+												{
+													if(SetThreadToken(NULL, hNewToken))
+														status = SamConnect(&uKdc, &hServerHandle, SAM_SERVER_CONNECT | SAM_SERVER_LOOKUP_DOMAIN, FALSE);
+													RevertToSelf();
+												}
+												else PRINT_ERROR_AUTO("SetThreadToken");
+												CloseHandle(hNewToken);
+											}
+											else PRINT_ERROR_AUTO("DuplicateTokenEx");
+											CloseHandle(hToken);
+										}
+										else PRINT_ERROR_AUTO("OpenProcessToken");
+										TerminateProcess(processInfos.hProcess, 0);
+										CloseHandle(processInfos.hProcess);
+										CloseHandle(processInfos.hThread);
+										RtlFreeUnicodeString(&uProg);
+									}
+									else PRINT_ERROR_AUTO("CreateProcessWithLogonW");
+									RtlFreeUnicodeString(&uPass);
+								}
+							}
+							if(NT_SUCCESS(status))
+							{
+								status = SamLookupDomainInSamServer(hServerHandle, &uDomain, &domainSid);
+								if(NT_SUCCESS(status))
+								{
+									status = SamOpenDomain(hServerHandle, DOMAIN_LIST_ACCOUNTS | DOMAIN_LOOKUP, domainSid, &hDomainHandle);
+									if(NT_SUCCESS(status))
+									{
+										if(rid)
+										{
+											status = SamLookupNamesInDomain(hDomainHandle, 1, &uUser, &aRid, &usage);
+											if(NT_SUCCESS(status))
+												*rid = aRid[0];
+											else PRINT_ERROR("SamLookupNamesInDomain %08x\n", status);
+										}
+									}
+									else PRINT_ERROR("SamOpenDomain %08x\n", status);
+
+									if(sid)
+									{
+										ret = GetLengthSid(domainSid);
+										if(*sid = (PSID) LocalAlloc(LPTR, ret))
+										{
+											if(!CopySid(ret, *sid, domainSid))
+											{
+												*sid = (PSID) LocalFree(*sid);
+												PRINT_ERROR_AUTO("CopySid");
+											}
+										}
+									}
+									SamFreeMemory(domainSid);
+								}
+								else PRINT_ERROR("SamLookupDomainInSamServer %08x\n", status);
+								SamCloseHandle(hServerHandle);
+							}
+							else PRINT_ERROR("SamConnectWithCreds %08x\n", status);
+							LocalFree(fullServer);
+						}
+					}
+					DsFreePasswordCredentials(hRPCAuth);
+				}
+				else PRINT_ERROR("DsMakePasswordCredentials: %u\n", ret);
+				RtlFreeUnicodeString(&uDomain);
+			}
+			RtlFreeUnicodeString(&uKdc);
+		}
+		RtlFreeUnicodeString(&uUser);
+	}
+}
+#endif

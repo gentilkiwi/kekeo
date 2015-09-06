@@ -9,3 +9,6 @@
 #define MIMIKATZ				"MS14-068 POC"
 #define MIMIKATZ_VERSION		"1.2"
 #define TICKET_FILENAME			"tgt.kirbi"
+
+#define MIMIKATZ_SAMLIB_NEEDED
+#define MIMIKATZ_DS_NEEDED
