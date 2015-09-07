@@ -149,12 +149,11 @@ int main(int argc, char * argv[])
 
 						if(szKdc)
 						{
-							if(kull_m_string_args_byName(argc, argv, "sid", &szSid, NULL) && kull_m_string_args_byName(argc, argv, "rid", &szRid, NULL))
-							{
-								if(ConvertStringSidToSid(szSid, &sid))
-									rid = strtoul(szRid, NULL, 0);
-								else PRINT_ERROR_AUTO("ConvertStringSidToSid");
-							}
+							if(kull_m_string_args_byName(argc, argv, "sid", &szSid, NULL))
+								if(!ConvertStringSidToSid(szSid, &sid))
+									PRINT_ERROR_AUTO("ConvertStringSidToSid");
+							if(kull_m_string_args_byName(argc, argv, "rid", &szRid, NULL))
+								rid = strtoul(szRid, NULL, 0);
 
 							if(szWhatDC || !(sid && rid))
 							{
