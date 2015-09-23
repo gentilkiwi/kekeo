@@ -80,6 +80,7 @@
     <ClInclude Include="codecs\ccache.h" />
     <ClInclude Include="codecs\krbcred.h" />
     <ClInclude Include="codecs\lsa.h" />
+    <ClInclude Include="codecs\wce.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="kirbikator.h" />
   </ItemGroup>
@@ -93,6 +94,7 @@
     <ClCompile Include="codecs\ccache.c" />
     <ClCompile Include="codecs\krbcred.c" />
     <ClCompile Include="codecs\lsa.c" />
+    <ClCompile Include="codecs\wce.c" />
     <ClCompile Include="kirbikator.c" />
   </ItemGroup>
   <ItemGroup>

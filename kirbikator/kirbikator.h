@@ -8,6 +8,7 @@
 #include "../modules/kull_m_file.h"
 #include "codecs/ccache.h"
 #include "codecs/krbcred.h"
+#include "codecs/wce.h"
 #include "codecs/lsa.h"
 
 typedef BOOL (* PVALID_HEADER) (OssBuf *input);

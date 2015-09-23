@@ -9,4 +9,4 @@
 #include "../modules/kull_m_kerberos_helper.h"
 
 #define MIMIKATZ				"KiRBikator"
-#define MIMIKATZ_VERSION		"1.0"
+#define MIMIKATZ_VERSION		"1.1"

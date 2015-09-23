@@ -33,6 +33,9 @@
     <ClInclude Include="..\modules\kull_m_sock.h">
       <Filter>common modules</Filter>
     </ClInclude>
+    <ClInclude Include="codecs\wce.h">
+      <Filter>codecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="kirbikator.c" />
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="..\modules\kull_m_sock.c">
       <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\wce.c">
+      <Filter>codecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

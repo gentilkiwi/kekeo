@@ -40,5 +40,11 @@ BOOL kiwi_krbcred_write(KRB_CRED *cred, OssBuf *output)
 	}
 	else PRINT_ERROR("%s", kull_m_kerberos_asn1_helper_ossGetErrMsg());
 
+	if(!status && output->value)
+	{
+		output->length = 0;
+		LocalFree(output->value);
+	}
+
 	return status;
 }

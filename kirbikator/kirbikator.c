@@ -10,6 +10,7 @@ BOOL g_isAsn1Init = FALSE, g_isKerberos = FALSE;
 const KERB_FORMAT_MODULE modules[] = {
 	{"MIT Credential Cache", kiwi_ccache_valid_header, kiwi_ccache_read, kiwi_ccache_write, "ccache", "ccaches"},
 	{"RFC KRB-CRED (#22)", kiwi_krbcred_valid_header, kiwi_krbcred_read, kiwi_krbcred_write, "kirbi", "kirbis"},
+	{"WCE \'windows wce\'", kiwi_wce_valid_header, kiwi_wce_read, kiwi_wce_write, "wce", "wces"},
 	{"Microsoft LSA API", NULL, NULL, kiwi_lsa_write, NULL, "lsa"},
 };
 
@@ -101,6 +102,7 @@ int main(int argc, char * argv[])
 								addCred(cred, &dst);
 								kull_m_kerberos_asn1_helper_ossFreePDU(KRB_CRED_PDU, cred);
 							}
+							else kprintf(": error when reading!");
 						}
 						else kprintf(": format not recognized!");
 						kprintf("\n");
@@ -119,7 +121,7 @@ int main(int argc, char * argv[])
 		else PRINT_ERROR("init() failed\n");
 		term();
 	}
-	else PRINT_ERROR("Arguments missing! kirbi|ccache|lsa|kirbis|ccaches ticket1 [ticket2] [...]\n");
+	else PRINT_ERROR("Arguments missing! kirbi|ccache|wce|lsa|kirbis|ccaches|wces ticket1 [ticket2] [...]\n");
 
 	return 0;
 }
