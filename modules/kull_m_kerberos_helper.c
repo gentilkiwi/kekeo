@@ -268,22 +268,24 @@ void kull_m_kerberos_helper_util_impersonateToGetData(PCSTR user, PCSTR domain, 
 												if(DuplicateTokenEx(hToken, TOKEN_QUERY | TOKEN_IMPERSONATE, NULL, SecurityDelegation, TokenImpersonation, &hNewToken))
 												{
 													if(SetThreadToken(NULL, hNewToken))
+													{
 														status = SamConnect(&uKdc, &hServerHandle, SAM_SERVER_CONNECT | SAM_SERVER_LOOKUP_DOMAIN, FALSE);
-													RevertToSelf();
+														RevertToSelf();
+													}
+													else PRINT_ERROR_AUTO("SetThreadToken");
+													CloseHandle(hNewToken);
 												}
-												else PRINT_ERROR_AUTO("SetThreadToken");
-												CloseHandle(hNewToken);
+												else PRINT_ERROR_AUTO("DuplicateTokenEx");
+												CloseHandle(hToken);
 											}
-											else PRINT_ERROR_AUTO("DuplicateTokenEx");
-											CloseHandle(hToken);
+											else PRINT_ERROR_AUTO("OpenProcessToken");
+											TerminateProcess(processInfos.hProcess, STATUS_SUCCESS);
+											CloseHandle(processInfos.hProcess);
+											CloseHandle(processInfos.hThread);
 										}
-										else PRINT_ERROR_AUTO("OpenProcessToken");
-										TerminateProcess(processInfos.hProcess, 0);
-										CloseHandle(processInfos.hProcess);
-										CloseHandle(processInfos.hThread);
+										else PRINT_ERROR_AUTO("CreateProcessWithLogonW");
 										RtlFreeUnicodeString(&uProg);
 									}
-									else PRINT_ERROR_AUTO("CreateProcessWithLogonW");
 									RtlFreeUnicodeString(&uPass);
 								}
 							}
