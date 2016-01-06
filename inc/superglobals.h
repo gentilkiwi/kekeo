@@ -19,7 +19,7 @@
 #include "../modules/kull_m_string.h"
 
 #define MIMIKATZ_ARCH			"x86"
-#define MIMIKATZ_CODENAME		"Kiwi en C"
+#define MIMIKATZ_CODENAME		"A La Vie, A L\'Amour"
 #define MIMIKATZ_FULL			MIMIKATZ " " MIMIKATZ_VERSION " (" MIMIKATZ_ARCH ") release \"" MIMIKATZ_CODENAME "\" (" TEXT(__DATE__) " " TEXT(__TIME__) ")"
 
 #define kprintf					printf
