@@ -20,7 +20,8 @@
 
 #define MIMIKATZ_ARCH			"x86"
 #define MIMIKATZ_CODENAME		"A La Vie, A L\'Amour"
-#define MIMIKATZ_FULL			MIMIKATZ " " MIMIKATZ_VERSION " (" MIMIKATZ_ARCH ") release \"" MIMIKATZ_CODENAME "\" (" TEXT(__DATE__) " " TEXT(__TIME__) ")"
+#define MIMIKATZ_FULL			MIMIKATZ " " MIMIKATZ_VERSION " (" MIMIKATZ_ARCH ") built on " TEXT(__DATE__) " " TEXT(__TIME__)
+#define MIMIKATZ_SECOND			"\"" MIMIKATZ_CODENAME "\""
 
 #define kprintf					printf
 

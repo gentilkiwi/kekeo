@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
 
 	kprintf("\n"
 		"  .#####.   " MIMIKATZ_FULL "\n"
-		" .## ^ ##.  \n"
+		" .## ^ ##.  " MIMIKATZ_SECOND "\n"
 		" ## / \\ ##  /* * *\n"
 		" ## \\ / ##   Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )\n"
 		" '## v ##'   http://blog.gentilkiwi.com                      (oe.eo)\n"
