@@ -7,7 +7,7 @@
 
 BOOL kiwi_krbcred_valid_header(OssBuf *input)
 {
-	return ((input->length > 4) && (_byteswap_ushort(*(PUSHORT) input->value) == 0x7682));
+	return ((input->length > 4) && ((_byteswap_ushort(*(PUSHORT) input->value) & 0xfff0) == 0x7680));
 }
 
 BOOL kiwi_krbcred_read(OssBuf *input, KRB_CRED **cred)
