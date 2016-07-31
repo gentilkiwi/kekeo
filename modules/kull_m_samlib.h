@@ -1,7 +1,7 @@
 /*	Benjamin DELPY `gentilkiwi`
 	http://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
-	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
+	Licence : https://creativecommons.org/licenses/by/4.0/
 */
 #pragma once
 #include "globals.h"
@@ -22,6 +22,14 @@ typedef struct _GROUP_MEMBERSHIP {
 	DWORD RelativeId;
 	DWORD Attributes;
 } GROUP_MEMBERSHIP, *PGROUP_MEMBERSHIP;
+
+typedef struct _CYPHER_BLOCK {
+	CHAR data[8];
+} CYPHER_BLOCK, *PCYPHER_BLOCK;
+
+typedef struct _NT_OWF_PASSWORD {
+	CYPHER_BLOCK data[2];
+} NT_OWF_PASSWORD, *PNT_OWF_PASSWORD, ENCRYPTED_NT_OWF_PASSWORD, *PENCRYPTED_NT_OWF_PASSWORD, USER_SESSION_KEY;
 
 typedef struct _SAMPR_USER_INTERNAL1_INFORMATION {
 	BYTE NTHash[LM_NTLM_HASH_LENGTH];
@@ -77,6 +85,17 @@ extern NTSTATUS WINAPI SamFreeMemory(IN PVOID Buffer);
 #define SAM_SERVER_READ					0x00020010
 #define SAM_SERVER_WRITE				0x0002000e
 #define SAM_SERVER_EXECUTE				0x00020021
+
+#define SAM_DOMAIN_OBJECT				0x00000000
+#define SAM_GROUP_OBJECT				0x10000000
+#define SAM_NON_SECURITY_GROUP_OBJECT	0x10000001
+#define SAM_ALIAS_OBJECT				0x20000000
+#define SAM_NON_SECURITY_ALIAS_OBJECT	0x20000001
+#define SAM_USER_OBJECT					0x30000000
+#define SAM_MACHINE_ACCOUNT				0x30000001
+#define SAM_TRUST_ACCOUNT				0x30000002
+#define SAM_APP_BASIC_GROUP				0x40000000
+#define SAM_APP_QUERY_GROUP				0x40000001
 
 #define DOMAIN_READ_PASSWORD_PARAMETERS	0x00000001
 #define DOMAIN_WRITE_PASSWORD_PARAMS	0x00000002

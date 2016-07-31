@@ -70,7 +70,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>advapi32.lib;user32.lib;dnsapi.lib;secur32.lib;netapi32.lib;ntdsapi.lib;toedcode.lib;ossiphlp.lib;ntdll.min.lib;cryptdll.lib;samlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;user32.lib;dnsapi.lib;rpcrt4.lib;secur32.lib;netapi32.lib;ntdsapi.lib;toedcode.lib;ossiphlp.lib;ntdll.min.lib;cryptdll.lib;samlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -79,6 +79,8 @@
     <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
+    <ClCompile Include="..\modules\kull_m_rpc.c" />
+    <ClCompile Include="..\modules\kull_m_rpc_ms-pac.c" />
     <ClCompile Include="..\modules\kull_m_sock.c" />
     <ClCompile Include="..\modules\kull_m_string.c" />
     <ClCompile Include="ms11013.c" />
@@ -90,7 +92,8 @@
     <ClInclude Include="..\modules\kull_m_kerberos_asn1.h" />
     <ClInclude Include="..\modules\kull_m_kerberos_asn1_helper.h" />
     <ClInclude Include="..\modules\kull_m_kerberos_helper.h" />
-    <ClInclude Include="..\modules\kull_m_rpce.h" />
+    <ClInclude Include="..\modules\kull_m_rpc.h" />
+    <ClInclude Include="..\modules\kull_m_rpc_ms-pac.h" />
     <ClInclude Include="..\modules\kull_m_samlib.h" />
     <ClInclude Include="..\modules\kull_m_sock.h" />
     <ClInclude Include="..\modules\kull_m_string.h" />
