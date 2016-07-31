@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global file
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{8163071B-5A86-4F7E-8685-F71045451CE0}"
 	ProjectSection(SolutionItems) = preProject
+		inc\ossasn1.h = inc\ossasn1.h
+		inc\osstype.h = inc\osstype.h
 		inc\superglobals.h = inc\superglobals.h
 	EndProjectSection
 EndProject
@@ -19,7 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{979399AD-9EB
 	ProjectSection(SolutionItems) = preProject
 		lib\cryptdll.lib = lib\cryptdll.lib
 		lib\ntdll.min.lib = lib\ntdll.min.lib
+		lib\ossiphlp.lib = lib\ossiphlp.lib
 		lib\samlib.lib = lib\samlib.lib
+		lib\toedcode.lib = lib\toedcode.lib
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kirbikator", "kirbikator\kirbikator.vcxproj", "{11C16712-C291-4D57-87FC-6A3E83EFDE2F}"
