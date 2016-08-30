@@ -1,9 +1,19 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms14068", "ms14068\ms14068.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E977}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aoratopw", "aoratopw\aoratopw.vcxproj", "{6A60AAD4-02D4-4EFD-A9D7-D97A4F32037A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kirbikator", "kirbikator\kirbikator.vcxproj", "{11C16712-C291-4D57-87FC-6A3E83EFDE2F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms11013", "ms11013\ms11013.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E978}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asktgs", "asktgs\asktgs.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E979}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asktgt", "asktgt\asktgt.vcxproj", "{9D0C4953-2E94-4C16-9262-59785BD4A16D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pkinitmustiness", "pkinitmustiness\pkinitmustiness.vcxproj", "{AC3864C4-1C5A-495F-97ED-92B08F22334C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global files", "{C3104405-A517-4F6B-8D09-0EE6EA32FD89}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,16 +36,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{979399AD-9EB
 		lib\samlib.lib = lib\samlib.lib
 		lib\toedcode.lib = lib\toedcode.lib
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kirbikator", "kirbikator\kirbikator.vcxproj", "{11C16712-C291-4D57-87FC-6A3E83EFDE2F}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms11013", "ms11013\ms11013.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E978}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asktgs", "asktgs\asktgs.vcxproj", "{2F4CBDD4-E97A-4708-A829-600230C3E979}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asktgt", "asktgt\asktgt.vcxproj", "{9D0C4953-2E94-4C16-9262-59785BD4A16D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pkinitmustiness", "pkinitmustiness\pkinitmustiness.vcxproj", "{AC3864C4-1C5A-495F-97ED-92B08F22334C}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
