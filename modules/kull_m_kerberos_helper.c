@@ -174,6 +174,178 @@ NTSTATUS kull_m_kerberos_helper_util_ptt_data(PVOID data, DWORD dataSize)
 	return status;
 }
 
+BOOL kull_m_kerberos_helper_getAuthInfo(int argc, char * argv[], PKIWI_AUTH_INFOS authInfo)
+{
+	BOOL status = FALSE, isSpecial = FALSE;
+	LPCSTR baseDot, szKey = NULL, szSubject, szPin, szAsreq;
+	DWORD i, j;
+	PA_DATA *paData;
+	PA_PK_AS_REQ *pkAsReq = NULL;
+	OssBuf AuthPackBuff = {0, NULL};
+	AuthPack *auth = NULL;
+	RtlZeroMemory(authInfo, sizeof(KIWI_AUTH_INFOS));
+
+	if(isSpecial = kull_m_string_args_byName(argc, argv, "asreq", &szAsreq, NULL))
+	{
+		authInfo->type = KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH;
+		kprintf("crypto mode        : PKINIT mustiness mode\n");
+		if(kull_m_crypto_get_DHKeyInfo(TRUE, FALSE, &authInfo->u.asReqDH.dhKeyInfo))
+		{
+			if(kull_m_file_readData(szAsreq, &authInfo->u.asReqDH.AsReqBuf.value, (PDWORD) &authInfo->u.asReqDH.AsReqBuf.length))
+			{
+				if(!kull_m_kerberos_asn1_helper_ossDecode(AS_REQ_PDU, &authInfo->u.asReqDH.AsReqBuf, (LPVOID *) &authInfo->u.asReqDH.AsReq))
+				{
+					kull_m_string_copy((LPSTR *) &authInfo->szDomain, authInfo->u.asReqDH.AsReq->req_body.realm);
+					if(authInfo->u.asReqDH.AsReq->req_body.bit_mask & KDC_REQ_BODY_cname_present)
+						if(authInfo->u.asReqDH.AsReq->req_body.cname.name_type == KRB_NT_PRINCIPAL)
+							kull_m_string_copy((LPSTR *) &authInfo->szUser, authInfo->u.asReqDH.AsReq->req_body.cname.name_string->value);
+
+					if(paData = kull_m_kerberos_asn1_helper_get_PADATA_from_REQ(authInfo->u.asReqDH.AsReq, PA_TYPE_PK_AS_REQ))
+					{
+						if(!kull_m_kerberos_asn1_helper_ossDecode(PA_PK_AS_REQ_PDU, (OssBuf *) &paData->padata_value, (LPVOID *) &pkAsReq))
+						{
+							if(kull_m_crypto_simple_message_get(&pkAsReq->signedAuthPack, &AuthPackBuff))
+							{
+								if(status = !kull_m_kerberos_asn1_helper_ossDecode(AuthPack_PDU, &AuthPackBuff, (LPVOID *) &auth))
+								{
+									kprintf("Authenticator time : ");
+									kull_m_kerberos_asn1_helper_display_KerberosTime(&auth->pkAuthenticator.ctime);
+									kprintf("\n");
+									if(auth->bit_mask & clientDHNonce_present)
+										if(authInfo->u.asReqDH.dhKeyInfo.dhClientNonce.value = (PBYTE) LocalAlloc(LPTR, auth->clientDHNonce.length))
+										{
+											authInfo->u.asReqDH.dhKeyInfo.dhClientNonce.length = auth->clientDHNonce.length;
+											RtlCopyMemory(authInfo->u.asReqDH.dhKeyInfo.dhClientNonce.value, auth->clientDHNonce.value, auth->clientDHNonce.length);
+										}
+									kull_m_kerberos_asn1_helper_ossFreePDU(AuthPack_PDU, auth);
+								}
+								else PRINT_ERROR("Unable to decode AuthPack: %s\n", kull_m_kerberos_asn1_helper_ossGetErrMsg());
+								LocalFree(AuthPackBuff.value);
+							}
+							else PRINT_ERROR("Unable to get signed message\n");
+							kull_m_kerberos_asn1_helper_ossFreePDU(PA_PK_AS_REQ_PDU, pkAsReq);
+						}
+						else PRINT_ERROR("Unable to decode PA_PK_AS_REQ: %s\n", kull_m_kerberos_asn1_helper_ossGetErrMsg());
+					}
+					else PRINT_ERROR("No PADATA of PA_TYPE_PK_AS_REQ\n");
+				}
+				else PRINT_ERROR("Unable to decode AS_REQ: %s\n", kull_m_kerberos_asn1_helper_ossGetErrMsg());
+			}
+			else PRINT_ERROR_AUTO("kull_m_file_readData (asreq)");
+		}
+		else PRINT_ERROR_AUTO("kull_m_crypto_get_DHKeyInfo");
+	}
+
+	if((isSpecial && status) || kull_m_string_args_byName(argc, argv, "user", &authInfo->szUser, NULL))
+	{
+		kprintf("username           : %s\n", authInfo->szUser);
+		if((isSpecial && status) || kull_m_string_args_byName(argc, argv, "domain", &authInfo->szDomain, NULL))
+		{
+			if(baseDot = strchr(authInfo->szDomain, L'.'))
+			{
+				i = (PBYTE) baseDot - (PBYTE) authInfo->szDomain;
+				if(authInfo->szNetbiosDomain = (PSTR) LocalAlloc(LPTR, i + 1))
+				{
+					for(j = 0; j < i ; j++)
+						authInfo->szNetbiosDomain[j] = toupper(authInfo->szDomain[j]);
+					kprintf("domain             : %s (%s)\n", authInfo->szDomain, authInfo->szNetbiosDomain);
+
+					// password part
+					if(kull_m_string_args_byName(argc, argv, "key", &szKey, NULL) || kull_m_string_args_byName(argc, argv, "password", &authInfo->szPassword, NULL))
+					{
+						authInfo->type = KIWI_AUTH_INFOS_TYPE_KEY;
+
+						if(kull_m_string_args_byName(argc, argv, "aes256", NULL, NULL))
+							authInfo->u.userKey.keytype = KERB_ETYPE_AES256_CTS_HMAC_SHA1_96;
+						else if(kull_m_string_args_byName(argc, argv, "aes128", NULL, NULL))
+							authInfo->u.userKey.keytype = KERB_ETYPE_AES128_CTS_HMAC_SHA1_96;
+						else
+							authInfo->u.userKey.keytype = KERB_ETYPE_RC4_HMAC_NT;
+
+						if(status = NT_SUCCESS(kull_m_kerberos_asn1_helper_util_stringToKey(authInfo->szUser, authInfo->szDomain, authInfo->szPassword, szKey, &authInfo->u.userKey)))
+						{
+							kprintf("password           : %s\n"
+								"key                : "
+								, szKey ? "<NULL>" : "***");
+							kull_m_string_printf_hex(authInfo->u.userKey.keyvalue.value, authInfo->u.userKey.keyvalue.length, 0);
+							kprintf(" (%s)\n", kull_m_kerberos_asn1_helper_util_etypeToString(authInfo->u.userKey.keytype));
+						}
+					}
+					else if(kull_m_string_args_byName(argc, argv, "subject", &szSubject, NULL))
+					{
+						kprintf("certificate subject: %s\n", szSubject);
+						if(kull_m_crypto_get_CertInfo(szSubject, &authInfo->u.certInfoDH.certinfo))
+						{
+							kprintf("crypto mode        : ");
+							if(kull_m_string_args_byName(argc, argv, "dh", NULL, NULL))
+							{
+								kprintf("RSA/DH\n");
+								authInfo->type = KIWI_AUTH_INFOS_TYPE_RSA_DH;
+								if(!(status = kull_m_crypto_get_DHKeyInfo(TRUE, kull_m_string_args_byName(argc, argv, "nonce", NULL, NULL), &authInfo->u.certInfoDH.dhKeyInfo)))
+									PRINT_ERROR_AUTO("kull_m_crypto_get_DHKeyInfo");
+							}
+							else
+							{
+								kprintf("RSA\n");
+								authInfo->type = KIWI_AUTH_INFOS_TYPE_RSA;
+								status = TRUE;
+							}
+
+							if(kull_m_string_args_byName(argc, argv, "pin", &szPin, NULL))
+							{
+								kprintf("smartcard pin code : %s", szPin);
+								if(CryptSetProvParam(authInfo->u.certInfoDH.certinfo.provider.hProv, PP_SIGNATURE_PIN, (LPCBYTE) szPin, 0))
+									kprintf("\n");
+								else PRINT_ERROR_AUTO("CryptSetProvParam");
+							}
+						}
+						else PRINT_ERROR("Unable to find a certificate and its private key with this subject\n");
+					}
+					else if(!status) PRINT_ERROR("Missing authentication information (password/key/subject)\n");
+				}
+			}
+			else PRINT_ERROR("Domain name (%s) does not look like a FQDN\n", authInfo->szDomain);
+		}
+		else if(!isSpecial) PRINT_ERROR("Missing domain argument\n");
+	}
+	else if(!isSpecial) PRINT_ERROR("Missing user argument\n");
+
+	if(!status)
+		kull_m_kerberos_helper_freeAuthInfo(authInfo);
+	return status;
+}
+
+void kull_m_kerberos_helper_freeAuthInfo(PKIWI_AUTH_INFOS authInfo)
+{
+	if(authInfo->szNetbiosDomain)
+		LocalFree(authInfo->szNetbiosDomain);
+	switch(authInfo->type)
+	{
+	case KIWI_AUTH_INFOS_TYPE_KEY:
+		if(authInfo->u.userKey.keyvalue.value)
+			LocalFree(authInfo->u.userKey.keyvalue.value);
+		break;
+	case KIWI_AUTH_INFOS_TYPE_RSA:
+	case KIWI_AUTH_INFOS_TYPE_RSA_DH:
+		kull_m_crypto_free_CertInfo(&authInfo->u.certInfoDH.certinfo);
+		if(authInfo->type == KIWI_AUTH_INFOS_TYPE_RSA_DH)
+			kull_m_crypto_free_DHKeyInfo(&authInfo->u.certInfoDH.dhKeyInfo);
+		break;
+	case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
+		if(authInfo->szUser)
+			LocalFree((HLOCAL) authInfo->szUser);
+		if(authInfo->szDomain)
+			LocalFree((HLOCAL) authInfo->szDomain);
+		if(authInfo->u.asReqDH.AsReqBuf.value)
+			LocalFree(authInfo->u.asReqDH.AsReqBuf.value);
+		if(authInfo->u.asReqDH.AsReq)
+			kull_m_kerberos_asn1_helper_ossFreePDU(AS_REQ_PDU, authInfo->u.asReqDH.AsReq);
+		kull_m_crypto_free_DHKeyInfo(&authInfo->u.asReqDH.dhKeyInfo);
+	default:
+		;
+	}
+}
+
 #ifdef MIMIKATZ_DS_NEEDED
 BOOL kull_m_kerberos_helper_net_getDC(LPCSTR fullDomainName, DWORD altFlags, LPSTR * fullDCName)
 {

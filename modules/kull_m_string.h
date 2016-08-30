@@ -47,6 +47,8 @@ BOOL kull_m_string_stringToHex(IN LPCSTR string, IN LPBYTE hex, IN DWORD size);
 void kull_m_string_printf_hex(LPCVOID lpData, DWORD cbData, DWORD flags);
 void kull_m_string_displayFileTime(IN PFILETIME pFileTime);
 void kull_m_string_displayLocalFileTime(IN PFILETIME pFileTime);
+BOOL kull_m_string_LocalFileTimeToString(IN PFILETIME pFileTime, OUT CHAR string[14 + 1]);
 void kull_m_string_displaySID(IN PSID pSid);
 
 BOOL kull_m_string_args_byName(const int argc, const char * argv[], const char * name, const char ** theArgs, const char * defaultValue);
+BOOL kull_m_string_copy(LPSTR *dst, LPCSTR src);

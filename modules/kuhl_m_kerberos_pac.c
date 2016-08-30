@@ -10,7 +10,7 @@ BOOL kuhl_m_pac_giveMePac(PCSTR Username, PCSTR LogonDomainName, PSID DomainSid,
 	BOOL status = FALSE;
 	KERB_VALIDATION_INFO validationInfo = {0};
 	STRING user, logondomain;
-	kull_m_kerberos_asn1_helper_util_UTCKerberosTimeToFileTime(AuthTime, &validationInfo.LogonTime);
+	kull_m_kerberos_asn1_helper_get_KerberosTime2(AuthTime, &validationInfo.LogonTime);
 	KIWI_NEVERTIME(&validationInfo.LogoffTime);
 	KIWI_NEVERTIME(&validationInfo.KickOffTime);
 	KIWI_NEVERTIME(&validationInfo.PasswordLastSet);

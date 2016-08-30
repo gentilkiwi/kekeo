@@ -22,6 +22,7 @@
 #define MIMIKATZ_CODENAME		"A La Vie, A L\'Amour"
 #define MIMIKATZ_FULL			MIMIKATZ " " MIMIKATZ_VERSION " (" MIMIKATZ_ARCH ") built on " TEXT(__DATE__) " " TEXT(__TIME__)
 #define MIMIKATZ_SECOND			"\"" MIMIKATZ_CODENAME "\""
+#define MIMIKATZ_NONCE			1702257953
 
 #define kprintf					printf
 
@@ -47,3 +48,6 @@ extern VOID WINAPI RtlGetNtVersionNumbers(LPDWORD pMajor, LPDWORD pMinor, LPDWOR
 #define SIZE_ALIGN(size, alignment)	(size + ((size % alignment) ? (alignment - (size % alignment)) : 0))
 
 #define LM_NTLM_HASH_LENGTH	16
+
+#define KERBEROS_DEFAULT_PORT	((WORD) 88)
+#define KADMIN_DEFAULT_PORT	((WORD) 464)

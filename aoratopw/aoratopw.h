@@ -12,7 +12,7 @@ BOOL init();
 BOOL term();
 
 int main(int argc, char * argv[]);
-void makeInception(PCSTR user, PCSTR domain, PCSTR newpassword, EncryptionKey *key, PCSTR kdc, WORD port, WORD kadminPort);
+void makeInception(PKIWI_AUTH_INFOS authInfo, PCSTR newpassword, PCSTR kdc, WORD port, WORD kadminPort);
 
 PCSTR kull_m_kadmin_passwd_err_to_string(DWORD id);
 void retFromKadmin(_octet1 * data);

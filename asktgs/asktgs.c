@@ -1,7 +1,7 @@
 /*	Benjamin DELPY `gentilkiwi`
-http://blog.gentilkiwi.com
-benjamin@gentilkiwi.com
-Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
+	http://blog.gentilkiwi.com
+	benjamin@gentilkiwi.com
+	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 #include "asktgs.h"
 
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
 								kprintf("Principal : %s @ %s\n", encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm);
 								if(kull_m_kerberos_helper_net_getDC(dDomain, DS_KDC_REQUIRED, &dKdc))
 								{
-									if(kull_m_sock_initSocket(dKdc, 88, &connectSocket))
+									if(kull_m_sock_initSocket(dKdc, KERBEROS_DEFAULT_PORT, &connectSocket))
 									{
 										for(i = 2; i < (DWORD) argc; i++)
 										{
@@ -84,11 +84,11 @@ int main(int argc, char * argv[])
 												pService = argv[i];
 												pTarget = pos + 1;
 												*pos = '\0';
-												if(kull_m_kerberos_asn1_helper_build_KdcReq(encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &encCred->ticket_info->value.key, pService, pTarget, dDomain, FALSE, &cred->tickets->value, NULL, &TgsReq))
+												if(kull_m_kerberos_asn1_helper_build_KdcReq_key(encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &encCred->ticket_info->value.key, pService, pTarget, dDomain, FALSE, &cred->tickets->value, NULL, &TgsReq))
 												{
 													if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
 													{
-														if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(TgsRep, &encTgsRepPart, &encCred->ticket_info->value.key, EncTGSRepPart_PDU))
+														if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_key(TgsRep, &encTgsRepPart, &encCred->ticket_info->value.key, EncTGSRepPart_PDU))
 														{
 															*pos = '.';
 															len = strlen(argv[i]);
@@ -114,6 +114,7 @@ int main(int argc, char * argv[])
 								}
 							}
 						}
+						else PRINT_ERROR("Ticket is not with krbtgt / KRB_NT_SRV_INST\n");
 						kull_m_kerberos_asn1_helper_ossFreePDU(EncKrbCredPart_PDU, encCred);
 					}
 					else PRINT_ERROR("(cred) %s", kull_m_kerberos_asn1_helper_ossGetErrMsg());

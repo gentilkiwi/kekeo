@@ -20,5 +20,9 @@ BOOL kull_m_kerberos_helper_util_SaveRepAsKrbCred(KDC_REP *rep, EncKDCRepPart *e
 
 NTSTATUS kull_m_kerberos_helper_util_LsaCallKerberosPackage(PVOID ProtocolSubmitBuffer, ULONG SubmitBufferLength, PVOID *ProtocolReturnBuffer, PULONG ReturnBufferLength, PNTSTATUS ProtocolStatus);
 NTSTATUS kull_m_kerberos_helper_util_ptt_data(PVOID data, DWORD dataSize);
+
+BOOL kull_m_kerberos_helper_getAuthInfo(int argc, char * argv[], PKIWI_AUTH_INFOS authInfo);
+void kull_m_kerberos_helper_freeAuthInfo(PKIWI_AUTH_INFOS authInfo);
+
 BOOL kull_m_kerberos_helper_net_getDC(LPCSTR fullDomainName, DWORD altFlags, LPSTR * fullDCName);
 void kull_m_kerberos_helper_util_impersonateToGetData(PCSTR user, PCSTR domain, PCSTR password, PCSTR kdc, PSID *sid, DWORD *rid, DWORD *pNbDc, PDS_DOMAIN_CONTROLLER_INFO_1 *dcInfos);

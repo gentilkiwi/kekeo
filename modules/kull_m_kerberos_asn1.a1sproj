@@ -1,16 +1,20 @@
-<OssGuiProject version="2.0" compilerVersionLastUsed="10.1" product="ASN.1 Studio" productVersion="7.1" compilerVersionInitial="10.0 T" compilerSettingsChangeTime="2015-01-11T13:35:41" compiler="ASN.1/C">
+<OssGuiProject compilerSettingsChangeTime="2015-08-26T22:59:28" compilerVersionInitial="10.0 T" compilerVersionLastUsed="10.1" compiler="ASN.1/C" version="2.0" productVersion="7.1" product="ASN.1 Studio">
  <Asn1Files>
-  <File>kull_m_kerberos_asn1.asn</File>
+  <File>KerberosV5Spec2.asn</File>
+  <File>KerberosV5-PK-INIT-SPEC.asn</File>
+  <File>PKIX1Explicit88.asn</File>
+  <File>PKINIT.asn</File>
  </Asn1Files>
  <CompilerSettings>
-  <Setting name="disablCAGLMessagesCheckBox" present="true"/>
-  <Setting name="headerGroupBox" present="true"/>
-  <Setting name="toedRadioButton" present="true"/>
-  <Setting name="modListRadioButton" present="false"/>
-  <Setting name="sampleDefaultRadioButton" present="true"/>
-  <Setting name="commentsNativeRadioButton" present="true"/>
-  <Setting name="helperApiRadioButton" present="false"/>
-  <Setting name="encOnlyRadioButton" present="false"/>
+  <Setting present="true" name="commentsNativeRadioButton"/>
+  <Setting present="true" name="disablCAGLMessagesCheckBox"/>
+  <Setting present="false" name="encOnlyRadioButton"/>
+  <Setting present="true" name="externCheckBox">kull_m_kerberos_asn1</Setting>
+  <Setting present="true" name="headerGroupBox">kull_m_kerberos_asn1.h</Setting>
+  <Setting present="false" name="helperApiRadioButton"/>
+  <Setting present="false" name="modListRadioButton"/>
+  <Setting present="true" name="sampleDefaultRadioButton"/>
+  <Setting present="true" name="toedRadioButton">kull_m_kerberos_asn1.c</Setting>
  </CompilerSettings>
  <EncodingFiles/>
  <GeneratedFiles>
@@ -18,9 +22,9 @@
   <File>kull_m_kerberos_asn1.c</File>
  </GeneratedFiles>
  <Settings>
-  <Setting name="-noRelaxedMode" present="false"/>
+  <Setting present="false" name="-noRelaxedMode"/>
   <Setting name="-root"/>
-  <Setting name="-relaySafe" present="false"/>
+  <Setting present="false" name="-relaySafe"/>
   <Setting name="AUTOMATIC_ENCDEC"/>
   <Setting name="OSS_AUTO_ENCODE_WITHOUT_CHECKING_CONSTRAINT"/>
   <Setting name="DEBUGPDU"/>

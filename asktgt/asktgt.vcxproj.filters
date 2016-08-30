@@ -2,14 +2,20 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="common modules">
-      <UniqueIdentifier>{115c470a-a42f-43c6-b840-5acf681c0418}</UniqueIdentifier>
+      <UniqueIdentifier>{20d266cc-4315-4483-b323-7eab022b9149}</UniqueIdentifier>
     </Filter>
     <Filter Include="common modules\asn1">
-      <UniqueIdentifier>{90716ede-63bc-4113-b5f4-6062acab4054}</UniqueIdentifier>
+      <UniqueIdentifier>{035cbdf5-97dd-4ccc-b85b-25f1deac0bec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\modules\kull_m_file.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_kerberos_helper.c">
       <Filter>common modules</Filter>
     </ClCompile>
     <ClCompile Include="..\modules\kull_m_sock.c">
@@ -18,13 +24,7 @@
     <ClCompile Include="..\modules\kull_m_string.c">
       <Filter>common modules</Filter>
     </ClCompile>
-    <ClCompile Include="asktgs.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c">
-      <Filter>common modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\modules\kull_m_kerberos_helper.c">
-      <Filter>common modules</Filter>
-    </ClCompile>
+    <ClCompile Include="asktgt.c" />
     <ClCompile Include="..\modules\kull_m_crypto_pkinit.c">
       <Filter>common modules</Filter>
     </ClCompile>
@@ -33,7 +33,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\modules\kull_m_crypto_system.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
     <ClInclude Include="..\modules\kull_m_file.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_kerberos_asn1_helper.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_kerberos_helper.h">
       <Filter>common modules</Filter>
     </ClInclude>
     <ClInclude Include="..\modules\kull_m_sock.h">
@@ -42,17 +51,8 @@
     <ClInclude Include="..\modules\kull_m_string.h">
       <Filter>common modules</Filter>
     </ClInclude>
+    <ClInclude Include="asktgt.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="asktgs.h" />
-    <ClInclude Include="..\modules\kull_m_kerberos_asn1_helper.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\modules\kull_m_crypto_system.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\modules\kull_m_kerberos_helper.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
     <ClInclude Include="..\modules\kull_m_crypto_pkinit.h">
       <Filter>common modules</Filter>
     </ClInclude>

@@ -68,6 +68,19 @@ void kull_m_string_displayLocalFileTime(IN PFILETIME pFileTime)
 			kull_m_string_displayFileTime(&ft);
 }
 
+BOOL kull_m_string_LocalFileTimeToString(IN PFILETIME pFileTime, OUT CHAR string[14 + 1])
+{
+	BOOL status = FALSE;
+	FILETIME ft;
+	SYSTEMTIME st;
+	if(pFileTime)
+		if(FileTimeToLocalFileTime(pFileTime, &ft))
+			if(FileTimeToSystemTime(&ft, &st))
+				if(GetDateFormat(LOCALE_USER_DEFAULT, 0, &st, "yyyyMMdd", string, 8 + 1))
+					status = GetTimeFormat(LOCALE_USER_DEFAULT, 0, &st, "HHmmss", string + 8, 6 + 1);
+	return status;
+}
+
 void kull_m_string_displaySID(IN PSID pSid)
 {
 	LPSTR stringSid;
@@ -118,4 +131,20 @@ BOOL kull_m_string_args_byName(const int argc, const char * argv[], const char *
 	}
 
 	return result;
+}
+
+BOOL kull_m_string_copy(LPSTR *dst, LPCSTR src)
+{
+	BOOL status = FALSE;
+	size_t size;
+	if(src && dst && (size = strlen(src)))
+	{
+		size = (size + 1);
+		if(*dst = (LPSTR) LocalAlloc(LPTR, size))
+		{
+			RtlCopyMemory(*dst, src, size);
+			status = TRUE;
+		}
+	}
+	return status;
 }

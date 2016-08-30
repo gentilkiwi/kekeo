@@ -8,9 +8,9 @@
 #include "../modules/kull_m_kerberos_helper.h"
 #include "../modules/kull_m_sock.h"
 #include "../modules/kuhl_m_kerberos_pac.h"
+#include "../modules/kull_m_crypto_pkinit.h"
 
 BOOL init();
 BOOL term();
 
 int main(int argc, char * argv[]);
-void makeInception(PKIWI_AUTH_INFOS authInfo, PSID sid, DWORD rid, PCSTR target, PCSTR service, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, PCSTR kdc, WORD port, PCSTR filename);
