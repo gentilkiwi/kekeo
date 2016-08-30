@@ -64,13 +64,13 @@ int main(int argc, char * argv[])
 			{
 				isNonce = authInfo.u.certInfoDH.dhKeyInfo.dhClientNonce.value && authInfo.u.certInfoDH.dhKeyInfo.dhClientNonce.length;
 				GetSystemTimeAsFileTime(&fTime);
+				kprintf("> Current time     : "); kull_m_string_displayLocalFileTime(&fTime);
 				if(kull_m_string_args_byName(argc, argv, "startoffset", &szLifetime, NULL))
 					*(PULONGLONG) &fTime -= *(PULONGLONG) &fTime % 10000000 - ((LONGLONG) strtol(szLifetime, NULL, 0) * 10000000 * 60);
 				kull_m_string_args_byName(argc, argv, "increment", &szLifetime, "10");
 				increment = strtoul(szLifetime, NULL, 0);
 				kull_m_string_args_byName(argc, argv, "count", &szLifetime, "1");
 				count = strtoul(szLifetime, NULL, 0);
-				kprintf("> Current time     : "); kull_m_string_displayLocalFileTime(&fTime);
 				kprintf("\n> Start time       : "); kull_m_string_displayLocalFileTime(&fTime);
 				kprintf("\n> Increment        : %u mn"
 					"\n> Count            : %u\n", increment, count);
