@@ -5,6 +5,26 @@
 */
 #include "kull_m_string.h"
 
+wchar_t * kull_m_string_qad_ansi_to_unicode(const char * ansi)
+{
+	wchar_t * buffer = NULL;
+	if(ansi)
+		buffer = kull_m_string_qad_ansi_c_to_unicode(ansi, strlen(ansi));
+	return buffer;
+}
+
+wchar_t * kull_m_string_qad_ansi_c_to_unicode(const char * ansi, SIZE_T szStr)
+{
+	wchar_t * buffer = NULL;
+	SIZE_T i;
+
+	if(ansi && szStr)
+		if(buffer = (wchar_t *) LocalAlloc(LPTR, (szStr + 1) * sizeof(wchar_t)))
+			for(i = 0; i < szStr; i++)
+				buffer[i] = ansi[i];
+	return buffer;
+}
+
 BOOL kull_m_string_stringToHex(IN LPCSTR string, IN LPBYTE hex, IN DWORD size)
 {
 	DWORD i, j;
@@ -90,6 +110,23 @@ void kull_m_string_displaySID(IN PSID pSid)
 		LocalFree(stringSid);
 	}
 	else PRINT_ERROR_AUTO("ConvertSidToStringSid");
+}
+
+PWSTR kull_m_string_getRandomGUID()
+{
+	UNICODE_STRING uString;
+	GUID guid;
+	PWSTR buffer = NULL;
+	if(NT_SUCCESS(UuidCreate(&guid)))
+	{
+		if(NT_SUCCESS(RtlStringFromGUID(&guid, &uString)))
+		{
+			if(buffer = (PWSTR) LocalAlloc(LPTR, uString.MaximumLength))
+				RtlCopyMemory(buffer, uString.Buffer, uString.MaximumLength);
+			RtlFreeUnicodeString(&uString);
+		}
+	}
+	return buffer;
 }
 
 BOOL kull_m_string_args_byName(const int argc, const char * argv[], const char * name, const char ** theArgs, const char * defaultValue)

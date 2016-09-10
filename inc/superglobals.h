@@ -22,7 +22,7 @@
 #define MIMIKATZ_CODENAME		"A La Vie, A L\'Amour"
 #define MIMIKATZ_FULL			MIMIKATZ " " MIMIKATZ_VERSION " (" MIMIKATZ_ARCH ") built on " TEXT(__DATE__) " " TEXT(__TIME__)
 #define MIMIKATZ_SECOND			"\"" MIMIKATZ_CODENAME "\""
-#define MIMIKATZ_NONCE			1702257953
+#define MIMIKATZ_NONCE			1853451123
 
 #define kprintf					printf
 

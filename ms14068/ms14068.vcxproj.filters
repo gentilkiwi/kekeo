@@ -77,6 +77,9 @@
     <ClInclude Include="..\modules\kull_m_crypto_pkinit.h">
       <Filter>common modules</Filter>
     </ClInclude>
+	<ClInclude Include="..\modules\kull_m_kerberos_crypto_shared.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
     <ClInclude Include="..\modules\kull_m_kerberos_asn1.h">
       <Filter>common modules\asn1</Filter>
     </ClInclude>

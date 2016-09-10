@@ -10,10 +10,6 @@
     <ProjectGuid>{2F4CBDD4-E97A-4708-A829-600230C3E978}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ms11013</RootNamespace>
-    <SccProjectName>Svn</SccProjectName>
-    <SccAuxPath>Svn</SccAuxPath>
-    <SccLocalPath>Svn</SccLocalPath>
-    <SccProvider>SubversionScc</SccProvider>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -74,19 +70,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\modules\kuhl_m_kerberos_pac.c" />
-    <ClCompile Include="..\modules\kull_m_crypto_pkinit.c" />
-    <ClCompile Include="..\modules\kull_m_file.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
-    <ClCompile Include="..\modules\kull_m_rpc.c" />
-    <ClCompile Include="..\modules\kull_m_rpc_ms-pac.c" />
-    <ClCompile Include="..\modules\kull_m_sock.c" />
-    <ClCompile Include="..\modules\kull_m_string.c" />
-    <ClCompile Include="ms11013.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\modules\kuhl_m_kerberos_pac.h" />
     <ClInclude Include="..\modules\kull_m_crypto_pkinit.h" />
     <ClInclude Include="..\modules\kull_m_crypto_system.h" />
@@ -104,19 +87,24 @@
     <ClInclude Include="ms11013.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\modules\KerberosV5Spec2.asn">
-      <FileType>Document</FileType>
-    </None>
+    <ClCompile Include="..\modules\kuhl_m_kerberos_pac.c" />
+    <ClCompile Include="..\modules\kull_m_crypto_pkinit.c" />
+    <ClCompile Include="..\modules\kull_m_file.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
+    <ClCompile Include="..\modules\kull_m_rpc.c" />
+    <ClCompile Include="..\modules\kull_m_rpc_ms-pac.c" />
+    <ClCompile Include="..\modules\kull_m_sock.c" />
+    <ClCompile Include="..\modules\kull_m_string.c" />
+    <ClCompile Include="ms11013.c" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
-    <None Include="..\modules\PKINIT.asn">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\modules\PKIX1Explicit88.asn">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn" />
+    <None Include="..\modules\KerberosV5Spec2.asn" />
+    <None Include="..\modules\PKINIT.asn" />
+    <None Include="..\modules\PKIX1Explicit88.asn" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

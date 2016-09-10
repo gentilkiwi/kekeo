@@ -66,19 +66,9 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>advapi32.lib;advapi32.hash.lib;crypt32.lib;user32.lib;dnsapi.lib;secur32.lib;netapi32.lib;ntdsapi.lib;toedcode.lib;ossiphlp.lib;ntdll.min.lib;cryptdll.lib;samlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;advapi32.hash.lib;crypt32.lib;user32.lib;dnsapi.lib;rpcrt4.lib;secur32.lib;netapi32.lib;ntdsapi.lib;toedcode.lib;ossiphlp.lib;ntdll.min.lib;cryptdll.lib;samlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\modules\kull_m_crypto_pkinit.c" />
-    <ClCompile Include="..\modules\kull_m_file.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
-    <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
-    <ClCompile Include="..\modules\kull_m_sock.c" />
-    <ClCompile Include="..\modules\kull_m_string.c" />
-    <ClCompile Include="asktgt.c" />
-  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\kull_m_crypto_pkinit.h" />
     <ClInclude Include="..\modules\kull_m_crypto_system.h" />
@@ -93,11 +83,19 @@
     <ClInclude Include="globals.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\modules\kull_m_crypto_pkinit.c" />
+    <ClCompile Include="..\modules\kull_m_file.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c" />
+    <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
+    <ClCompile Include="..\modules\kull_m_sock.c" />
+    <ClCompile Include="..\modules\kull_m_string.c" />
+    <ClCompile Include="asktgt.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
     <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn" />
     <None Include="..\modules\KerberosV5Spec2.asn" />
-    <None Include="..\modules\kull_m_kerberos_asn1.a1sproj">
-      <FileType>Document</FileType>
-    </None>
     <None Include="..\modules\PKINIT.asn" />
     <None Include="..\modules\PKIX1Explicit88.asn" />
   </ItemGroup>

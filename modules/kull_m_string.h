@@ -41,6 +41,9 @@ extern NTSTATUS NTAPI RtlValidateUnicodeString(IN ULONG Flags, IN PCUNICODE_STRI
 
 extern NTSTATUS WINAPI RtlAppendUnicodeStringToString(IN OUT PUNICODE_STRING Destination, IN PCUNICODE_STRING Source);
 
+wchar_t * kull_m_string_qad_ansi_to_unicode(const char * ansi);
+wchar_t * kull_m_string_qad_ansi_c_to_unicode(const char * ansi, SIZE_T szStr);
+
 BOOL kull_m_string_suspectUnicodeStringStructure(IN PUNICODE_STRING pUnicodeString);
 BOOL kull_m_string_stringToHex(IN LPCSTR string, IN LPBYTE hex, IN DWORD size);
 
@@ -49,6 +52,7 @@ void kull_m_string_displayFileTime(IN PFILETIME pFileTime);
 void kull_m_string_displayLocalFileTime(IN PFILETIME pFileTime);
 BOOL kull_m_string_LocalFileTimeToString(IN PFILETIME pFileTime, OUT CHAR string[14 + 1]);
 void kull_m_string_displaySID(IN PSID pSid);
+PWSTR kull_m_string_getRandomGUID();
 
 BOOL kull_m_string_args_byName(const int argc, const char * argv[], const char * name, const char ** theArgs, const char * defaultValue);
 BOOL kull_m_string_copy(LPSTR *dst, LPCSTR src);

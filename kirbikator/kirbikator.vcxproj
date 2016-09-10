@@ -66,7 +66,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>advapi32.lib;advapi32.hash.lib;crypt32.lib;dnsapi.lib;user32.lib;secur32.lib;ws2_32.lib;toedcode.lib;ossiphlp.lib;cryptdll.lib;ntdll.min.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;advapi32.hash.lib;crypt32.lib;user32.lib;dnsapi.lib;rpcrt4.lib;secur32.lib;netapi32.lib;ntdsapi.lib;toedcode.lib;ossiphlp.lib;ntdll.min.lib;cryptdll.lib;samlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -101,19 +101,11 @@
     <ClCompile Include="kirbikator.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\modules\KerberosV5Spec2.asn">
-      <FileType>Document</FileType>
-    </None>
     <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
-    <None Include="..\modules\PKINIT.asn">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\modules\PKIX1Explicit88.asn">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn" />
+    <None Include="..\modules\KerberosV5Spec2.asn" />
+    <None Include="..\modules\PKINIT.asn" />
+    <None Include="..\modules\PKIX1Explicit88.asn" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

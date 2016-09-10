@@ -330,9 +330,11 @@ BOOL kull_m_kerberos_asn1_helper_build_AsReq_Generic(PKIWI_AUTH_INFOS authInfo, 
 		status = kull_m_kerberos_asn1_helper_build_KdcReq_key(authInfo->szUser, authInfo->szDomain, &authInfo->u.userKey, Service, Target, NULL, PacRequest, NULL, NULL, AsReq);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA:
+	case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
 		status = kull_m_kerberos_asn1_helper_build_KdcReq_RSA(authInfo->szUser, authInfo->szDomain, &authInfo->u.certInfoDH.certinfo, Service, Target, time, PacRequest, AsReq);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA_DH:
+	case KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH:
 		status = kull_m_kerberos_asn1_helper_build_KdcReq_RSA_DH(authInfo->szUser, authInfo->szDomain, &authInfo->u.certInfoDH.certinfo, &authInfo->u.certInfoDH.dhKeyInfo, Service, Target, time, PacRequest, AsReq);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
@@ -355,9 +357,11 @@ BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AU
 		status = kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_key(AsRep, encAsRepPart, &authInfo->u.userKey, EncASRepPart_PDU);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA:
+	case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
 		status = kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_RSA(AsRep, &authInfo->u.certInfoDH.certinfo.provider, EncASRepPart_PDU, encAsRepPart);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA_DH:
+	case KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH:
 		status = kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_Rep_RSA_DH(AsRep, &authInfo->u.certInfoDH.dhKeyInfo, EncASRepPart_PDU, encAsRepPart);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:

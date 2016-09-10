@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
 		kprintf("Cookie value       : %08x\n", cookie);
 		if(kull_m_kerberos_helper_getAuthInfo(argc, argv, &authInfo))
 		{
-			if(authInfo.type == KIWI_AUTH_INFOS_TYPE_RSA_DH)
+			if((authInfo.type == KIWI_AUTH_INFOS_TYPE_RSA_DH) || (authInfo.type == KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH))
 			{
 				isNonce = authInfo.u.certInfoDH.dhKeyInfo.dhClientNonce.value && authInfo.u.certInfoDH.dhKeyInfo.dhClientNonce.length;
 				GetSystemTimeAsFileTime(&fTime);

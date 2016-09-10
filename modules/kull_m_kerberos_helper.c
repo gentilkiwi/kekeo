@@ -174,10 +174,24 @@ NTSTATUS kull_m_kerberos_helper_util_ptt_data(PVOID data, DWORD dataSize)
 	return status;
 }
 
+LPSTR kull_m_kerberos_helper_makeMeUpn(LPCSTR szUser, LPCSTR szDomain)
+{
+	LPSTR result = NULL;
+	DWORD dwUser = strlen(szUser), dwDomain = strlen(szDomain);
+	if(result = (LPSTR) LocalAlloc(LPTR, dwUser + 1 + dwDomain + 1))
+	{
+		RtlCopyMemory(result, szUser, dwUser);
+		*(result + dwUser) = '@';
+		RtlCopyMemory(result + dwUser + 1, szDomain, dwDomain);
+	}
+	return result;
+}
+
 BOOL kull_m_kerberos_helper_getAuthInfo(int argc, char * argv[], PKIWI_AUTH_INFOS authInfo)
 {
 	BOOL status = FALSE, isSpecial = FALSE;
-	LPCSTR baseDot, szKey = NULL, szSubject, szPin, szAsreq;
+	LPCSTR baseDot, szKey = NULL, szSubject, szPin, szAsreq, szNameCA, szStoreCA, szUPN;
+	LPSTR  calculatedUpn = NULL;
 	DWORD i, j;
 	PA_DATA *paData;
 	PA_PK_AS_REQ *pkAsReq = NULL;
@@ -301,7 +315,36 @@ BOOL kull_m_kerberos_helper_getAuthInfo(int argc, char * argv[], PKIWI_AUTH_INFO
 						}
 						else PRINT_ERROR("Unable to find a certificate and its private key with this subject\n");
 					}
-					else if(!status) PRINT_ERROR("Missing authentication information (password/key/subject)\n");
+					else if(kull_m_string_args_byName(argc, argv, "caname", &szNameCA, NULL))
+					{
+						kull_m_string_args_byName(argc, argv, "castore", &szStoreCA, "LOCAL_MACHINE");
+						if(!kull_m_string_args_byName(argc, argv, "upn", &szUPN, NULL))
+						{
+							calculatedUpn = kull_m_kerberos_helper_makeMeUpn(authInfo->szUser, authInfo->szDomain);
+							kprintf("calculated UPN     : %s\n", calculatedUpn);
+							szUPN = calculatedUpn;
+						}
+						if(kull_m_crypto_get_CertFromCA(szNameCA, szStoreCA, szUPN, &authInfo->u.certInfoDH.certinfo, &authInfo->u.certInfoDH.tmpKey))
+						{
+							kprintf("crypto mode        : ");
+							if(kull_m_string_args_byName(argc, argv, "dh", NULL, NULL))
+							{
+								kprintf("RSA/DH OtF\n");
+								authInfo->type = KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH;
+								if(!(status = kull_m_crypto_get_DHKeyInfo(TRUE, kull_m_string_args_byName(argc, argv, "nonce", NULL, NULL), &authInfo->u.certInfoDH.dhKeyInfo)))
+									PRINT_ERROR_AUTO("kull_m_crypto_get_DHKeyInfo");
+							}
+							else
+							{
+								kprintf("RSA OtF\n");
+								authInfo->type = KIWI_AUTH_INFOS_TYPE_OTF_RSA;
+								status = TRUE;
+							}
+						}
+						if(calculatedUpn)
+							LocalFree(calculatedUpn);
+					}
+					else if(!status) PRINT_ERROR("Missing authentication information (password/key/subject/ca)\n");
 				}
 			}
 			else PRINT_ERROR("Domain name (%s) does not look like a FQDN\n", authInfo->szDomain);
@@ -329,6 +372,11 @@ void kull_m_kerberos_helper_freeAuthInfo(PKIWI_AUTH_INFOS authInfo)
 	case KIWI_AUTH_INFOS_TYPE_RSA_DH:
 		kull_m_crypto_free_CertInfo(&authInfo->u.certInfoDH.certinfo);
 		if(authInfo->type == KIWI_AUTH_INFOS_TYPE_RSA_DH)
+			kull_m_crypto_free_DHKeyInfo(&authInfo->u.certInfoDH.dhKeyInfo);
+		break;
+	case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
+		kull_m_crypto_free_CertFromCA(&authInfo->u.certInfoDH.certinfo, &authInfo->u.certInfoDH.tmpKey);
+		if(authInfo->type == KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH)
 			kull_m_crypto_free_DHKeyInfo(&authInfo->u.certInfoDH.dhKeyInfo);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
