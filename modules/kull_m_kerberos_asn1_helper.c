@@ -371,17 +371,16 @@ BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AU
 	return status;
 }
 
-const DWORD kdcOptions = 0x10008040;//_byteswap_ulong(0x40800010/*0x40810010*/);//isTgs ? 0x40810010/*40810000*/ : 0x40810010);
 const struct _seqof2	suppEtypeRC4 = {NULL, KERB_ETYPE_RC4_HMAC_NT},
 						suppEtypeAES128 = {(struct _seqof2 *) &suppEtypeRC4, KERB_ETYPE_AES128_CTS_HMAC_SHA1_96},
 						suppEtypeAES256 = {(struct _seqof2 *) &suppEtypeAES128, KERB_ETYPE_AES256_CTS_HMAC_SHA1_96};
-
-void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain)
+void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain)
 {
 	RtlZeroMemory(body, sizeof(KDC_REQ_BODY));
 	body->bit_mask = KDC_REQ_BODY_sname_present;
-	body->kdc_options.length = sizeof(kdcOptions) * 8;
-	body->kdc_options.value = (unsigned char *) &kdcOptions;
+	body->kdc_options.length = sizeof(DWORD) * 8;
+	body->kdc_options.value = (unsigned char *) LocalAlloc(LPTR, sizeof(DWORD));
+	*(PDWORD) body->kdc_options.value = _byteswap_ulong(Options ? Options : KERB_KDCOPTION_standard);
 	if(cname)
 	{
 		body->bit_mask |= KDC_REQ_BODY_cname_present;
@@ -402,6 +401,8 @@ void kull_m_kerberos_asn1_helper_build_FreeReqBody(KDC_REQ_BODY *body)
 		LocalFree(body->sname.name_string);
 	if(body->cname.name_string)
 		LocalFree(body->cname.name_string);
+	if(body->kdc_options.value)
+		LocalFree(body->kdc_options.value);
 }
 
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
@@ -412,13 +413,19 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, 
 	OssBuf AuthData;
 	struct _seqof2 suppEtype = {NULL, key->keytype};
 	BOOL isTgs = Service && ticket && key;
-	
+	DWORD Options = 0;
+
 	OutKdcReq->length = 0;
 	OutKdcReq->value = NULL;
 	req.pvno = 5;
 	req.msg_type = isTgs ? 12 : 10;
 
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, isTgs ? NULL : Username, Domain, &suppEtype, Service, Target, sDomain);
+	if(Service && (strlen(Service) >= 2) && (Service[0] == '~'))
+	{
+		Options = KERB_KDCOPTION_standard | KERB_KDCOPTION_renew;
+		Service++;
+	}
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, isTgs ? NULL : Username, Domain, Options, &suppEtype, Service, Target, sDomain);
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(isTgs ? kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(&PaGeneric, Username, Domain, ticket, key) : kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(&PaGeneric, key))
@@ -467,7 +474,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA(PCSTR Username, PCSTR Domain, 
 	req.pvno = 5;
 	req.msg_type = 10;
 
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, NULL, Service, Target, NULL);	
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL);	
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ_old(&PaAuthPackOld, Domain, time, certInfo))
@@ -499,7 +506,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA_DH(PCSTR Username, PCSTR Domai
 	req.pvno = 5;
 	req.msg_type = 10;
 	
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, NULL, Service, Target, NULL);	
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL);	
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(&PaAuthPack, time, certInfo, keyInfo, NULL))

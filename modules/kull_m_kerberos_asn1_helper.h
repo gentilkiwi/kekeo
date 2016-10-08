@@ -9,6 +9,26 @@
 #include "kull_m_kerberos_crypto_shared.h"
 #include "kull_m_crypto_pkinit.h"
 
+#define KERB_KDCOPTION_reserved					0x80000000
+#define KERB_KDCOPTION_forwardable				0x40000000
+#define KERB_KDCOPTION_forwarded				0x20000000
+#define KERB_KDCOPTION_proxiable				0x10000000
+#define KERB_KDCOPTION_proxy					0x08000000
+#define KERB_KDCOPTION_allow_postdate			0x04000000
+#define KERB_KDCOPTION_postdated				0x02000000
+#define KERB_KDCOPTION_renewable				0x00800000
+#define KERB_KDCOPTION_opt_hardware_auth		0x00100000
+#define KERB_KDCOPTION_request_anonymous		0x00020000
+#define KERB_KDCOPTION_canonicalize				0x00010000
+#define KERB_KDCOPTION_constrained_delegation	0x00000080
+#define KERB_KDCOPTION_disable_transition_check	0x00000020
+#define KERB_KDCOPTION_renewable_ok				0x00000010
+#define KERB_KDCOPTION_enc_tkt_in_skey			0x00000008
+#define KERB_KDCOPTION_renew					0x00000002
+#define KERB_KDCOPTION_validate					0x00000001
+
+#define KERB_KDCOPTION_standard					KERB_KDCOPTION_forwardable | KERB_KDCOPTION_renewable | KERB_KDCOPTION_renewable_ok
+
 BOOL kull_m_kerberos_asn1_helper_init();
 BOOL kull_m_kerberos_asn1_helper_term();
 
@@ -46,7 +66,7 @@ BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(PA_DATA *data, Kerber
 BOOL kull_m_kerberos_asn1_helper_build_AsReq_Generic(PKIWI_AUTH_INFOS authInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *AsReq);
 BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AUTH_INFOS authInfo, KDC_REP *AsRep, EncKDCRepPart **encAsRepPart);
 
-void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain);
+void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain);
 void kull_m_kerberos_asn1_helper_build_FreeReqBody(KDC_REQ_BODY *body);
 
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
