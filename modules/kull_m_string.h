@@ -16,6 +16,14 @@ typedef PSTRING POEM_STRING;
 typedef CONST STRING* PCOEM_STRING;
 typedef CONST UNICODE_STRING *PCUNICODE_STRING;
 
+#define DECLARE_UNICODE_STRING(_var, _string) \
+const WCHAR _var ## _buffer[] = _string; \
+UNICODE_STRING _var = { sizeof(_string) - sizeof(WCHAR), sizeof(_string), (PWCH) _var ## _buffer }
+
+#define DECLARE_ANSI_STRING(_var, _string) \
+const CHAR _var ## _buffer[] = _string; \
+ANSI_STRING _var = { sizeof(_string) - sizeof(CHAR), sizeof(_string), (PCH) _var ## _buffer }
+
 extern VOID WINAPI RtlInitString(OUT PSTRING DestinationString, IN PCSZ SourceString);
 extern VOID WINAPI RtlInitUnicodeString(OUT PUNICODE_STRING DestinationString, IN PCWSTR SourceString);
 

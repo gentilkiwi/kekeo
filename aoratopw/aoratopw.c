@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
 
 void makeInception(PKIWI_AUTH_INFOS authInfo, PCSTR newpassword, PCSTR kdc, WORD port, WORD kadminPort)
 {
-	SOCKET connectSocket, connectSocketAdmin;
+	KULL_M_SOCK connectSocket, connectSocketAdmin;
 	OssBuf AsReq, ApReq, KrbPrivReq;
 	KDC_REP *AsRep;
 	AP_REP *ApRep;
@@ -83,7 +83,7 @@ void makeInception(PKIWI_AUTH_INFOS authInfo, PCSTR newpassword, PCSTR kdc, WORD
 	password.length = strlen(newpassword);
 	password.value = (unsigned char *) newpassword;
 
-	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
+	if(kull_m_sock_initSocket(kdc, port, IPPROTO_TCP, &connectSocket))
 	{
 		kprintf(" [level 1] Reality       (AS-REQ)\n");
 		if(kull_m_kerberos_asn1_helper_build_AsReq_Generic(authInfo, "kadmin", "changepw", NULL, FALSE, &AsReq))
@@ -98,7 +98,7 @@ void makeInception(PKIWI_AUTH_INFOS authInfo, PCSTR newpassword, PCSTR kdc, WORD
 						kprintf(" [level 3] The Hotel     (KRB-PRIV - REQ)\n");
 						if(kull_m_kerberos_asn1_helper_build_KrbPriv(&password, &authKey, "wtf", &KrbPrivReq, &seq))
 						{
-							if(kull_m_sock_initSocket(kdc, kadminPort, &connectSocketAdmin))
+							if(kull_m_sock_initSocket(kdc, kadminPort, IPPROTO_TCP, &connectSocketAdmin))
 							{
 								if(kull_m_kerberos_helper_net_callKadminOssBuf(&connectSocketAdmin, &ApReq, &KrbPrivReq, &ApRep, &KrbPriv))
 								{

@@ -5,7 +5,6 @@
 */
 #pragma once
 #include "superglobals.h"
-#include "../modules/kull_m_kerberos_helper.h"
 
-#define MIMIKATZ				"KiRBikator"
-#define MIMIKATZ_VERSION		"1.1"
+#define MIMIKATZ				"KerbStorm"
+#define MIMIKATZ_VERSION		"1.0"

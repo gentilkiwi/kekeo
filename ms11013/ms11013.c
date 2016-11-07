@@ -211,13 +211,13 @@ int main(int argc, char * argv[])
 
 void makeInception(PKIWI_AUTH_INFOS authInfo, PSID sid, DWORD rid, PCSTR target, PCSTR service, PGROUP_MEMBERSHIP groups, DWORD cbGroups, PKERB_SID_AND_ATTRIBUTES sids, DWORD cbSids, PCSTR kdc, WORD port, PCSTR filename)
 {
-	SOCKET connectSocket;
+	KULL_M_SOCK connectSocket;
 	OssBuf AsReq, TgsReq;
 	KDC_REP *AsRep, *TgsRep;
 	EncKDCRepPart *encAsRepPart, *encTgsRepPart;
 	_octet1 pac;
 
-	if(kull_m_sock_initSocket(kdc, port, &connectSocket))
+	if(kull_m_sock_initSocket(kdc, port, IPPROTO_TCP, &connectSocket))
 	{
 		kprintf(" [level   1] Reality       (AS-REQ)\n");
 		if(kull_m_kerberos_asn1_helper_build_AsReq_Generic(authInfo, NULL, NULL, NULL, FALSE, &AsReq))

@@ -34,7 +34,7 @@ BOOL term()
 
 int main(int argc, char * argv[])
 {
-	SOCKET connectSocket;
+	KULL_M_SOCK connectSocket;
 	FILETIME fTime;
 	OssBuf AsReq;
 	KDC_REP *AsRep;
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
 			{
 				if(!szWhatDC)
 					kprintf("kdc      : %s\n", szKdc);
-				if(kull_m_sock_initSocket(szKdc, KERBEROS_DEFAULT_PORT, &connectSocket))
+				if(kull_m_sock_initSocket(szKdc, KERBEROS_DEFAULT_PORT, IPPROTO_TCP, &connectSocket))
 				{
 					if(kull_m_kerberos_asn1_helper_build_AsReq_Generic(&authInfo, NULL, NULL, NULL, TRUE, &AsReq))
 					{

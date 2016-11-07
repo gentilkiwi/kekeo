@@ -34,7 +34,7 @@ BOOL term()
 
 int main(int argc, char * argv[])
 {
-	SOCKET connectSocket;
+	KULL_M_SOCK connectSocket;
 	OssBuf ossTgtBuff, TgsReq;
 	KRB_CRED *cred = NULL;
 	EncKrbCredPart *encCred = NULL;
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
 								kprintf("Principal : %s @ %s\n", encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm);
 								if(kull_m_kerberos_helper_net_getDC(dDomain, DS_KDC_REQUIRED, &dKdc))
 								{
-									if(kull_m_sock_initSocket(dKdc, KERBEROS_DEFAULT_PORT, &connectSocket))
+									if(kull_m_sock_initSocket(dKdc, KERBEROS_DEFAULT_PORT, IPPROTO_TCP, &connectSocket))
 									{
 										for(i = 2; i < (DWORD) argc; i++)
 										{

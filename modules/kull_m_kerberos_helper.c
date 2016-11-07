@@ -25,42 +25,12 @@ BOOL kull_m_kerberos_helper_term()
 	return status;
 }
 
-BOOL kull_m_kerberos_helper_net_SendAndRecv(SOCKET *Socket, LPCVOID dataIn, DWORD dataInSize, LPVOID *dataOut, DWORD *dataOutSize)
-{
-	PVOID data, buffer;
-	DWORD dataSize, bufferSize;
-	BOOL status = FALSE;
-
-	dataSize = dataInSize + sizeof(DWORD);
-	if(data = LocalAlloc(LPTR, dataSize))
-	{
-		*(PDWORD) data = _byteswap_ulong(dataInSize);
-		RtlCopyMemory((PBYTE) data + sizeof(DWORD), dataIn, dataInSize);
-		if(status = kull_m_sock_SendAndRecv(Socket, data, dataSize, &buffer, &bufferSize))
-		{
-			*dataOutSize = bufferSize - sizeof(DWORD);
-			if(*dataOut = LocalAlloc(LPTR, *dataOutSize))
-			{
-				RtlCopyMemory(*dataOut, (PBYTE) buffer + sizeof(DWORD), *dataOutSize);
-				if(!(status = (*dataOutSize == _byteswap_ulong(*(PDWORD) buffer))))
-					PRINT_ERROR("Packet size + 4 != Kerberos Packet Size\n");
-
-				if(!status)
-					LocalFree(*dataOut);
-			}
-			LocalFree(buffer);
-		}
-		LocalFree(data);
-	}
-	return status;
-}
-
-BOOL kull_m_kerberos_helper_net_callKdcOssBuf(SOCKET *Socket, OssBuf *in, LPVOID * out, int outPdu)
+BOOL kull_m_kerberos_helper_net_callKdcOssBuf(PKULL_M_SOCK fullsocket, OssBuf *in, LPVOID * out, int outPdu)
 {
 	BOOL status = FALSE;
 	OssBuf receivedData;
 	*out = NULL;
-	if(kull_m_kerberos_helper_net_SendAndRecv(Socket, in->value, in->length, (LPVOID *) &receivedData.value, (DWORD *) &receivedData.length))
+	if(kull_m_sock_kerberos_SendAndRecv(fullsocket, in->value, in->length, (LPVOID *) &receivedData.value, (DWORD *) &receivedData.length))
 	{
 		status = kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(&receivedData, outPdu, out);
 		LocalFree(receivedData.value);
@@ -68,7 +38,7 @@ BOOL kull_m_kerberos_helper_net_callKdcOssBuf(SOCKET *Socket, OssBuf *in, LPVOID
 	return status;
 }
 
-BOOL kull_m_kerberos_helper_net_callKadminOssBuf(SOCKET *Socket, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv)
+BOOL kull_m_kerberos_helper_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv)
 {
 	BOOL status = FALSE;
 	PVOID bufferIn, bufferOut;
@@ -85,7 +55,7 @@ BOOL kull_m_kerberos_helper_net_callKadminOssBuf(SOCKET *Socket, OssBuf *ReqIn, 
 		RtlCopyMemory((PBYTE) bufferIn + 6, ReqIn->value, ReqIn->length);
 		RtlCopyMemory((PBYTE) bufferIn + 6 + ReqIn->length, KrbPrivIn->value, KrbPrivIn->length);
 
-		if(kull_m_kerberos_helper_net_SendAndRecv(Socket, bufferIn, sizeIn, &bufferOut, &sizeOut))
+		if(kull_m_sock_kerberos_SendAndRecv(fullsocket, bufferIn, sizeIn, &bufferOut, &sizeOut))
 		{
 			if((sizeOut == _byteswap_ushort(((PWORD) bufferOut)[0])) && (sizeOut > 6)) // ok fuck, exploit me
 			{

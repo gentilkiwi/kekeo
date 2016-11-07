@@ -4,17 +4,16 @@
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 #pragma once
-#include "kull_m_kerberos_asn1_helper.h"
 #include "kull_m_sock.h"
+#include "kull_m_kerberos_asn1_helper.h"
 #include "kull_m_file.h"
 #include "kull_m_samlib.h"
 
 BOOL kull_m_kerberos_helper_init();
 BOOL kull_m_kerberos_helper_term();
 
-BOOL kull_m_kerberos_helper_net_SendAndRecv(SOCKET *Socket, LPCVOID dataIn, DWORD dataInSize, LPVOID *dataOut, DWORD *dataOutSize);
-BOOL kull_m_kerberos_helper_net_callKdcOssBuf(SOCKET *Socket, OssBuf *in, LPVOID * out, int outPdu);
-BOOL kull_m_kerberos_helper_net_callKadminOssBuf(SOCKET *Socket, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv);
+BOOL kull_m_kerberos_helper_net_callKdcOssBuf(struct _KULL_M_SOCK *fullsocket, OssBuf *in, LPVOID * out, int outPdu);
+BOOL kull_m_kerberos_helper_net_callKadminOssBuf(struct _KULL_M_SOCK *fullsocket, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv);
 
 BOOL kull_m_kerberos_helper_util_SaveRepAsKrbCred(KDC_REP *rep, EncKDCRepPart *encRepPart, LPCSTR filename);
 
