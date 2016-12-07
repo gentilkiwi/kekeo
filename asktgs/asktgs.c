@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
 												pService = argv[i];
 												pTarget = pos + 1;
 												*pos = '\0';
-												if(kull_m_kerberos_asn1_helper_build_KdcReq_key(encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &encCred->ticket_info->value.key, pService, pTarget, dDomain, FALSE, &cred->tickets->value, NULL, &TgsReq))
+												if(kull_m_kerberos_asn1_helper_build_KdcReq_key(encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &encCred->ticket_info->value.key, pService, pTarget, dDomain, FALSE, &cred->tickets->value, NULL, &TgsReq)) // dDomain ?? cred->tickets->value.realm ??
 												{
 													if(kull_m_kerberos_helper_net_callKdcOssBuf(&connectSocket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
 													{

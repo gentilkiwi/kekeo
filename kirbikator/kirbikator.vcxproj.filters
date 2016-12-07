@@ -106,5 +106,8 @@
     <None Include="..\modules\PKIX1Explicit88.asn">
       <Filter>common modules\asn1</Filter>
     </None>
+    <None Include="..\modules\MS-SFU-KILE.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
   </ItemGroup>
 </Project>

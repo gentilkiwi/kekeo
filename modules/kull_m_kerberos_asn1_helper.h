@@ -20,7 +20,7 @@
 #define KERB_KDCOPTION_opt_hardware_auth		0x00100000
 #define KERB_KDCOPTION_request_anonymous		0x00020000
 #define KERB_KDCOPTION_canonicalize				0x00010000
-#define KERB_KDCOPTION_constrained_delegation	0x00000080
+#define KERB_KDCOPTION_constrained_delegation	0x00008000
 #define KERB_KDCOPTION_disable_transition_check	0x00000020
 #define KERB_KDCOPTION_renewable_ok				0x00000010
 #define KERB_KDCOPTION_enc_tkt_in_skey			0x00000008
@@ -61,14 +61,17 @@ BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(PA_DATA *data, BOOL req
 BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(PA_DATA *data, PCSTR Username, PCSTR Domain, Ticket *ticket, EncryptionKey *key);
 BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ_old(PA_DATA *data, PCSTR Domain, KerberosTime *time, struct _KULL_M_CRYPTO_CERT_INFO *certSignInfo);
 BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(PA_DATA *data, KerberosTime *time, struct _KULL_M_CRYPTO_CERT_INFO *certSignInfo, struct _KULL_M_CRYPTO_DH_KEY_INFO *dhKeyInfo, PSHA_DIGEST digest);
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_FOR_USER(PA_DATA *data, PCSTR Username, PCSTR Domain, EncryptionKey *key);
 
 // KDC_REQ & KDC_REP
 BOOL kull_m_kerberos_asn1_helper_build_AsReq_Generic(PKIWI_AUTH_INFOS authInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *AsReq);
 BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AUTH_INFOS authInfo, KDC_REP *AsRep, EncKDCRepPart **encAsRepPart);
 
-void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain);
+void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL isS4USelf);
 void kull_m_kerberos_asn1_helper_build_FreeReqBody(KDC_REQ_BODY *body);
 
+BOOL kull_m_kerberos_asn1_helper_build_KdcReqS4U2Self(EncKrbCredPart *encCred, KRB_CRED *cred, PCSTR username, PCSTR domain, OssBuf *OutKdcReq);
+BOOL kull_m_kerberos_asn1_helper_build_KdcReqS4U2Proxy(EncKrbCredPart *encCred, KRB_CRED *cred, Ticket *ticket, PCSTR Service, PCSTR Target, OssBuf *OutKdcReq);
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq);
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA(PCSTR Username, PCSTR Domain, PKULL_M_CRYPTO_CERT_INFO certInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *OutKdcReq);
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA_DH(PCSTR Username, PCSTR Domain, PKULL_M_CRYPTO_CERT_INFO certInfo, PKULL_M_CRYPTO_DH_KEY_INFO keyInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *OutKdcReq);
@@ -82,6 +85,7 @@ BOOL kull_m_kerberos_asn1_helper_build_AuthorizationData(OssBuf * AuthData, _oct
 BOOL kull_m_kerberos_asn1_helper_build_KrbPriv(_octet1 *data, EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, UInt32 *seq);
 BOOL kull_m_kerberos_asn1_helper_build_KrbCred(Realm *prealm, PrincipalName *pname, EncKDCRepPart *repPart, Ticket *ticket, OssBuf *OutKrbCred);
 BOOL kull_m_kerberos_asn1_helper_build_EncKrbPrivPart_from_Priv(KRB_PRIV *priv, EncKrbPrivPart ** encKrbPrivPart, EncryptionKey *authKey);
+BOOL kull_m_kerberos_asn1_helper_build_ForUser(OssBuf * ForUserData, PCSTR Username, PCSTR Domain, EncryptionKey *key);
 BOOL kull_m_kerberos_asn1_helper_build_AuthPackOld(OssBuf *AuthPackOld, PCSTR Domain, KerberosTime *time);
 BOOL kull_m_kerberos_asn1_helper_build_AuthPack(OssBuf *authPack, KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, PSHA_DIGEST digest);
 
@@ -118,6 +122,8 @@ typedef struct _KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR{
 #define PA_TYPE_PK_AS_REQ			16
 #define PA_TYPE_PK_AS_REP			17
 #define PA_TYPE_PAC_REQUEST			128
+#define PA_TYPE_FOR_USER			129
+#define PA_TYPE_X509_USER			130
 
 #define AD_TYPE_IF_RELEVANT			1
 #define AD_TYPE_KDCIssued			4

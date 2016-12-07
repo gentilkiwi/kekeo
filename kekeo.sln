@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pkinitmustiness", "pkinitmu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kerbstorm", "kerbstorm\kerbstorm.vcxproj", "{A2FF628F-BDA8-4CCF-987F-C033BE522FC3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s4u", "s4u\s4u.vcxproj", "{C50ED425-0F53-4FED-98DB-88104156DCD3}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global files", "{C3104405-A517-4F6B-8D09-0EE6EA32FD89}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -64,6 +66,8 @@ Global
 		{AC3864C4-1C5A-495F-97ED-92B08F22334C}.Release|Win32.Build.0 = Release|Win32
 		{A2FF628F-BDA8-4CCF-987F-C033BE522FC3}.Release|Win32.ActiveCfg = Release|Win32
 		{A2FF628F-BDA8-4CCF-987F-C033BE522FC3}.Release|Win32.Build.0 = Release|Win32
+		{C50ED425-0F53-4FED-98DB-88104156DCD3}.Release|Win32.ActiveCfg = Release|Win32
+		{C50ED425-0F53-4FED-98DB-88104156DCD3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

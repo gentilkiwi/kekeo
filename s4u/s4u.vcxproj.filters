@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="common modules">
-      <UniqueIdentifier>{115c470a-a42f-43c6-b840-5acf681c0416}</UniqueIdentifier>
+      <UniqueIdentifier>{115c470a-a42f-43c6-b840-5acf681c0418}</UniqueIdentifier>
     </Filter>
     <Filter Include="common modules\asn1">
-      <UniqueIdentifier>{9e0eeec3-745b-4fe7-8c57-6b15c4dcebbd}</UniqueIdentifier>
+      <UniqueIdentifier>{90716ede-63bc-4113-b5f4-6062acab4054}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,20 +18,11 @@
     <ClCompile Include="..\modules\kull_m_string.c">
       <Filter>common modules</Filter>
     </ClCompile>
-    <ClCompile Include="ms14068.c" />
+    <ClCompile Include="s4u.c" />
     <ClCompile Include="..\modules\kull_m_kerberos_asn1_helper.c">
       <Filter>common modules</Filter>
     </ClCompile>
     <ClCompile Include="..\modules\kull_m_kerberos_helper.c">
-      <Filter>common modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\modules\kuhl_m_kerberos_pac.c">
-      <Filter>common modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\modules\kull_m_rpc.c">
-      <Filter>common modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\modules\kull_m_rpc_ms-pac.c">
       <Filter>common modules</Filter>
     </ClCompile>
     <ClCompile Include="..\modules\kull_m_crypto_pkinit.c">
@@ -45,9 +36,6 @@
     <ClInclude Include="..\modules\kull_m_file.h">
       <Filter>common modules</Filter>
     </ClInclude>
-    <ClInclude Include="..\modules\kull_m_samlib.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
     <ClInclude Include="..\modules\kull_m_sock.h">
       <Filter>common modules</Filter>
     </ClInclude>
@@ -55,7 +43,7 @@
       <Filter>common modules</Filter>
     </ClInclude>
     <ClInclude Include="globals.h" />
-    <ClInclude Include="ms14068.h" />
+    <ClInclude Include="s4u.h" />
     <ClInclude Include="..\modules\kull_m_kerberos_asn1_helper.h">
       <Filter>common modules</Filter>
     </ClInclude>
@@ -63,15 +51,6 @@
       <Filter>common modules</Filter>
     </ClInclude>
     <ClInclude Include="..\modules\kull_m_kerberos_helper.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\modules\kuhl_m_kerberos_pac.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\modules\kull_m_rpc.h">
-      <Filter>common modules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\modules\kull_m_rpc_ms-pac.h">
       <Filter>common modules</Filter>
     </ClInclude>
     <ClInclude Include="..\modules\kull_m_crypto_pkinit.h">

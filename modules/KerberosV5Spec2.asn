@@ -397,13 +397,6 @@ AD-AND-OR               ::= SEQUENCE {
  
 AD-MANDATORY-FOR-KDC    ::= AuthorizationData
 
-KERB-PA-PAC-REQUEST     ::= SEQUENCE {
-        include-pac[0] BOOLEAN -- if TRUE, and no pac present,
-                               -- include PAC.
-                               ---If FALSE, and pac
-                               -- PAC present, remove PAC
-}
-
 ChangePasswdData ::=  SEQUENCE {
         newpasswd[0]   OCTET STRING,
         targname[1]    PrincipalName OPTIONAL,

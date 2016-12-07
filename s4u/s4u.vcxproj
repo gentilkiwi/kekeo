@@ -7,9 +7,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9D0C4953-2E94-4C16-9262-59785BD4A16D}</ProjectGuid>
+    <ProjectGuid>{C50ED425-0F53-4FED-98DB-88104156DCD3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>asktgt</RootNamespace>
+    <RootNamespace>s4u</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -79,7 +79,7 @@
     <ClInclude Include="..\modules\kull_m_kerberos_helper.h" />
     <ClInclude Include="..\modules\kull_m_sock.h" />
     <ClInclude Include="..\modules\kull_m_string.h" />
-    <ClInclude Include="asktgt.h" />
+    <ClInclude Include="s4u.h" />
     <ClInclude Include="globals.h" />
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +90,7 @@
     <ClCompile Include="..\modules\kull_m_kerberos_helper.c" />
     <ClCompile Include="..\modules\kull_m_sock.c" />
     <ClCompile Include="..\modules\kull_m_string.c" />
-    <ClCompile Include="asktgt.c" />
+    <ClCompile Include="s4u.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />

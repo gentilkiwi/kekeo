@@ -319,6 +319,21 @@ BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(PA_DATA *data, Kerber
 	return status;
 }
 
+BOOL kull_m_kerberos_asn1_helper_init_PA_DATA_FOR_USER(PA_DATA *data, PCSTR Username, PCSTR Domain, EncryptionKey *key)
+{
+	BOOL status = FALSE;
+	OssBuf encodedReq = {0, NULL};
+
+	data->padata_value.value = NULL;
+	if(status = kull_m_kerberos_asn1_helper_build_ForUser(&encodedReq, Username, Domain, key))
+	{
+		data->padata_type = PA_TYPE_FOR_USER;
+		data->padata_value.length = encodedReq.length;
+		data->padata_value.value = encodedReq.value;
+	}
+	return status;
+}
+
 BOOL kull_m_kerberos_asn1_helper_build_AsReq_Generic(PKIWI_AUTH_INFOS authInfo, PCSTR Service, PCSTR Target, KerberosTime *time, BOOL PacRequest, OssBuf *AsReq)
 {
 	BOOL status = FALSE;
@@ -374,20 +389,25 @@ BOOL kull_m_kerberos_asn1_helper_build_EncKDCRepPart_from_AsRep_Generic(PKIWI_AU
 const struct _seqof2	suppEtypeRC4 = {NULL, KERB_ETYPE_RC4_HMAC_NT},
 						suppEtypeAES128 = {(struct _seqof2 *) &suppEtypeRC4, KERB_ETYPE_AES128_CTS_HMAC_SHA1_96},
 						suppEtypeAES256 = {(struct _seqof2 *) &suppEtypeAES128, KERB_ETYPE_AES256_CTS_HMAC_SHA1_96};
-void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain)
+void kull_m_kerberos_asn1_helper_build_KdcReqBody(KDC_REQ_BODY *body, PCSTR cname, PCSTR Domain, DWORD Options, struct _seqof2 *suppEtype, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL isS4USelf)
 {
 	RtlZeroMemory(body, sizeof(KDC_REQ_BODY));
 	body->bit_mask = KDC_REQ_BODY_sname_present;
 	body->kdc_options.length = sizeof(DWORD) * 8;
 	body->kdc_options.value = (unsigned char *) LocalAlloc(LPTR, sizeof(DWORD));
-	*(PDWORD) body->kdc_options.value = _byteswap_ulong(Options ? Options : KERB_KDCOPTION_standard);
+	if(!Options)
+		Options = isS4USelf ? (KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey) : KERB_KDCOPTION_standard;
+	*(PDWORD) body->kdc_options.value = _byteswap_ulong(Options);
 	if(cname)
 	{
 		body->bit_mask |= KDC_REQ_BODY_cname_present;
 		kull_m_kerberos_asn1_helper_init_PrincipalName(&body->cname, KRB_NT_PRINCIPAL, 1, cname);
 	}
 	body->realm = (Realm) (sDomain ? sDomain : Domain);
-	kull_m_kerberos_asn1_helper_init_PrincipalName(&body->sname, KRB_NT_SRV_INST, 2, Service ? Service : "krbtgt", Target ? Target : Domain);
+	if(!isS4USelf)	
+		kull_m_kerberos_asn1_helper_init_PrincipalName(&body->sname, KRB_NT_SRV_INST, 2, Service ? Service : "krbtgt", Target ? Target : Domain);
+	else
+		kull_m_kerberos_asn1_helper_init_PrincipalName(&body->sname, KRB_NT_PRINCIPAL, 1, Service);
 	kull_m_kerberos_asn1_helper_init_KerberosTime(&body->till, NULL, TRUE);
 	body->nonce = MIMIKATZ_NONCE;
 	body->etype = suppEtype ? suppEtype : (struct _seqof2 *) ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? &suppEtypeRC4 : &suppEtypeAES256);
@@ -403,6 +423,78 @@ void kull_m_kerberos_asn1_helper_build_FreeReqBody(KDC_REQ_BODY *body)
 		LocalFree(body->cname.name_string);
 	if(body->kdc_options.value)
 		LocalFree(body->kdc_options.value);
+}
+
+BOOL kull_m_kerberos_asn1_helper_build_KdcReqS4U2Self(EncKrbCredPart *encCred, KRB_CRED *cred, PCSTR username, PCSTR domain, OssBuf *OutKdcReq)
+{
+	BOOL status = FALSE;
+	KDC_REQ req;
+	PA_DATA PaGeneric, PaForUser;
+	struct _seqof2 suppEtype = {NULL, encCred->ticket_info->value.key.keytype};
+
+	OutKdcReq->length = 0;
+	OutKdcReq->value = NULL;
+	req.pvno = 5;
+	req.msg_type = 12;
+	
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, NULL, encCred->ticket_info->value.prealm, 0, &suppEtype, encCred->ticket_info->value.pname.name_string->value, NULL, cred->tickets->value.realm, TRUE);
+	//req.req_body.additional_tickets = cred->tickets;											
+	//req.req_body.bit_mask |= additional_tickets_present;
+	if(kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(&PaGeneric, encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &cred->tickets->value, &encCred->ticket_info->value.key))
+	{
+		//kull_m_string_printf_hex(encCred->ticket_info->value.key.keyvalue.value, encCred->ticket_info->value.key.keyvalue.length, 0); kprintf("\n");
+		if(kull_m_kerberos_asn1_helper_init_PA_DATA_FOR_USER(&PaForUser, username, domain ? domain : encCred->ticket_info->value.prealm, &encCred->ticket_info->value.key))
+		{
+			kull_m_kerberos_asn1_helper_init_PADATAs(&req.padata, 2, &PaGeneric, &PaForUser);
+			req.bit_mask = KDC_REQ_padata_present;
+
+			if(!(status = !ossEncode(&world, TGS_REQ_PDU, &req, OutKdcReq)))
+				PRINT_ERROR("%s\n", ossGetErrMsg(&world));
+			if(req.padata)
+				LocalFree(req.padata);
+			if(PaForUser.padata_value.value)
+				ossFreeBuf(&world, PaForUser.padata_value.value);
+		}
+		if(PaGeneric.padata_value.value)
+			ossFreeBuf(&world, PaGeneric.padata_value.value);
+	}
+	kull_m_kerberos_asn1_helper_build_FreeReqBody(&req.req_body);
+	return status;
+}
+
+BOOL kull_m_kerberos_asn1_helper_build_KdcReqS4U2Proxy(EncKrbCredPart *encCred, KRB_CRED *cred, Ticket *ticket, PCSTR Service, PCSTR Target, OssBuf *OutKdcReq)
+{
+	BOOL status = FALSE;
+	KDC_REQ req;
+	PA_DATA PaGeneric;
+	struct _seqof2 suppEtype = {NULL, encCred->ticket_info->value.key.keytype};
+	struct _seqof3 tickets;
+	
+	OutKdcReq->length = 0;
+	OutKdcReq->value = NULL;
+	req.pvno = 5;
+	req.msg_type = 12;
+	tickets.next = NULL;
+	tickets.value = *ticket;
+
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, NULL, encCred->ticket_info->value.prealm, KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous, &suppEtype, Service, Target, NULL, FALSE);
+	req.req_body.additional_tickets = &tickets;
+	req.req_body.bit_mask |= additional_tickets_present;
+	if(kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(&PaGeneric, encCred->ticket_info->value.pname.name_string->value, encCred->ticket_info->value.prealm, &cred->tickets->value, &encCred->ticket_info->value.key))
+	{
+			kull_m_kerberos_asn1_helper_init_PADATAs(&req.padata, 1, &PaGeneric);
+			req.bit_mask = KDC_REQ_padata_present;
+
+			if(!(status = !ossEncode(&world, TGS_REQ_PDU, &req, OutKdcReq)))
+				PRINT_ERROR("%s\n", ossGetErrMsg(&world));
+			if(req.padata)
+				LocalFree(req.padata);
+		
+		if(PaGeneric.padata_value.value)
+			ossFreeBuf(&world, PaGeneric.padata_value.value);
+	}
+	kull_m_kerberos_asn1_helper_build_FreeReqBody(&req.req_body);
+	return status;
 }
 
 BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, EncryptionKey *key, PCSTR Service, PCSTR Target, PCSTR sDomain, BOOL PacRequest, Ticket *ticket, _octet1 *pac, OssBuf *OutKdcReq)
@@ -425,7 +517,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_key(PCSTR Username, PCSTR Domain, 
 		Options = KERB_KDCOPTION_standard | KERB_KDCOPTION_renew;
 		Service++;
 	}
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, isTgs ? NULL : Username, Domain, Options, &suppEtype, Service, Target, sDomain);
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, isTgs ? NULL : Username, Domain, Options, &suppEtype, Service, Target, sDomain, FALSE);
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(isTgs ? kull_m_kerberos_asn1_helper_init_PA_DATA_TGS_REQ(&PaGeneric, Username, Domain, ticket, key) : kull_m_kerberos_asn1_helper_init_PA_DATA_encTimeStamp(&PaGeneric, key))
@@ -474,7 +566,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA(PCSTR Username, PCSTR Domain, 
 	req.pvno = 5;
 	req.msg_type = 10;
 
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL);	
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL, FALSE);
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ_old(&PaAuthPackOld, Domain, time, certInfo))
@@ -506,7 +598,7 @@ BOOL kull_m_kerberos_asn1_helper_build_KdcReq_RSA_DH(PCSTR Username, PCSTR Domai
 	req.pvno = 5;
 	req.msg_type = 10;
 	
-	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL);	
+	kull_m_kerberos_asn1_helper_build_KdcReqBody(&req.req_body, Username, Domain, 0, NULL, Service, Target, NULL, FALSE);
 	if(kull_m_kerberos_asn1_helper_init_PA_DATA_PacRequest(&PaPacRequest, PacRequest))
 	{
 		if(kull_m_kerberos_asn1_helper_init_PA_DATA_PA_PK_AS_REQ(&PaAuthPack, time, certInfo, keyInfo, NULL))
@@ -891,6 +983,44 @@ BOOL kull_m_kerberos_asn1_helper_build_EncKrbPrivPart_from_Priv(KRB_PRIV *priv, 
 		LocalFree(encKrbPrivPartBuff.value);
 	}
 	else PRINT_ERROR("Encrypt\n");
+	return status;
+}
+
+BOOL kull_m_kerberos_asn1_helper_build_ForUser(OssBuf * ForUserData, PCSTR Username, PCSTR Domain, EncryptionKey *key)
+{
+	BOOL status = FALSE;
+	PA_FOR_USER_ENC forUser;
+	BYTE hmacMd5[MD5_DIGEST_LENGTH] = {0};
+	PKERB_CHECKSUM pCheckSum;
+	PVOID Context;
+	ForUserData->length = 0;
+	ForUserData->value = NULL;
+
+	kull_m_kerberos_asn1_helper_init_PrincipalName(&forUser.userName, KRB_NT_PRINCIPAL, 1, Username);
+	forUser.userRealm = (Realm) Domain;
+	forUser.cksum.cksumtype = KERB_CHECKSUM_HMAC_MD5;
+	forUser.cksum.checksum.length = sizeof(hmacMd5);
+	forUser.cksum.checksum.value = hmacMd5;
+	forUser.auth_package = "Kerberos";
+	if(key)
+	{
+		if(NT_SUCCESS(CDLocateCheckSum(KERB_CHECKSUM_HMAC_MD5, &pCheckSum)))
+		{
+			if(NT_SUCCESS(pCheckSum->InitializeEx(key->keyvalue.value, key->keyvalue.length, 17 /* KERB_NON_KERB_CKSUM_SALT */, &Context)))
+			{
+				pCheckSum->Sum(Context, sizeof(forUser.userName.name_type), &forUser.userName.name_type);
+				pCheckSum->Sum(Context, lstrlen(forUser.userName.name_string->value), forUser.userName.name_string->value); // todo: multiple
+				pCheckSum->Sum(Context, lstrlen(forUser.userRealm), forUser.userRealm);
+				pCheckSum->Sum(Context, lstrlen(forUser.auth_package), forUser.auth_package);
+				pCheckSum->Finalize(Context, hmacMd5);
+				pCheckSum->Finish(&Context);
+			}
+		}
+	}
+	if(!(status = !ossEncode(&world, PA_FOR_USER_ENC_PDU, &forUser, ForUserData)))
+			PRINT_ERROR("Unable to encode PA_FOR_USER_ENC: %s\n", ossGetErrMsg(&world));
+	if(forUser.userName.name_string)
+		LocalFree(forUser.userName.name_string);
 	return status;
 }
 

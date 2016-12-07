@@ -104,6 +104,7 @@
     <None Include="..\modules\kull_m_kerberos_asn1.a1sproj" />
     <None Include="..\modules\KerberosV5-PK-INIT-SPEC.asn" />
     <None Include="..\modules\KerberosV5Spec2.asn" />
+    <None Include="..\modules\MS-SFU-KILE.asn" />
     <None Include="..\modules\PKINIT.asn" />
     <None Include="..\modules\PKIX1Explicit88.asn" />
   </ItemGroup>
