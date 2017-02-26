@@ -1,0 +1,56 @@
+MS-SFU-KILE DEFINITIONS EXPLICIT TAGS ::=
+BEGIN
+--EXPORTS ALL--
+IMPORTS
+Int32, UInt32, PrincipalName, Realm, Checksum, KerberosString, KerberosFlags
+FROM KerberosV5Spec2
+{ iso(1) identified-organization(3) dod(6) internet(1) security(5) 
+		 kerberosV5(2) };
+
+PA-FOR-USER-ENC ::= SEQUENCE {
+	userName[0] PrincipalName,
+	userRealm[1] Realm,
+	cksum[2] Checksum,
+	auth-package[3] KerberosString
+}
+
+PA-S4U-X509-USER::= SEQUENCE {
+	user-id[0] S4UUserID,
+	checksum[1] Checksum
+}
+
+S4UUserID ::= SEQUENCE {
+	nonce [0] UInt32, -- the nonce in KDC-REQ-BODY
+	cname [1] PrincipalName OPTIONAL, -- Certificate mapping hints
+	crealm [2] Realm,
+	subject-certificate [3] OCTET STRING OPTIONAL,
+	options [4] BIT STRING OPTIONAL,
+	...
+}
+
+PA-PAC-OPTIONS ::= SEQUENCE {
+	KerberosFlags
+		-- Claims (0)
+		-- Branch Aware (1)
+		-- Forward to Full DC (2)
+		-- resource-based constrained delegation (3)
+}
+
+KERB-PA-PAC-REQUEST     ::= SEQUENCE {
+        include-pac[0] BOOLEAN -- if TRUE, and no pac present,
+                               -- include PAC.
+                               ---If FALSE, and pac
+                               -- PAC present, remove PAC
+}
+
+KERB-LOCAL ::= OCTET STRING	-- Implementation-specific data which MUST be
+							-- ignored if Kerberos client is not local.
+
+KERB-AD-RESTRICTION-ENTRY ::= SEQUENCE {
+	restriction-type [0] Int32,
+	restriction [1] OCTET STRING
+}
+
+PA-SUPPORTED-ENCTYPES ::= Int32 -- Supported Encryption Types Bit Field --
+
+END

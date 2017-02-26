@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kekeo", "kekeo\kekeo.vcxproj", "{E6F0D274-D280-4E1D-B11A-D47D63DDDE8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global files", "global files", "{7BC63A9D-AA3E-471E-9AF2-90815A59FDF7}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{F673A1F0-9FBD-4E83-AF6C-9A8DA991BD88}"
+	ProjectSection(SolutionItems) = preProject
+		inc\DsGetDC.h = inc\DsGetDC.h
+		inc\globals.h = inc\globals.h
+		inc\Midles.h = inc\Midles.h
+		inc\NtDsAPI.h = inc\NtDsAPI.h
+		inc\ossasn1.h = inc\ossasn1.h
+		inc\osstype.h = inc\osstype.h
+		inc\schannel.h = inc\schannel.h
+		inc\Schedule.h = inc\Schedule.h
+		inc\schnlsp.h = inc\schnlsp.h
+		inc\WinBer.h = inc\WinBer.h
+		inc\WinDNS.h = inc\WinDNS.h
+		inc\Winldap.h = inc\Winldap.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{D5AEF78D-1BB0-4D7B-A434-51BEA236AC15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{2D5BE43F-2697-4AFF-8D7A-9E2721C3A135}"
+	ProjectSection(SolutionItems) = preProject
+		lib\Win32\advapi32.hash.lib = lib\Win32\advapi32.hash.lib
+		lib\Win32\cryptdll.lib = lib\Win32\cryptdll.lib
+		lib\Win32\ntdll.min.lib = lib\Win32\ntdll.min.lib
+		lib\Win32\ossiphlp.lib = lib\Win32\ossiphlp.lib
+		lib\Win32\samlib.lib = lib\Win32\samlib.lib
+		lib\Win32\soeddefa.lib = lib\Win32\soeddefa.lib
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x64", "x64", "{71D007E1-9E34-49BC-91C3-65CC186A9A52}"
+	ProjectSection(SolutionItems) = preProject
+		lib\x64\advapi32.hash.lib = lib\x64\advapi32.hash.lib
+		lib\x64\cryptdll.lib = lib\x64\cryptdll.lib
+		lib\x64\ntdll.min.lib = lib\x64\ntdll.min.lib
+		lib\x64\ossiphlp.lib = lib\x64\ossiphlp.lib
+		lib\x64\samlib.lib = lib\x64\samlib.lib
+		lib\x64\soeddefa.lib = lib\x64\soeddefa.lib
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6F0D274-D280-4E1D-B11A-D47D63DDDE8E}.Release|Win32.ActiveCfg = Release|Win32
+		{E6F0D274-D280-4E1D-B11A-D47D63DDDE8E}.Release|Win32.Build.0 = Release|Win32
+		{E6F0D274-D280-4E1D-B11A-D47D63DDDE8E}.Release|x64.ActiveCfg = Release|x64
+		{E6F0D274-D280-4E1D-B11A-D47D63DDDE8E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F673A1F0-9FBD-4E83-AF6C-9A8DA991BD88} = {7BC63A9D-AA3E-471E-9AF2-90815A59FDF7}
+		{D5AEF78D-1BB0-4D7B-A434-51BEA236AC15} = {7BC63A9D-AA3E-471E-9AF2-90815A59FDF7}
+		{2D5BE43F-2697-4AFF-8D7A-9E2721C3A135} = {D5AEF78D-1BB0-4D7B-A434-51BEA236AC15}
+		{71D007E1-9E34-49BC-91C3-65CC186A9A52} = {D5AEF78D-1BB0-4D7B-A434-51BEA236AC15}
+	EndGlobalSection
+EndGlobal

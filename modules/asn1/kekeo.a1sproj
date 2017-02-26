@@ -1,0 +1,40 @@
+<OssGuiProject productVersion="7.1" compilerVersionInitial="10.0 T" compilerSettingsChangeTime="2016-02-25T03:38:34" compilerVersionLastUsed="10.1" compiler="ASN.1/C" version="2.0" product="ASN.1 Studio">
+ <Asn1Files>
+  <File>KerberosV5Spec2.asn</File>
+  <File>KerberosV5-PK-INIT-SPEC.asn</File>
+  <File>PKIX1Explicit88.asn</File>
+  <File>PKINIT.asn</File>
+  <File>MS-SFU-KILE.asn</File>
+ </Asn1Files>
+ <CompilerSettings>
+  <Setting name="cCommentsRadioButton" present="true"/>
+  <Setting name="disablCAGLMessagesCheckBox" present="true"/>
+  <Setting name="encOnlyRadioButton" present="false"/>
+  <Setting name="externCheckBox" present="true">kekeo_asn1</Setting>
+  <Setting name="headerGroupBox" present="true">kull_m_kerberos_oss_asn1_internal.h</Setting>
+  <Setting name="helperApiRadioButton" present="false"/>
+  <Setting name="modListRadioButton" present="false"/>
+  <Setting name="sampleDefaultRadioButton" present="false"/>
+  <Setting name="soedRadioButton" present="true">kull_m_kerberos_oss_asn1_internal.c</Setting>
+ </CompilerSettings>
+ <EncodingFiles/>
+ <GeneratedFiles>
+  <File>kull_m_kerberos_oss_asn1_internal.h</File>
+  <File>kull_m_kerberos_oss_asn1_internal.c</File>
+ </GeneratedFiles>
+ <Settings>
+  <Setting name="-der"/>
+  <Setting name="-noRelaxedMode" present="false"/>
+  <Setting name="-relaySafe" present="false"/>
+  <Setting name="-root"/>
+  <Setting name="AUTOMATIC_ENCDEC"/>
+  <Setting name="DEBUGPDU"/>
+  <Setting name="OSS_AUTO_ENCODE_WITHOUT_CHECKING_CONSTRAINT"/>
+  <Setting name="OSS_HEXBYTES"/>
+  <Setting name="OSS_PRINT_COMMENTS"/>
+  <Setting name="OSS_PRINT_OFFSET"/>
+  <Setting name="OSS_PRINT_TYPE_INFO"/>
+  <Setting name="asn1dfltC" present="true">../../Program Files/OSS Nokalva/ossasn1/winx64/10.1.0/asn1dflt/asn1dflt.msx64.zp8</Setting>
+ </Settings>
+ <UserFiles/>
+</OssGuiProject>

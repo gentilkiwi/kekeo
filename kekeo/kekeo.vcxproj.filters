@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common modules">
+      <UniqueIdentifier>{5ef90338-6717-4a1f-9b92-df77617f74ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local modules">
+      <UniqueIdentifier>{4bbd945a-5b07-4de6-afc9-896151cec6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common modules\asn1">
+      <UniqueIdentifier>{4f775af3-26be-4685-99b0-99a9f76f0fe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common modules\rpc">
+      <UniqueIdentifier>{19cf87ae-fdc6-475f-9033-c4840a85a41d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local modules\kerberos">
+      <UniqueIdentifier>{ca210ff3-1a5b-4903-94f2-051d6d7a1460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local modules\codecs">
+      <UniqueIdentifier>{659b034c-1a91-48a8-b708-e40614293e13}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="kekeo.c" />
+    <ClCompile Include="..\modules\kull_m_file.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_output.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_standard.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_string.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\asn1\kull_m_kerberos_oss_asn1_internal_$(Platform).c">
+      <Filter>common modules\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\asn1\kull_m_kerberos_asn1_authinfos.c">
+      <Filter>common modules\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\asn1\kull_m_kerberos_asn1.c">
+      <Filter>common modules\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\asn1\kull_m_kerberos_asn1_crypto.c">
+      <Filter>common modules\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_sock.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\asn1\kull_m_kerberos_asn1_net.c">
+      <Filter>common modules\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_tgt.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\rpc\kull_m_rpc.c">
+      <Filter>common modules\rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\rpc\kull_m_rpc_ms-pac.c">
+      <Filter>common modules\rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\rpc\kull_m_rpc_ms-claims.c">
+      <Filter>common modules\rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_tgs.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kerberos\kuhl_m_kerberos_claims.c">
+      <Filter>local modules\kerberos</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kerberos\kuhl_m_kerberos_pac.c">
+      <Filter>local modules\kerberos</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_exploit.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_misc.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\codecs\ccache.c">
+      <Filter>local modules\codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\codecs\krbcred.c">
+      <Filter>local modules\codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\codecs\lsa.c">
+      <Filter>local modules\codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\codecs\wce.c">
+      <Filter>local modules\codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\codecs\common.c">
+      <Filter>local modules\codecs</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kerberos\kuhl_m_kerberos.c">
+      <Filter>local modules\kerberos</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="kekeo.h" />
+    <ClInclude Include="..\modules\kull_m_file.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_output.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_standard.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_string.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\asn1\kull_m_kerberos_oss_asn1_internal.h">
+      <Filter>common modules\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\asn1\kull_m_kerberos_asn1_authinfos.h">
+      <Filter>common modules\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\asn1\kull_m_kerberos_asn1.h">
+      <Filter>common modules\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\asn1\kull_m_kerberos_asn1_crypto.h">
+      <Filter>common modules\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_crypto_system.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_sock.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\asn1\kull_m_kerberos_asn1_net.h">
+      <Filter>common modules\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_tgt.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\rpc\kull_m_rpc_ms-pac.h">
+      <Filter>common modules\rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\rpc\kull_m_rpc.h">
+      <Filter>common modules\rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_samlib.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\rpc\kull_m_rpc_ms-claims.h">
+      <Filter>common modules\rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_tgs.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kerberos\kuhl_m_kerberos_claims.h">
+      <Filter>local modules\kerberos</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kerberos\kuhl_m_kerberos_pac.h">
+      <Filter>local modules\kerberos</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_exploit.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_misc.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\codecs\ccache.h">
+      <Filter>local modules\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\codecs\krbcred.h">
+      <Filter>local modules\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\codecs\lsa.h">
+      <Filter>local modules\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\codecs\wce.h">
+      <Filter>local modules\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\codecs\common.h">
+      <Filter>local modules\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kerberos\kuhl_m_kerberos.h">
+      <Filter>local modules\kerberos</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="kekeo.ico" />
+    <None Include="..\modules\asn1\kekeo.a1sproj">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\KerberosV5-PK-INIT-SPEC.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\KerberosV5Spec2.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\MS-SFU-KILE.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\PKINIT.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\PKIX1Explicit88.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="kekeo.rc" />
+  </ItemGroup>
+</Project>
