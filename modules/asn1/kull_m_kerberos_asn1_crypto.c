@@ -142,7 +142,6 @@ void kull_m_kerberos_asn1_crypto_CertInfo_descr(PKULL_M_CRYPTO_CERT_INFO certInf
 
 }
 
-
 BOOL kull_m_kerberos_asn1_crypto_simple_message_sign(PKULL_M_CRYPTO_CERT_INFO certInfo, OssBuf *input, _octet1 *output)
 {
 	BOOL status = FALSE;

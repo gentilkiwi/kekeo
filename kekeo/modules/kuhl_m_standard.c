@@ -13,7 +13,7 @@ const KUHL_M_C kuhl_m_c_standard[] = {
 	{kuhl_m_standard_coffee,	L"coffee",		L"Please, make me a coffee!"},
 	{kuhl_m_standard_sleep,		L"sleep",		L"Sleep an amount of milliseconds"},
 	{kuhl_m_standard_log,		L"log",			L"Log mimikatz input/output to file"},
-	{kuhl_m_standard_base64,	L"base64",		L"Switch file output/base64 output"},
+	{kuhl_m_standard_base64,	L"base64",		L"Switch file input/output base64"},
 	{kuhl_m_standard_version,	L"version",		L"Display some version informations"},
 	{kuhl_m_standard_cd,		L"cd",			L"Change or display current directory"},
 	{kuhl_m_standard_localtime,	L"localtime",	L"Displays system local date and time (OJ command)"},

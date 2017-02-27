@@ -5,7 +5,6 @@
 */
 #pragma once
 #include "globals.h"
-//#include "kull_m_memory.h"
 
 typedef CONST char *PCSZ;
 typedef STRING ANSI_STRING;
@@ -51,9 +50,6 @@ extern VOID NTAPI RtlRunDecodeUnicodeString(IN BYTE Hash, IN OUT PUNICODE_STRING
 extern VOID NTAPI RtlRunEncodeUnicodeString(IN OUT PBYTE Hash, IN OUT PUNICODE_STRING String);
 
 //BOOL kull_m_string_suspectUnicodeStringStructure(IN PUNICODE_STRING pUnicodeString);
-// todo: exit
-//BOOL kull_m_string_getUnicodeString(IN PUNICODE_STRING string, IN PKULL_M_MEMORY_HANDLE source);
-//BOOL kull_m_string_getSid(IN PSID * pSid, IN PKULL_M_MEMORY_HANDLE source);
 void kull_m_string_MakeRelativeOrAbsoluteString(PVOID BaseAddress, PLSA_UNICODE_STRING String, BOOL relative);
 BOOL kull_m_string_copyUnicodeStringBuffer(PUNICODE_STRING pSource, PUNICODE_STRING pDestination);
 void kull_m_string_freeUnicodeStringBuffer(PUNICODE_STRING pString);
