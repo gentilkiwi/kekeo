@@ -45,6 +45,8 @@ CC BY-NC-SA 4.0 licence - https://creativecommons.org/licenses/by-nc-sa/4.0/
   * Grace Sigona - OSS - @OSSNokalva - http://www.oss.com/
   * Taylor Swift - @SwiftOnSecurity - https://twitter.com/SwiftOnSecurity/status/767788634904735745
   * Seth Moore - Microsoft - @robododo - https://datatracker.ietf.org/doc/draft-ietf-kitten-pkinit-freshness/
+  * Alberto Solino - Core Security / Impacket - @agsolino - https://github.com/CoreSecurity/impacket
+  * Laurent Gaffié - @PythonResponder / @lgandx - https://github.com/lgandx/Responder / https://g-laurent.blogspot.com/
 
 ## Author
 Benjamin DELPY `gentilkiwi`, you can contact me on Twitter ( @gentilkiwi ) or by mail ( benjamin [at] gentilkiwi.com )
