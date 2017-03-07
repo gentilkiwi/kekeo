@@ -12,6 +12,7 @@
 #include "modules/kuhl_m_exploit.h"
 #include "modules/kuhl_m_misc.h"
 #include "modules/kerberos/kuhl_m_kerberos.h"
+#include "modules/kuhl_m_smb.h"
 
 #include "../modules/kull_m_file.h"
 #include "../modules/asn1/kull_m_kerberos_asn1.h"

@@ -104,6 +104,7 @@
     <ClCompile Include="modules\kerberos\kuhl_m_kerberos_pac.c" />
     <ClCompile Include="modules\kuhl_m_exploit.c" />
     <ClCompile Include="modules\kuhl_m_misc.c" />
+    <ClCompile Include="modules\kuhl_m_smb.c" />
     <ClCompile Include="modules\kuhl_m_tgs.c" />
     <ClCompile Include="modules\kuhl_m_tgt.c" />
     <ClCompile Include="modules\kuhl_m_standard.c" />
@@ -135,6 +136,7 @@
     <ClInclude Include="modules\kuhl_m.h" />
     <ClInclude Include="modules\kuhl_m_exploit.h" />
     <ClInclude Include="modules\kuhl_m_misc.h" />
+    <ClInclude Include="modules\kuhl_m_smb.h" />
     <ClInclude Include="modules\kuhl_m_tgs.h" />
     <ClInclude Include="modules\kuhl_m_tgt.h" />
     <ClInclude Include="modules\kuhl_m_standard.h" />

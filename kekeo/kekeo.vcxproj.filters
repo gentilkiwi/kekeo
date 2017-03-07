@@ -97,6 +97,9 @@
     <ClCompile Include="modules\kerberos\kuhl_m_kerberos.c">
       <Filter>local modules\kerberos</Filter>
     </ClCompile>
+    <ClCompile Include="modules\kuhl_m_smb.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -183,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="modules\kerberos\kuhl_m_kerberos.h">
       <Filter>local modules\kerberos</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_smb.h">
+      <Filter>local modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
