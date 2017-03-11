@@ -9,6 +9,7 @@ const KUHL_M_C kuhl_m_c_misc[] = {
 	{kuhl_m_misc_changepw,	L"changepw",	L"Change user password (AoratoPw)"},
 	{kuhl_m_misc_convert,	L"convert",		L"Convert tickets"},
 	{kuhl_m_misc_storm,		L"storm",		L"Kerberos Storm!"},
+	{kuhl_m_misc_arch,		L"arch",		L"Ask RPC for NDR64 support"},
 };
 const KUHL_M kuhl_m_misc = {
 	L"misc",	L"Miscellaneous module", NULL,
@@ -394,4 +395,71 @@ DWORD kuhl_m_misc_storm_giveUsersForServer(PCWSTR server)
 		SamCloseHandle(hServerHandle);
 	}
 	return totalUsers;
+}
+
+NTSTATUS kuhl_m_misc_arch(int argc, wchar_t * argv[])
+{
+	KULL_M_SOCK sock;
+	PCWCHAR server = argc ? argv[0] : L"localhost";
+	DWORD cbOut;
+	prpcconn_bind_ack_hdr_t binda = NULL;
+	pp_result_list_t list = NULL;
+	static const rpcconn_bind_hdr_t bindr = {
+		5, 0,
+		RPC_PDU_bind,
+		0x02 | 0x01,
+		0x00000010,
+		sizeof(rpcconn_bind_hdr_t),
+		0,
+		2,
+		5840, 5840,
+		0,
+		{
+			1,
+			0, 0,
+			{
+				{
+					0,
+					1,
+					0,
+					{{0xe1af8308, 0x5d1f, 0x11c9, {0x91, 0xa4, 0x08, 0x00, 0x2b, 0x14, 0xa0, 0xfa}}, {3, 0}}, // AbstractSyntax EPMv4 v3.0
+					{
+						{{0x71710533, 0xbeba, 0x4937, {0x83, 0x19, 0xb5, 0xdb, 0xef, 0x9c, 0xcc, 0x36}}, {1, 0}} // TransferSyntax NDR64 v1.0
+					}
+				}
+			}
+		}
+	};
+
+	kprintf(L"Server      : %s\n", server);
+	if(kull_m_sock_init_addr_protocol(server, NULL, 135, IPPROTO_TCP, &sock))
+	{
+		if(kull_m_sock_connect(&sock))
+		{
+			if(kull_m_sock_SendAndRecv(&sock, &bindr, bindr.frag_length, (LPVOID *) &binda, &cbOut))
+			{
+				if(cbOut > FIELD_OFFSET(rpcconn_bind_ack_hdr_t, max_xmit_frag))
+				{
+					if(binda->PTYPE == RPC_PDU_bind_ack)
+					{
+						list = (pp_result_list_t) ((PBYTE) &binda->sec_addr + SIZE_ALIGN(FIELD_OFFSET(port_any_t, port_spec) + binda->sec_addr.length, 4));
+						if(list->n_results == 1)
+						{
+							if(list->p_results[0].result == RPC_CONT_DEF_RESULT_acceptance)
+								kprintf(L"Architecture: x64\n");
+							else if((list->p_results[0].result == RPC_CONT_DEF_RESULT_provider_rejection) && (list->p_results[0].reason == RPC_PROVIDER_REASON_proposed_transfer_syntaxes_not_supported))
+								kprintf(L"Architecture: x86\n");
+							else PRINT_ERROR(L"Result: %u -- Reason: %u\n", (DWORD) list->p_results[0].result, (DWORD) list->p_results[0].reason);
+						}
+						else PRINT_ERROR(L"n_results: %u\n", (DWORD) list->n_results);
+					}
+					else PRINT_ERROR(L"PTYPE: %u\n", (DWORD) binda->PTYPE);
+				}
+				else PRINT_ERROR(L"Size is not valid (%u)\n", cbOut);
+				LocalFree(binda);
+			}
+		}
+		kull_m_sock_termSocket(&sock);
+	}
+	return STATUS_SUCCESS;
 }
