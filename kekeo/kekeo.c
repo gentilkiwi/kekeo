@@ -19,13 +19,13 @@ int wmain(int argc, wchar_t * argv[])
 {
 	NTSTATUS status = STATUS_SUCCESS;
 	int i;
+#ifndef _WINDLL
 	size_t len;
 	wchar_t input[0xffff];
 	kull_m_output_init();
 	SetConsoleTitle(MIMIKATZ L" " MIMIKATZ_VERSION L" " MIMIKATZ_ARCH L" (oe.eo)");
 	SetConsoleCtrlHandler(HandlerRoutine, TRUE);
-
-
+#endif
 	kprintf(L"\n"
 		L"  ___ _    " MIMIKATZ_FULL L"\n"
 		L" /   ('>-  " MIMIKATZ_SECOND L"\n"
@@ -40,6 +40,7 @@ int wmain(int argc, wchar_t * argv[])
 		kprintf(L"\n" MIMIKATZ L"(" MIMIKATZ_AUTO_COMMAND_STRING L") # %s\n", argv[i]);
 		status = mimikatz_dispatchCommand(argv[i]);
 	}
+#ifndef _WINDLL
 	while (status != STATUS_FATAL_APP_EXIT)
 	{
 		kprintf(L"\n" MIMIKATZ L" # "); fflush(stdin);
@@ -51,9 +52,12 @@ int wmain(int argc, wchar_t * argv[])
 			status = mimikatz_dispatchCommand(input);
 		}
 	}
+#endif
 	mimikatz_initOrClean(FALSE);
+#ifndef _WINDLL
 	SetConsoleCtrlHandler(HandlerRoutine, FALSE);
 	kull_m_output_clean();
+#endif
 	return STATUS_SUCCESS;
 }
 
@@ -70,7 +74,6 @@ NTSTATUS mimikatz_initOrClean(BOOL Init)
 	long offsetToFunc;
 	NTSTATUS fStatus;
 	HRESULT hr;
-
 	g_isBreak = !Init;
 	if(Init)
 	{
@@ -79,6 +82,9 @@ NTSTATUS mimikatz_initOrClean(BOOL Init)
 		offsetToFunc = FIELD_OFFSET(KUHL_M, pInit);
 		hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 		if(FAILED(hr))
+#ifdef _WINDLL
+			if(hr != RPC_E_CHANGED_MODE)
+#endif
 			PRINT_ERROR(L"CoInitializeEx: %08x\n", hr);
 		kull_m_sock_startup();
 		kull_m_kerberos_asn1_init();
@@ -98,8 +104,8 @@ NTSTATUS mimikatz_initOrClean(BOOL Init)
 
 	if(!Init)
 	{
-		CoUninitialize();
 		kull_m_kerberos_asn1_term();
+		CoUninitialize();
 		kull_m_sock_finish();
 		kull_m_output_file(NULL);
 	}
@@ -190,3 +196,21 @@ NTSTATUS mimikatz_doLocal(wchar_t * input)
 	}
 	return status;
 }
+
+#ifdef _WINDLL
+__declspec(dllexport) wchar_t * powershell_reflective_kekeo(LPCWSTR input)
+{
+	int argc = 0;
+	wchar_t ** argv;
+	
+	if(argv = CommandLineToArgvW(input, &argc))
+	{
+		outputBufferElements = 0xff;
+		outputBufferElementsPosition = 0;
+		if(outputBuffer = (wchar_t *) LocalAlloc(LPTR, outputBufferElements * sizeof(wchar_t)))
+			wmain(argc, argv);
+		LocalFree(argv);
+	}
+	return outputBuffer;
+}
+#endif

@@ -100,6 +100,9 @@
     <ClCompile Include="modules\kuhl_m_smb.c">
       <Filter>local modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\kull_m_net.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -190,29 +193,8 @@
     <ClInclude Include="modules\kuhl_m_smb.h">
       <Filter>local modules</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="kekeo.ico" />
-    <None Include="..\modules\asn1\kekeo.a1sproj">
-      <Filter>common modules\asn1</Filter>
-    </None>
-    <None Include="..\modules\asn1\KerberosV5-PK-INIT-SPEC.asn">
-      <Filter>common modules\asn1</Filter>
-    </None>
-    <None Include="..\modules\asn1\KerberosV5Spec2.asn">
-      <Filter>common modules\asn1</Filter>
-    </None>
-    <None Include="..\modules\asn1\MS-SFU-KILE.asn">
-      <Filter>common modules\asn1</Filter>
-    </None>
-    <None Include="..\modules\asn1\PKINIT.asn">
-      <Filter>common modules\asn1</Filter>
-    </None>
-    <None Include="..\modules\asn1\PKIX1Explicit88.asn">
-      <Filter>common modules\asn1</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="kekeo.rc" />
+    <ClInclude Include="..\modules\kull_m_net.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
