@@ -197,4 +197,28 @@
       <Filter>common modules</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="kekeo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="kekeo.ico" />
+    <None Include="..\modules\asn1\kekeo.a1sproj">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\KerberosV5-PK-INIT-SPEC.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\KerberosV5Spec2.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\MS-SFU-KILE.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\PKINIT.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\PKIX1Explicit88.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+  </ItemGroup>
 </Project>

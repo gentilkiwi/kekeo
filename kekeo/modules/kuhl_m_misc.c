@@ -438,7 +438,7 @@ NTSTATUS kuhl_m_misc_arch(int argc, wchar_t * argv[])
 		{
 			if(kull_m_sock_SendAndRecv(&sock, &bindr, bindr.frag_length, (LPVOID *) &binda, &cbOut))
 			{
-				if(cbOut > FIELD_OFFSET(rpcconn_bind_ack_hdr_t, max_xmit_frag))
+				if(cbOut > (DWORD) FIELD_OFFSET(rpcconn_bind_ack_hdr_t, max_xmit_frag))
 				{
 					if(binda->PTYPE == RPC_PDU_bind_ack)
 					{
