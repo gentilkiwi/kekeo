@@ -318,7 +318,7 @@ PKIWI_AUTH_INFOS kull_m_kerberos_asn1_Authinfos_create(int argc, wchar_t * argv[
 			kull_m_kerberos_asn1_Authinfos_create_for_asreq(infos, argc, argv);
 
 		if(infos->w_cname)
-			kull_m_kerberos_asn1_PrincipalName_create_fromName(&infos->cname, infos->w_cname);
+			kull_m_kerberos_asn1_PrincipalName_create_fromName(&infos->cname, NULL, infos->w_cname);
 		if(infos->w_short_realm && !infos->w_realm)
 			kull_m_string_copy(&infos->w_realm, infos->w_short_realm);
 		if(infos->w_realm)
@@ -328,7 +328,7 @@ PKIWI_AUTH_INFOS kull_m_kerberos_asn1_Authinfos_create(int argc, wchar_t * argv[
 			if(kull_m_string_args_byName(argc, argv, L"changepw", NULL, NULL))
 				kull_m_kerberos_asn1_PrincipalName_create(&infos->sname, KRB_NT_SRV_INST, 2, "kadmin", "changepw");
 			else if(kull_m_string_args_byName(argc, argv, L"altservice", &szData, NULL))
-				kull_m_kerberos_asn1_PrincipalName_create_fromName(&infos->sname, szData);
+				kull_m_kerberos_asn1_PrincipalName_create_fromName(&infos->sname, NULL, szData);
 			else kull_m_kerberos_asn1_PrincipalName_create(&infos->sname, KRB_NT_SRV_INST, 2, "krbtgt", infos->realm);
 
 			if(infos->type == KIWI_AUTH_INFOS_TYPE_INVALID)
@@ -457,7 +457,7 @@ USHORT kull_m_kerberos_asn1_Authinfos_changepw(_octet1 *data, int argc, wchar_t 
 				change.newpasswd.length = lstrlenA((PCHAR) change.newpasswd.value);
 				if(username && domain)
 				{
-					kull_m_kerberos_asn1_PrincipalName_create_fromName(&change.targname, username);
+					kull_m_kerberos_asn1_PrincipalName_create_fromName(&change.targname, NULL, username);
 					change.bit_mask |= targname_present;
 					change.targrealm = domain;
 					kprintf(L"[changepw] targname : ");

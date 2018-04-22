@@ -73,7 +73,7 @@ BOOL CALLBACK kuhl_m_kerberos_ptt_directory(DWORD level, PCWCHAR fullpath, PCWCH
 		{
 			*separator = L'\0';
 			separator++;
-			kull_m_kerberos_asn1_PrincipalName_create_fromName(&pAltService, separator);
+			kull_m_kerberos_asn1_PrincipalName_create_fromName(&pAltService, NULL, separator);
 		}
 		else separator = NULL;
 

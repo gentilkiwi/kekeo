@@ -59,7 +59,7 @@ void kull_m_kerberos_asn1_PrincipalName_create(PrincipalName *principal_name, In
 	}
 }
 
-void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, LPCWSTR name)
+void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, Realm *pRealm, LPCWSTR name)
 {
 	DWORD count = 0, i;
 	char *dupName, *nextToken, *token;
@@ -71,6 +71,17 @@ void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal
 			RtlZeroMemory(principal_name, sizeof(PrincipalName));
 			if(strchr(aName, '/'))
 			{
+				if(pRealm)
+				{
+					if(nextToken = strrchr(aName, '@'))
+					{
+						if(*(nextToken + 1))
+						{
+							*nextToken = '\0';
+							*pRealm = _strdup(nextToken + 1);
+						}
+					}
+				}
 				if(dupName = _strdup(aName))
 				{
 					for(nextToken = NULL, token = strtok_s(dupName, "/", &nextToken); token; token = strtok_s(NULL, "/", &nextToken))
@@ -855,7 +866,7 @@ BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, PrincipalName *user
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm realm, PrincipalName *sname, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa)
+BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm crealm, PrincipalName *sname, Realm srealm, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
@@ -868,7 +879,7 @@ BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, 
 	OutKdcReq->value = NULL;
 	tgsReq.pvno = 5;
 	tgsReq.msg_type = 12;
-	kull_m_kerberos_asn1_KdcReqBody_build(&tgsReq.req_body, (options & KERB_KDCOPTION_request_anonymous) ? NULL : cname, realm, sname, options, NULL);
+	kull_m_kerberos_asn1_KdcReqBody_build(&tgsReq.req_body, (options & KERB_KDCOPTION_request_anonymous) ? NULL : cname, srealm ? srealm : crealm, sname, options, NULL);
 	if(addTicket)
 	{
 		seqofTickets.next = NULL;
@@ -890,7 +901,7 @@ BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, 
 			ossFreeBuf(&kull_m_kerberos_asn1_world, AuthData.value);
 		}
 	}
-	if(kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(&PaGeneric, cname, realm, ticket, key))
+	if(kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(&PaGeneric, cname, crealm, ticket, key))
 	{
 		kull_m_kerberos_asn1_PA_DATAs_build(&tgsReq.padata, optPa ? 2 : 1, &PaGeneric, optPa);
 		tgsReq.bit_mask = KDC_REQ_padata_present;
@@ -1477,6 +1488,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 		{
 			PRINT_ERROR(L"Unable to decode EncKrbCredPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, *KrbCred);
+			*KrbCred = NULL;
 		}
 	}
 	else PRINT_ERROR(L"Unable to decode KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));

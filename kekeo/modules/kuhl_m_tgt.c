@@ -59,7 +59,7 @@ NTSTATUS kuhl_m_tgt_pac(int argc, wchar_t * argv[])
 		{
 			if(kull_m_kerberos_asn1_AsReqAsRep(infos, socket, NULL, NULL, &asrep, &enckdcreppart, &asKey))
 			{
-				if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &asrep->cname, asrep->crealm, &asrep->cname, KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey, &asrep->ticket, &enckdcreppart->key, &asrep->ticket, NULL, NULL))
+				if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &asrep->cname, asrep->crealm, &asrep->cname, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey, &asrep->ticket, &enckdcreppart->key, &asrep->ticket, NULL, NULL))
 				{
 					if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
 					{

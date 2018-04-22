@@ -72,6 +72,7 @@ typedef struct _KULL_M_CRYPTO_CERT_INFO {
 #define PA_TYPE_PAC_REQUEST			128
 #define PA_TYPE_FOR_USER			129
 #define PA_TYPE_X509_USER			130
+#define PA_TYPE_PAC_OPTIONS			167
 
 #define AD_TYPE_IF_RELEVANT			1
 #define AD_TYPE_KDCIssued			4
@@ -124,7 +125,7 @@ BOOL kull_m_kerberos_asn1_init();
 void kull_m_kerberos_asn1_term();
 
 void kull_m_kerberos_asn1_PrincipalName_create(PrincipalName *principal_name, Int32 name_type, DWORD count, ...);
-void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, LPCWSTR name);
+void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, Realm *pRealm, LPCWSTR name);
 void kull_m_kerberos_asn1_PrincipalName_delete(PrincipalName *principal_name);
 void kull_m_kerberos_asn1_PrincipalName_descr(PrincipalName *principal_name, BOOL withType);
 
@@ -161,7 +162,7 @@ BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, K
 BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(PA_DATA *data, PrincipalName *user, Realm realm, EncryptionKey *key);
 BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, PrincipalName *user, Realm realm, EncryptionKey *key);
 
-BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm realm, PrincipalName *sname, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa);
+BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm crealm, PrincipalName *sname, Realm srealm, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa);
 
 BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(PA_DATA *data, BOOL request);
 

@@ -20,17 +20,17 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 	PCWSTR szData;
 	PKULL_M_SOCK socket;
 	OssBuf TgsReq = {0, NULL};
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
+	KRB_CRED *KrbCred = NULL, *AddKrbCred = NULL;
+	EncKrbCredPart *encKrbCred = NULL, *AddEncKrbCred = NULL;
 	TGS_REP *TgsRep = NULL;
 	EncKDCRepPart *encTgsRepPart = NULL;
 	PWSTR domain, dupService, nextSetToken, SetToken;
 	PrincipalName pService;
 	PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback = NULL;
+	Realm realm;
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
 		callback = kuhl_m_kerberos_ptt_data;
-
 	if(kull_m_string_args_byName(argc, argv, L"tgt", &szData, NULL))
 	{
 		kprintf(L"Ticket  : %s\n", szData);
@@ -38,6 +38,11 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 		{
 			if(domain = kull_m_string_qad_ansi_to_unicode(KrbCred->tickets->value.realm))
 			{
+				if(kull_m_string_args_byName(argc, argv, L"add", &szData, NULL))
+				{
+					kprintf(L"Additionnal Ticket: %s\n", szData);
+					kull_m_kerberos_asn1_KrbCred_load(szData, NULL, &AddKrbCred, &AddEncKrbCred);
+				}
 				if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(domain, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 				{
 					if(kull_m_string_args_byName(argc, argv, L"service", &szData, NULL))
@@ -47,11 +52,14 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 						{
 							for(nextSetToken = NULL, SetToken = wcstok_s(dupService, L",", &nextSetToken); SetToken; SetToken = wcstok_s(NULL, L",", &nextSetToken))
 							{
-								kull_m_kerberos_asn1_PrincipalName_create_fromName(&pService, SetToken);
+								realm = NULL;
+								kull_m_kerberos_asn1_PrincipalName_create_fromName(&pService, &realm, SetToken);
 								kprintf(L"  ");
 								kull_m_kerberos_asn1_PrincipalName_descr(&pService, FALSE);
+								if(realm)
+									kprintf(L" @ %S", realm);
 								kprintf(L"\n");
-								if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, (encKrbCred->ticket_info->value.bit_mask & pname_present) ? &encKrbCred->ticket_info->value.pname : NULL, KrbCred->tickets->value.realm, &pService, 0, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, NULL, NULL, NULL))
+								if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, (encKrbCred->ticket_info->value.bit_mask & pname_present) ? &encKrbCred->ticket_info->value.pname : NULL, KrbCred->tickets->value.realm, &pService, realm, AddKrbCred ? (KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous) : 0, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, AddKrbCred ? &AddKrbCred->tickets->value : NULL, NULL, NULL))
 								{
 									if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
 									{
@@ -65,6 +73,8 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 									ossFreeBuf(&kull_m_kerberos_asn1_world, TgsReq.value);
 								}
 								kull_m_kerberos_asn1_PrincipalName_delete(&pService);
+								if(realm)
+									free(realm);
 							}
 							free(dupService);
 						}
@@ -72,6 +82,10 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 					else PRINT_ERROR(L"A service name is needed ( /service:cifs/target.domain.local[,http/webserver.domain.local] )\n");
 					kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 				}
+				if(AddEncKrbCred)
+					ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, AddEncKrbCred);
+				if(AddKrbCred)
+					ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, AddKrbCred);
 				LocalFree(domain);
 			}
 			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
@@ -100,7 +114,6 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
 		callback = kuhl_m_kerberos_ptt_data;
-
 	if(kull_m_string_args_byName(argc, argv, L"tgt", &szData, NULL))
 	{
 		kprintf(L"Ticket  : %s\n", szData);
@@ -110,13 +123,13 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 			{
 				if(kull_m_string_args_byName(argc, argv, L"user", &szData, NULL))
 				{
-					kull_m_kerberos_asn1_PrincipalName_create_fromName(&pUser, szData);
+					kull_m_kerberos_asn1_PrincipalName_create_fromName(&pUser, NULL, szData);
 					kprintf(L"  [s4u2self]  ");
 					kull_m_kerberos_asn1_PrincipalName_descr(&pUser, FALSE);
 					kprintf(L"\n");
 					if(kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(&PaForUser, &pUser, KrbCred->tickets->value.realm, &encKrbCred->ticket_info->value.key))
 					{
-						if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &encKrbCred->ticket_info->value.pname, KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, pacWanted ? &KrbCred->tickets->value : NULL, NULL, &PaForUser))
+						if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &encKrbCred->ticket_info->value.pname, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, pacWanted ? &KrbCred->tickets->value : NULL, NULL, &PaForUser))
 						{
 							if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(domain, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 							{
@@ -148,11 +161,11 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 												{
 													*separator = L'\0';
 													separator++;
-													kull_m_kerberos_asn1_PrincipalName_create_fromName(&pAltService, separator);
+													kull_m_kerberos_asn1_PrincipalName_create_fromName(&pAltService, NULL, separator);
 												}
 												else separator = NULL;
 
-												kull_m_kerberos_asn1_PrincipalName_create_fromName(&pService, SetToken);
+												kull_m_kerberos_asn1_PrincipalName_create_fromName(&pService, NULL, SetToken);
 												kprintf(L"  [s4u2proxy] ");
 												kull_m_kerberos_asn1_PrincipalName_descr(&pService, FALSE);
 												kprintf(L"\n");
@@ -164,7 +177,7 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 													kprintf(L"\n");
 												}
 												
-												if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq2, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &pService, KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, &TgsRep->ticket, NULL, NULL))
+												if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq2, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &pService, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, &TgsRep->ticket, NULL, NULL))
 												{
 													if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq2, (LPVOID *) &TgsRep2, TGS_REP_PDU))
 													{
@@ -232,7 +245,6 @@ NTSTATUS kuhl_m_tgs_renew(int argc, wchar_t * argv[])
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
 		callback = kuhl_m_kerberos_ptt_data;
-
 	if(kull_m_string_args_byName(argc, argv, L"ticket", &szData, NULL) || kull_m_string_args_byName(argc, argv, L"tgt", &szData, NULL) || kull_m_string_args_byName(argc, argv, L"tgs", &szData, NULL))
 	{
 		kprintf(L"Ticket  : %s\n", szData);
@@ -240,7 +252,7 @@ NTSTATUS kuhl_m_tgs_renew(int argc, wchar_t * argv[])
 		{
 			if(domain = kull_m_string_qad_ansi_to_unicode(KrbCred->tickets->value.realm))
 			{
-				if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &encKrbCred->ticket_info->value.sname, KERB_KDCOPTION_standard | KERB_KDCOPTION_renew, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, NULL, NULL, NULL))
+				if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &encKrbCred->ticket_info->value.sname, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_renew, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, NULL, NULL, NULL))
 				{
 					if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(domain, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 					{
