@@ -56,8 +56,7 @@ NTSTATUS kuhl_m_kerberos_ptt(int argc, wchar_t * argv[])
 			kprintf(L"* Directory: \'%s\'\n", argv[i]);
 			kull_m_file_Find(argv[i], L"*.kirbi", FALSE, 0, FALSE, kuhl_m_kerberos_ptt_directory, NULL);
 		}
-		else
-			kuhl_m_kerberos_ptt_directory(0, argv[i], PathFindFileName(argv[i]), NULL);
+		else kuhl_m_kerberos_ptt_directory(0, argv[i], PathFindFileName(argv[i]), NULL);
 	}
 	return STATUS_SUCCESS;
 }
@@ -77,14 +76,12 @@ BOOL CALLBACK kuhl_m_kerberos_ptt_directory(DWORD level, PCWCHAR fullpath, PCWCH
 		}
 		else separator = NULL;
 
-
 		kprintf(L"\n* File: \'%s\': ", fullpath);
 		kuhl_m_kerberos_ptt_file(fullpath, separator ? &pAltService : NULL);
 		if(separator)
 			kull_m_kerberos_asn1_PrincipalName_delete(&pAltService);
-
 	}
-	return TRUE;
+	return FALSE;
 }
 
 void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
