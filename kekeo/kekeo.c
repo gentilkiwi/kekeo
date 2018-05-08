@@ -13,6 +13,7 @@ const KUHL_M * mimikatz_modules[] = {
 	&kuhl_m_misc,
 	&kuhl_m_kerberos,
 	&kuhl_m_smb,
+	&kuhl_m_ntlm,
 };
 
 int wmain(int argc, wchar_t * argv[])

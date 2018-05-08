@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <sddl.h>
 #include <ntsecapi.h>
+#include <ntsecpkg.h>
 #include <wchar.h>
 #include "../modules/kull_m_output.h"
 #ifdef _M_X64

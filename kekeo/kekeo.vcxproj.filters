@@ -103,6 +103,9 @@
     <ClCompile Include="..\modules\kull_m_net.c">
       <Filter>common modules</Filter>
     </ClCompile>
+    <ClCompile Include="modules\kuhl_m_ntlm.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -195,6 +198,9 @@
     </ClInclude>
     <ClInclude Include="..\modules\kull_m_net.h">
       <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_ntlm.h">
+      <Filter>local modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

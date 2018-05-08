@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{F673A1F0-9FB
 		inc\globals.h = inc\globals.h
 		inc\Midles.h = inc\Midles.h
 		inc\NtDsAPI.h = inc\NtDsAPI.h
+		inc\NTSecPKG.h = inc\NTSecPKG.h
 		inc\ossasn1.h = inc\ossasn1.h
 		inc\osstype.h = inc\osstype.h
 		inc\schannel.h = inc\schannel.h
@@ -21,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{F673A1F0-9FB
 		inc\schnlsp.h = inc\schnlsp.h
 		inc\WinBer.h = inc\WinBer.h
 		inc\WinDNS.h = inc\WinDNS.h
+		inc\winhttp.h = inc\winhttp.h
 		inc\Winldap.h = inc\Winldap.h
 	EndProjectSection
 EndProject
@@ -34,6 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{2D5BE43F
 		lib\Win32\ossiphlp.lib = lib\Win32\ossiphlp.lib
 		lib\Win32\samlib.lib = lib\Win32\samlib.lib
 		lib\Win32\soeddefa.lib = lib\Win32\soeddefa.lib
+		lib\Win32\winhttp.lib = lib\Win32\winhttp.lib
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x64", "x64", "{71D007E1-9E34-49BC-91C3-65CC186A9A52}"
@@ -44,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x64", "x64", "{71D007E1-9E3
 		lib\x64\ossiphlp.lib = lib\x64\ossiphlp.lib
 		lib\x64\samlib.lib = lib\x64\samlib.lib
 		lib\x64\soeddefa.lib = lib\x64\soeddefa.lib
+		lib\x64\winhttp.lib = lib\x64\winhttp.lib
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samba", "samba", "{8B68E870-E7A4-446D-9853-3E1042FFD15A}"

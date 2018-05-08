@@ -81,7 +81,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>advapi32.lib;crypt32.lib;dnsapi.lib;netapi32.lib;ntdsapi.lib;ole32.lib;rpcrt4.lib;samlib.lib;secur32.lib;shlwapi.lib;shell32.lib;user32.lib;wldap32.lib;ws2_32.lib;cryptdll.lib;advapi32.hash.lib;ntdll.min.lib;soeddefa.lib;ossiphlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;crypt32.lib;dnsapi.lib;netapi32.lib;ntdsapi.lib;ole32.lib;rpcrt4.lib;samlib.lib;secur32.lib;shlwapi.lib;shell32.lib;user32.lib;wldap32.lib;ws2_32.lib;cryptdll.lib;winhttp.lib;advapi32.hash.lib;ntdll.min.lib;soeddefa.lib;ossiphlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AssemblyDebug>false</AssemblyDebug>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
@@ -116,6 +116,7 @@
     <ClCompile Include="modules\kerberos\kuhl_m_kerberos_pac.c" />
     <ClCompile Include="modules\kuhl_m_exploit.c" />
     <ClCompile Include="modules\kuhl_m_misc.c" />
+    <ClCompile Include="modules\kuhl_m_ntlm.c" />
     <ClCompile Include="modules\kuhl_m_smb.c" />
     <ClCompile Include="modules\kuhl_m_tgs.c" />
     <ClCompile Include="modules\kuhl_m_tgt.c" />
@@ -149,6 +150,7 @@
     <ClInclude Include="modules\kuhl_m.h" />
     <ClInclude Include="modules\kuhl_m_exploit.h" />
     <ClInclude Include="modules\kuhl_m_misc.h" />
+    <ClInclude Include="modules\kuhl_m_ntlm.h" />
     <ClInclude Include="modules\kuhl_m_smb.h" />
     <ClInclude Include="modules\kuhl_m_tgs.h" />
     <ClInclude Include="modules\kuhl_m_tgt.h" />
