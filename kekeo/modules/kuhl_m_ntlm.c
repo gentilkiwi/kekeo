@@ -262,7 +262,7 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 	PKIWI_HTTP pHttp;
 	DWORD dwIndex, dwLen, dwDisableRedirect = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
 	WORD httpStatus;
-	wchar_t *text;
+	wchar_t *text, *inputChallenge;
 	UNICODE_STRING scheme;
 	BOOL isNTLM, isNego;
 
@@ -331,10 +331,10 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 									if(kuhl_m_ntlm_http_sendReceiveHTTP(pHttp, negoHeader, NULL, NULL, &httpStatus))
 									{
 										kprintf(L"  WWW-Authenticate: ");
-										if(kuhl_m_ntlm_http_getHeaders(pHttp, WINHTTP_QUERY_WWW_AUTHENTICATE, WINHTTP_NO_HEADER_INDEX, (PBYTE *) &text, &dwLen))
+										if(kuhl_m_ntlm_http_getHeaders(pHttp, WINHTTP_QUERY_WWW_AUTHENTICATE, WINHTTP_NO_HEADER_INDEX, (PBYTE *) &inputChallenge, &dwLen))
 										{
-											kprintf(L"%.*s\n[SSPI - CHALLENGE]\n", dwLen / sizeof(wchar_t), text);
-											if(kuhl_m_ntlm_http_decodeB64NTLMAuth(package, text, &Input))
+											kprintf(L"%.*s\n[SSPI - CHALLENGE]\n", dwLen / sizeof(wchar_t), inputChallenge);
+											if(kuhl_m_ntlm_http_decodeB64NTLMAuth(package, inputChallenge, &Input))
 											{
 												kuhl_m_ntlm_descrGeneric(&Input, NTLMSSP_TypeTwoMessage);
 												if(altIdentity.UserLength || kull_m_string_args_byName(argc, argv, L"auth", NULL, NULL))
@@ -368,7 +368,7 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 												}
 												LocalFree(Input.pBuffers[0].pvBuffer);
 											}
-											LocalFree(text);
+											LocalFree(inputChallenge);
 										}
 									}
 									LocalFree(negoHeader);
