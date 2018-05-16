@@ -5,6 +5,8 @@
   <File>PKIX1Explicit88.asn</File>
   <File>PKINIT.asn</File>
   <File>MS-SFU-KILE.asn</File>
+  <File>SPNEGO.asn</File>
+  <File>CredSSP.asn</File>
  </Asn1Files>
  <CompilerSettings>
   <Setting name="cCommentsRadioButton" present="true"/>

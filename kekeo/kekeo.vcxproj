@@ -100,6 +100,7 @@
     <ClCompile Include="..\modules\kull_m_file.c" />
     <ClCompile Include="..\modules\kull_m_net.c" />
     <ClCompile Include="..\modules\kull_m_output.c" />
+    <ClCompile Include="..\modules\kull_m_pipe.c" />
     <ClCompile Include="..\modules\kull_m_sock.c" />
     <ClCompile Include="..\modules\kull_m_string.c" />
     <ClCompile Include="..\modules\rpc\kull_m_rpc.c" />
@@ -121,6 +122,7 @@
     <ClCompile Include="modules\kuhl_m_tgs.c" />
     <ClCompile Include="modules\kuhl_m_tgt.c" />
     <ClCompile Include="modules\kuhl_m_standard.c" />
+    <ClCompile Include="modules\kuhl_m_tsssp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\asn1\kull_m_kerberos_asn1_authinfos.h" />
@@ -132,6 +134,7 @@
     <ClInclude Include="..\modules\kull_m_file.h" />
     <ClInclude Include="..\modules\kull_m_net.h" />
     <ClInclude Include="..\modules\kull_m_output.h" />
+    <ClInclude Include="..\modules\kull_m_pipe.h" />
     <ClInclude Include="..\modules\kull_m_samlib.h" />
     <ClInclude Include="..\modules\kull_m_sock.h" />
     <ClInclude Include="..\modules\kull_m_string.h" />
@@ -155,6 +158,7 @@
     <ClInclude Include="modules\kuhl_m_tgs.h" />
     <ClInclude Include="modules\kuhl_m_tgt.h" />
     <ClInclude Include="modules\kuhl_m_standard.h" />
+    <ClInclude Include="modules\kuhl_m_tsssp.h" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' != 'Second_Release_PowerShell'">
     <ResourceCompile Include="kekeo.rc" />
@@ -166,6 +170,8 @@
     <None Include="..\modules\asn1\MS-SFU-KILE.asn" />
     <None Include="..\modules\asn1\PKINIT.asn" />
     <None Include="..\modules\asn1\PKIX1Explicit88.asn" />
+    <None Include="..\modules\asn1\CredSSP.asn" />
+    <None Include="..\modules\asn1\SPNEGO.asn" />
     <None Include="kekeo.ico" />
   </ItemGroup>
 </Project>

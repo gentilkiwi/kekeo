@@ -68,6 +68,7 @@ NTSTATUS kuhl_m_ntlm_netntlm(int argc, wchar_t * argv[])
 				LocalFree(InBuff.pvBuffer);
 			}
 			FreeContextBuffer(OutBuff.pvBuffer);
+			DeleteSecurityContext(&NewContext);
 		}
 		else PRINT_ERROR(L"InitializeSecurityContext(1/2): 0x%08x\n", status);
 		FreeCredentialHandle(&Credentials);
@@ -639,7 +640,7 @@ void kuhl_m_ntlm_descrGeneric(PSecBufferDesc buff, ULONG WantedMessageType)
 
 const PCWCHAR KIWI_NEGOTIATE_FLAGS[] = {
 	L"UNICODE", L"OEM", L"ReqTARGET", L"RESERVED_10", L"SIGN", L"SEAL", L"DATAGRAM", L"LM_KEY",
-	L"RESERVED_9", L"NTLM", L"RESERVED_8", L"ANONYMOUS", L"OEM_DOMAIN_SUPPLIED", L"OEM_WORKSTATION_SUPPLIED", L"RESERVED_7", L"ALWAYS_SIGN", 
+	L"RESERVED_9", L"NTLM", L"RESERVED_8", L"ANONYMOUS", L"OEM_DOMAIN_SUPPLIED", L"OEM_WORKSTATION_SUPPLIED", L"LOCAL_CALL", L"ALWAYS_SIGN", 
 	L"TARGET_TYPE_DOMAIN", L"TARGET_TYPE_SERVER", L"TARGET_TYPE_SHARE", L"EXTENDED_SESSIONSECURITY",  L"IDENTIFY", L"RESERVED_5", L"ReqNON_NT_SESSION_KEY", L"TARGET_INFO", 
 	L"RESERVED_4", L"VERSION", L"RESERVED_3", L"RESERVED_2",  L"RESERVED_1", L"128", L"KEY_EXCH", L"56",
 };

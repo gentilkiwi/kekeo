@@ -106,6 +106,12 @@
     <ClCompile Include="modules\kuhl_m_ntlm.c">
       <Filter>local modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\kull_m_pipe.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\kuhl_m_tsssp.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -202,6 +208,12 @@
     <ClInclude Include="modules\kuhl_m_ntlm.h">
       <Filter>local modules</Filter>
     </ClInclude>
+    <ClInclude Include="..\modules\kull_m_pipe.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_tsssp.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="kekeo.rc" />
@@ -224,6 +236,12 @@
       <Filter>common modules\asn1</Filter>
     </None>
     <None Include="..\modules\asn1\PKIX1Explicit88.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\CredSSP.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\SPNEGO.asn">
       <Filter>common modules\asn1</Filter>
     </None>
   </ItemGroup>
