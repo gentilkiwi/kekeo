@@ -129,20 +129,19 @@ NTSTATUS kuhl_m_tsssp_server(int argc, wchar_t * argv[])
 }
 
 LPCWCHAR AllowToCheck[] = {L"AllowDefaultCredentials", L"AllowDefCredentialsWhenNTLMOnly", L"ConcatenateDefaults_AllowDefault", L"ConcatenateDefaults_AllowDefNTLMOnly"};
-LPCWCHAR AllowToCheckData[] = {L"AllowDefaultCredentials", L"AllowDefaultCredentialsDomain", L"AllowDefaultCredentialsWhenNTLMOnly", L"AllowDefaultCredentialsWhenNTLMOnlyDomain"};
 NTSTATUS kuhl_m_tsssp_list(int argc, wchar_t * argv[])
 {
 	LONG regError;
-	HKEY hPd, hData;
-	DWORD i, j, type, dwData, dwSize, nbValues, szMaxValueNameLen, szMaxValueLen, szKeyLen, szValueLen;
-	wchar_t *keyName, *valueName;
+	HKEY hPd;
+	DWORD i, dwData, dwSize;
 
-	regError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\CredentialsDelegation", 0, KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_WOW64_64KEY, &hPd);
+	kprintf(L"\nLocal policy:\n");
+	regError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\CredentialsDelegation", 0, KEY_READ | KEY_WOW64_64KEY, &hPd);
 	if(regError == ERROR_SUCCESS)
 	{
 		for(i = 0; i < ARRAYSIZE(AllowToCheck); i++)
 		{
-			kprintf(L"%s\t", AllowToCheck[i]);
+			kprintf(L"  * %-36s  ", AllowToCheck[i]);
 			dwSize = sizeof(dwData);
 			regError = RegQueryValueEx(hPd, AllowToCheck[i], NULL, NULL, (LPBYTE) &dwData, &dwSize);
 			if(regError == ERROR_SUCCESS)
@@ -153,92 +152,71 @@ NTSTATUS kuhl_m_tsssp_list(int argc, wchar_t * argv[])
 			kprintf(L"\n");
 		}
 		kprintf(L"\n");
-		for(i = 0; i < ARRAYSIZE(AllowToCheckData); i++)
-		{
-			kprintf(L"[%s]\n", AllowToCheck[i]);
-			regError = RegOpenKeyEx(hPd, AllowToCheckData[i], 0, KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_WOW64_64KEY, &hData);
-			if(regError == ERROR_SUCCESS)
-			{
-				regError = RegQueryInfoKey(hData, NULL, NULL, NULL, NULL, NULL, NULL, &nbValues, &szMaxValueNameLen, &szMaxValueLen, NULL, NULL);
-				if(regError == ERROR_SUCCESS)
-				{
-					szMaxValueNameLen++;
-					if(keyName = (wchar_t *) LocalAlloc(LPTR, (szMaxValueNameLen + 1) * sizeof(wchar_t)))
-					{
-						if(valueName = (wchar_t *) LocalAlloc(LPTR, szMaxValueLen))
-						{
-							for(j = 0; j < nbValues; j++)
-							{
-								szKeyLen = szMaxValueNameLen;
-								szValueLen = szMaxValueLen;
-								regError = RegEnumValue(hData, j, keyName, &szKeyLen, NULL, &type, (LPBYTE) valueName, &szValueLen);
-								if(regError == ERROR_SUCCESS)
-								{
-									if(type == REG_SZ)
-										kprintf(L"  %s -- %s\n", keyName, valueName);
-								}
-								else if(regError != ERROR_NO_MORE_ITEMS) PRINT_ERROR(L"RegEnumValue: 0x%08x", regError);
-							}
-							LocalFree(valueName);
-						}
-						LocalFree(keyName);
-					}
-				}
-				else PRINT_ERROR(L"RegQueryInfoKey: 0x%08x", regError);
-				RegCloseKey(hData);
-			}
-			else if(regError != ERROR_FILE_NOT_FOUND) PRINT_ERROR(L"RegOpenKeyEx: 0x%08x", regError);
-			kprintf(L"\n");
-		}
+		kuhl_m_tsssp_list_data(hPd);
 		RegCloseKey(hPd);
 	}
+	else if(regError == ERROR_FILE_NOT_FOUND)
+		kprintf(L"No local policy!\n");
 	else PRINT_ERROR(L"RegOpenKeyEx: 0x%08x\n", regError);
 	
-	regError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Lsa\\Credssp\\PolicyDefaults", 0, KEY_READ | KEY_ENUMERATE_SUB_KEYS, &hPd);
+	kprintf(L"\n\nCredssp default policy:\n");
+	regError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Lsa\\Credssp\\PolicyDefaults", 0, KEY_READ, &hPd);
 	if(regError == ERROR_SUCCESS)
 	{
-		for(i = 0; i < ARRAYSIZE(AllowToCheckData); i++)
-		{
-			kprintf(L"[%s]\n", AllowToCheck[i]);
-			regError = RegOpenKeyEx(hPd, AllowToCheckData[i], 0, KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_WOW64_64KEY, &hData);
-			if(regError == ERROR_SUCCESS)
-			{
-				regError = RegQueryInfoKey(hData, NULL, NULL, NULL, NULL, NULL, NULL, &nbValues, &szMaxValueNameLen, &szMaxValueLen, NULL, NULL);
-				if(regError == ERROR_SUCCESS)
-				{
-					szMaxValueNameLen++;
-					if(keyName = (wchar_t *) LocalAlloc(LPTR, (szMaxValueNameLen + 1) * sizeof(wchar_t)))
-					{
-						if(valueName = (wchar_t *) LocalAlloc(LPTR, szMaxValueLen))
-						{
-							for(j = 0; j < nbValues; j++)
-							{
-								szKeyLen = szMaxValueNameLen;
-								szValueLen = szMaxValueLen;
-								regError = RegEnumValue(hData, j, keyName, &szKeyLen, NULL, &type, (LPBYTE) valueName, &szValueLen);
-								if(regError == ERROR_SUCCESS)
-								{
-									if(type == REG_SZ)
-										kprintf(L"  %s -- %s\n", keyName, valueName);
-								}
-								else if(regError != ERROR_NO_MORE_ITEMS) PRINT_ERROR(L"RegEnumValue: 0x%08x", regError);
-							}
-							LocalFree(valueName);
-						}
-						LocalFree(keyName);
-					}
-				}
-				else PRINT_ERROR(L"RegQueryInfoKey: 0x%08x", regError);
-				RegCloseKey(hData);
-			}
-			else if(regError != ERROR_FILE_NOT_FOUND) PRINT_ERROR(L"RegOpenKeyEx: 0x%08x", regError);
-			kprintf(L"\n");
-		}
+		kuhl_m_tsssp_list_data(hPd);
 		RegCloseKey(hPd);
 	}
+	else if(regError == ERROR_FILE_NOT_FOUND)
+		kprintf(L"No Credssp default policy!\n");
 	else PRINT_ERROR(L"RegOpenKeyEx: 0x%08x\n", regError);
 	
 	return STATUS_SUCCESS;
+}
+
+LPCWCHAR AllowToCheckData[] = {L"AllowDefaultCredentials", L"AllowDefaultCredentialsDomain", L"AllowDefaultCredentialsWhenNTLMOnly", L"AllowDefaultCredentialsWhenNTLMOnlyDomain"};
+void kuhl_m_tsssp_list_data(HKEY hPd)
+{
+	HKEY hData;
+	LONG regError;
+	DWORD i, j, type, nbValues, szMaxValueNameLen, szMaxValueLen, szKeyLen, szValueLen;
+	wchar_t *keyName, *valueName;
+
+	for(i = 0; i < ARRAYSIZE(AllowToCheckData); i++)
+	{
+		kprintf(L"  [%s]\n", AllowToCheckData[i]);
+		regError = RegOpenKeyEx(hPd, AllowToCheckData[i], 0, KEY_READ | KEY_WOW64_64KEY, &hData);
+		if(regError == ERROR_SUCCESS)
+		{
+			regError = RegQueryInfoKey(hData, NULL, NULL, NULL, NULL, NULL, NULL, &nbValues, &szMaxValueNameLen, &szMaxValueLen, NULL, NULL);
+			if(regError == ERROR_SUCCESS)
+			{
+				szMaxValueNameLen++;
+				if(keyName = (wchar_t *) LocalAlloc(LPTR, (szMaxValueNameLen + 1) * sizeof(wchar_t)))
+				{
+					if(valueName = (wchar_t *) LocalAlloc(LPTR, szMaxValueLen))
+					{
+						for(j = 0; j < nbValues; j++)
+						{
+							szKeyLen = szMaxValueNameLen;
+							szValueLen = szMaxValueLen;
+							regError = RegEnumValue(hData, j, keyName, &szKeyLen, NULL, &type, (LPBYTE) valueName, &szValueLen);
+							if(regError == ERROR_SUCCESS)
+							{
+								if(type == REG_SZ)
+									kprintf(L"    %-*s | %s\n", szMaxValueNameLen - 1, keyName, valueName);
+							}
+							else if(regError != ERROR_NO_MORE_ITEMS) PRINT_ERROR(L"RegEnumValue: 0x%08x", regError);
+						}
+						LocalFree(valueName);
+					}
+					LocalFree(keyName);
+				}
+			}
+			else PRINT_ERROR(L"RegQueryInfoKey: 0x%08x", regError);
+			RegCloseKey(hData);
+		}
+		else if(regError != ERROR_FILE_NOT_FOUND) PRINT_ERROR(L"RegOpenKeyEx: 0x%08x", regError);
+	}
 }
 
 BOOL kuhl_m_tsssp_send_recv(HANDLE hPipe, PSecBuffer toSend, PSecBuffer toRecv)
@@ -266,45 +244,6 @@ void kuhl_m_tsssp_printOctet1String(_octet1 *data)
 {
 	if(data)
 		kprintf(L"%.*s", data->length / sizeof(wchar_t), data->value);
-}
-
-BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out)
-{
-	BOOL status = FALSE;
-	SECURITY_STATUS subStatus;
-	SecBuffer SBToCrypt[3] = {{0, SECBUFFER_TOKEN, NULL}, {0, SECBUFFER_DATA, NULL}, {0, SECBUFFER_PADDING, NULL}};
-	SecBufferDesc SBDToCrypt = {SECBUFFER_VERSION, ARRAYSIZE(SBToCrypt), SBToCrypt};
-	SecPkgContext_Sizes sizes = {0};
-
-	subStatus = QueryContextAttributes(phContext, SECPKG_ATTR_SIZES, &sizes);
-	if(subStatus == SEC_E_OK)
-	{
-		SBToCrypt[0].cbBuffer = sizes.cbSecurityTrailer;
-		SBToCrypt[1].cbBuffer = data->cbBuffer;
-		SBToCrypt[2].cbBuffer = sizes.cbBlockSize;
-		if(SBToCrypt[0].pvBuffer = LocalAlloc(LPTR, SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer + SBToCrypt[2].cbBuffer))
-		{
-			SBToCrypt[1].pvBuffer = (PBYTE) SBToCrypt[0].pvBuffer + SBToCrypt[0].cbBuffer;
-			SBToCrypt[2].pvBuffer = (PBYTE) SBToCrypt[1].pvBuffer + SBToCrypt[1].cbBuffer;
-			RtlCopyMemory(SBToCrypt[1].pvBuffer, data->pvBuffer, SBToCrypt[1].cbBuffer);
-			subStatus = EncryptMessage(phContext, 0, &SBDToCrypt, 0);
-			if(subStatus == SEC_E_OK)
-			{
-				out->length = SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer + SBToCrypt[2].cbBuffer;
-				if(out->value = (unsigned char *) LocalAlloc(LPTR, out->length))
-				{
-					RtlCopyMemory(out->value, SBToCrypt[0].pvBuffer, SBToCrypt[0].cbBuffer);
-					RtlCopyMemory(out->value + SBToCrypt[0].cbBuffer, SBToCrypt[1].pvBuffer, SBToCrypt[1].cbBuffer);
-					RtlCopyMemory(out->value + SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer, SBToCrypt[2].pvBuffer, SBToCrypt[2].cbBuffer);
-					status = TRUE;
-				}
-			}
-			else PRINT_ERROR(L"EncryptMessage: 0x%08x\n", subStatus);
-			LocalFree(SBToCrypt[0].pvBuffer);
-		}
-	}
-	else PRINT_ERROR(L"QueryContextAttributes: 0x%08x\n", subStatus);
-	return status;
 }
 
 SECURITY_STATUS kuhl_m_tsssp_AcquireCredentialsHandle(__in_opt LPWSTR pszPrincipal, __out PCredHandle phCredential)
@@ -459,30 +398,6 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 	return status;
 }
 
-//BOOL kuhl_m_tsssp_PublicKeyFromCert(LPCBYTE data, DWORD size, struct _octet1 *publicKey) ///
-//{
-//	BOOL status = FALSE;
-//	HCERTSTORE hStore;
-//	PCERT_CONTEXT pCertContext = NULL;
-//	if(hStore = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, 0, 0, NULL))
-//	{
-//		if(CertAddEncodedCertificateToStore(hStore, X509_ASN_ENCODING, data/*rawData + sizeof(DWORD)*/, size/**(PDWORD) rawData*/, CERT_STORE_ADD_USE_EXISTING, &pCertContext))
-//		{
-//			publicKey->length = pCertContext->pCertInfo->SubjectPublicKeyInfo.PublicKey.cbData;
-//			if(publicKey->value = (unsigned char *) LocalAlloc(LPTR, publicKey->length))
-//			{
-//				RtlCopyMemory(publicKey->value, pCertContext->pCertInfo->SubjectPublicKeyInfo.PublicKey.pbData, publicKey->length);
-//				status = TRUE;
-//			}
-//			CertFreeCertificateContext(pCertContext);
-//		}
-//		else PRINT_ERROR_AUTO(L"CertAddEncodedCertificateToStore");
-//		CertCloseStore(hStore, CERT_CLOSE_STORE_FORCE_FLAG);
-//	}
-//	else PRINT_ERROR_AUTO(L"CertOpenStore");
-//	return status;
-//}
-
 void kuhl_m_tsssp_TSCredentials(PSecBuffer data)
 {
 	OssBuf InputTsEncoded = {data->cbBuffer, (unsigned char *) data->pvBuffer};
@@ -551,6 +466,45 @@ void kuhl_m_tsssp_TSCredentials(PSecBuffer data)
 		ossFreePDU(&kull_m_kerberos_asn1_world, TSCredentials_PDU, InputTsCredentials);
 	}
 	else PRINT_ERROR(L"Unable to decode TSCredentials: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+}
+
+BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out)
+{
+	BOOL status = FALSE;
+	SECURITY_STATUS subStatus;
+	SecBuffer SBToCrypt[3] = {{0, SECBUFFER_TOKEN, NULL}, {0, SECBUFFER_DATA, NULL}, {0, SECBUFFER_PADDING, NULL}};
+	SecBufferDesc SBDToCrypt = {SECBUFFER_VERSION, ARRAYSIZE(SBToCrypt), SBToCrypt};
+	SecPkgContext_Sizes sizes = {0};
+
+	subStatus = QueryContextAttributes(phContext, SECPKG_ATTR_SIZES, &sizes);
+	if(subStatus == SEC_E_OK)
+	{
+		SBToCrypt[0].cbBuffer = sizes.cbSecurityTrailer;
+		SBToCrypt[1].cbBuffer = data->cbBuffer;
+		SBToCrypt[2].cbBuffer = sizes.cbBlockSize;
+		if(SBToCrypt[0].pvBuffer = LocalAlloc(LPTR, SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer + SBToCrypt[2].cbBuffer))
+		{
+			SBToCrypt[1].pvBuffer = (PBYTE) SBToCrypt[0].pvBuffer + SBToCrypt[0].cbBuffer;
+			SBToCrypt[2].pvBuffer = (PBYTE) SBToCrypt[1].pvBuffer + SBToCrypt[1].cbBuffer;
+			RtlCopyMemory(SBToCrypt[1].pvBuffer, data->pvBuffer, SBToCrypt[1].cbBuffer);
+			subStatus = EncryptMessage(phContext, 0, &SBDToCrypt, 0);
+			if(subStatus == SEC_E_OK)
+			{
+				out->length = SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer + SBToCrypt[2].cbBuffer;
+				if(out->value = (unsigned char *) LocalAlloc(LPTR, out->length))
+				{
+					RtlCopyMemory(out->value, SBToCrypt[0].pvBuffer, SBToCrypt[0].cbBuffer);
+					RtlCopyMemory(out->value + SBToCrypt[0].cbBuffer, SBToCrypt[1].pvBuffer, SBToCrypt[1].cbBuffer);
+					RtlCopyMemory(out->value + SBToCrypt[0].cbBuffer + SBToCrypt[1].cbBuffer, SBToCrypt[2].pvBuffer, SBToCrypt[2].cbBuffer);
+					status = TRUE;
+				}
+			}
+			else PRINT_ERROR(L"EncryptMessage: 0x%08x\n", subStatus);
+			LocalFree(SBToCrypt[0].pvBuffer);
+		}
+	}
+	else PRINT_ERROR(L"QueryContextAttributes: 0x%08x\n", subStatus);
+	return status;
 }
 
 BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, _octet1 *data, PSecBuffer out)

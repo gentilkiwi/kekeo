@@ -14,16 +14,15 @@ NTSTATUS kuhl_m_tsssp_server(int argc, wchar_t * argv[]);
 NTSTATUS kuhl_m_tsssp_client(int argc, wchar_t * argv[]);
 NTSTATUS kuhl_m_tsssp_list(int argc, wchar_t * argv[]);
 
+void kuhl_m_tsssp_list_data(HKEY hPd);
+
+BOOL kuhl_m_tsssp_send_recv(HANDLE hPipe, PSecBuffer toSend, PSecBuffer toRecv);
+void kuhl_m_tsssp_freeBuffer(PSecBuffer buffer, BOOL isContext);
+void kuhl_m_tsssp_printOctet1String(_octet1 *data);
 
 SECURITY_STATUS kuhl_m_tsssp_AcquireCredentialsHandle(__in_opt LPWSTR pszPrincipal, __out PCredHandle phCredential);
 SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCredential, __in_opt PCtxtHandle phContext, __in_opt PSecBufferDesc pInput, __in_opt PCtxtHandle phNewContext, __in_opt PSecBufferDesc pOutput);
-//BOOL kuhl_m_tsssp_PublicKeyFromCert(LPCBYTE data, DWORD size, struct _octet1 *publicKey);
 void kuhl_m_tsssp_TSCredentials(PSecBuffer data);
-
-BOOL kuhl_m_tsssp_send_recv(HANDLE hPipe, PSecBuffer toSend, PSecBuffer toRecv);
-
-void kuhl_m_tsssp_freeBuffer(PSecBuffer buffer, BOOL isContext);
-void kuhl_m_tsssp_printOctet1String(_octet1 *data);
 
 BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out);
 BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, _octet1 *data, PSecBuffer out);

@@ -174,4 +174,7 @@
     <None Include="..\modules\asn1\SPNEGO.asn" />
     <None Include="kekeo.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\modules\asn1\GSSAPI.asn" />
+  </ItemGroup>
 </Project>

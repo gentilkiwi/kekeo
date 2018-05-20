@@ -238,6 +238,7 @@ PKULL_M_SOCK kull_m_kerberos_asn1_net_AddressSocket_create(LPCWSTR domain, WORD 
 				}
 				if(!status)
 					status = kull_m_sock_init_addr_protocol(cInfo->DomainControllerName + 2, NULL, port, proto, fullsocket);
+				NetApiBufferFree(cInfo);
 			}
 			else PRINT_ERROR(L"DsGetDcName: %u\n", ret);
 		}

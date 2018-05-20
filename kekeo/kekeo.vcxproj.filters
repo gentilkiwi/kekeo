@@ -244,5 +244,8 @@
     <None Include="..\modules\asn1\SPNEGO.asn">
       <Filter>common modules\asn1</Filter>
     </None>
+    <None Include="..\modules\asn1\GSSAPI.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
   </ItemGroup>
 </Project>

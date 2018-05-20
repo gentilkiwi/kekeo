@@ -12,6 +12,8 @@
 #define KERBEROS_DEFAULT_PORT	((WORD) 88)
 #define KPASSWD_DEFAULT_PORT	((WORD) 464)
 
+extern DWORD WINAPI NetApiBufferFree (IN LPVOID Buffer);
+
 typedef struct _KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR{
 	DWORD	id;
 	PCWSTR	name;
