@@ -112,7 +112,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 {
 	BOOL status = FALSE;
 	DWORD l;
-	LPCWSTR szData, szStoreCA;
+	LPCWSTR szData, szStoreCA, szCRLDP;
 	LPWSTR buffer, p;
 	LPSTR abuf;
 	if(kull_m_string_args_byName(argc, argv, L"subject", &szData, NULL))
@@ -163,9 +163,10 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 	else if(kull_m_string_args_byName(argc, argv, L"caname", &szData, NULL))
 	{
 		kull_m_string_args_byName(argc, argv, L"castore", &szStoreCA, L"LOCAL_MACHINE");
+		kull_m_string_args_byName(argc, argv, L"crldp", &szCRLDP, NULL);
 		if(buffer = kull_m_kerberos_asn1_Authinfos_makeMeUpn(infos))
 		{
-			if(status = kull_m_kerberos_asn1_crypto_get_CertFromCA(szData, szStoreCA, buffer, &infos->u.certinfos, &infos->u.certinfos.tmpKey))
+			if(status = kull_m_kerberos_asn1_crypto_get_CertFromCA(szData, szStoreCA, buffer, szCRLDP, &infos->u.certinfos))
 				infos->type = KIWI_AUTH_INFOS_TYPE_OTF_RSA;
 			LocalFree(buffer);
 		}
@@ -186,14 +187,12 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 			case KIWI_AUTH_INFOS_TYPE_RSA:
 				if(status)
 					infos->type = KIWI_AUTH_INFOS_TYPE_RSA_DH;
-				else
-					kull_m_kerberos_asn1_crypto_free_CertInfo(&infos->u.certinfos);
+				else kull_m_kerberos_asn1_crypto_free_CertInfo(&infos->u.certinfos);
 				break;
 			case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
 				if(status)
 					infos->type = KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH;
-				else
-					kull_m_kerberos_asn1_crypto_free_CertFromCA(&infos->u.certinfos, &infos->u.certinfos.tmpKey);
+				else kull_m_kerberos_asn1_crypto_free_CertFromCA(&infos->u.certinfos);
 				break;
 			}
 		}
@@ -388,7 +387,7 @@ void kull_m_kerberos_asn1_Authinfos_delete(PKIWI_AUTH_INFOS infos)
 		case KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH:
 			kull_m_kerberos_asn1_crypto_free_DHKeyInfo(&infos->u.certinfos.dhKeyInfo);
 		case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
-			kull_m_kerberos_asn1_crypto_free_CertFromCA(&infos->u.certinfos, &infos->u.certinfos.tmpKey);
+			kull_m_kerberos_asn1_crypto_free_CertFromCA(&infos->u.certinfos);
 			break;
 		case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
 			if(infos->u.certinfos.tmpAsReq)

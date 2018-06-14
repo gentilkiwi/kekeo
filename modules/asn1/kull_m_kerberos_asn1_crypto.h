@@ -38,11 +38,12 @@ void kull_m_kerberos_asn1_crypto_reverseit(PVOID data, DWORD dwData);
 void kull_m_kerberos_asn1_crypto_k_truncate(PVOID input, DWORD cbInput, PVOID output, DWORD cbOutput);
 BOOL kull_m_kerberos_asn1_crypto_octetstring2key(PVOID input, DWORD cbInput, DHNonce *client, DHNonce *server, EncryptionKey *ekey);
 
-BOOL kull_m_kerberos_asn1_crypto_get_CertFromCA(PCWSTR caname, PCWSTR castore, PCWSTR upn, PKULL_M_CRYPTO_CERT_INFO certInfo, PCRYPT_KEY_PROV_INFO keyInfo);
-void kull_m_kerberos_asn1_crypto_free_CertFromCA(PKULL_M_CRYPTO_CERT_INFO certInfo, PCRYPT_KEY_PROV_INFO keyInfo);
+BOOL kull_m_kerberos_asn1_crypto_get_CertFromCA(PCWSTR caname, PCWSTR castore, PCWSTR upn, PCWSTR crldp, PKULL_M_CRYPTO_CERT_INFO certInfo);
+void kull_m_kerberos_asn1_crypto_free_CertFromCA(PKULL_M_CRYPTO_CERT_INFO certInfo);
 BOOL kull_m_kerberos_asn1_crypto_sc_auth_Ext_AltUPN(PCERT_EXTENSION pCertExtension, LPCWSTR upn);
 BOOL kull_m_kerberos_asn1_crypto_sc_auth_Ext_KU(PCERT_EXTENSION pCertExtension, WORD bits);
 BOOL kull_m_kerberos_asn1_crypto_sc_auth_Ext_EKU(PCERT_EXTENSION pCertExtension, DWORD count, ...);
+BOOL kull_m_kerberos_asn1_crypto_sc_auth_Ext_CDP(PCERT_EXTENSION pCertExtension, DWORD count, ...);
 __inline void kull_m_kerberos_asn1_crypto_sc_auth_Ext_Free(PCERT_EXTENSION pCertExtension);
 DWORD kull_m_kerberos_asn1_crypto_system_store_to_dword(PCWSTR name);
 PCWCHAR kull_m_kerberos_asn1_crypto_etype(LONG eType);
