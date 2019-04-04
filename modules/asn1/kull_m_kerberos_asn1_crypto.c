@@ -334,7 +334,7 @@ BOOL kull_m_kerberos_asn1_crypto_get_DHKeyInfo(BOOL integrated, BOOL withNonce, 
 		#else
 		#define DH_XOR		0xa2491d83
 		#define DH_OFFSET	5
-		# endif
+		#endif
 		((PDWORD) (((PULONG_PTR) keyInfo->hProv)[28] ^ DH_XOR))[DH_OFFSET] = TRUE; // :)
 		if(integrated)
 		{

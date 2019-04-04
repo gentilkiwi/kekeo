@@ -25,8 +25,7 @@ BOOL kull_m_sock_finish()
 		status = (WSACleanup() == ERROR_SUCCESS);
 		if(status)
 			kull_m_sock_isInit = FALSE;
-		else
-			kull_m_sock_error_auto(L"WSACleanup");
+		else kull_m_sock_error_auto(L"WSACleanup");
 	}
 	return status;
 }
@@ -128,21 +127,9 @@ BOOL kull_m_sock_termSocket(PKULL_M_SOCK fullsocket)
 void kull_m_sock_descr(PKULL_M_SOCK fullsocket)
 {
 	PCWSTR proto;
-	LPWSTR buffer;
-	DWORD size = 0;
-
 	kprintf(L"Server  : %s\n", fullsocket->servername);
 	kprintf(L"Address : ");
-	if((WSAAddressToString((LPSOCKADDR) &fullsocket->address, sizeof(SOCKADDR_IN), NULL, NULL, &size) == SOCKET_ERROR) && (WSAGetLastError() == WSAEFAULT))
-	{
-		if(buffer = (LPWSTR) LocalAlloc(LPTR, size * sizeof(wchar_t)))
-		{
-			if(WSAAddressToString((LPSOCKADDR) &fullsocket->address, sizeof(SOCKADDR_IN), NULL, buffer, &size) == ERROR_SUCCESS)
-				kprintf(L"%s\n", buffer);
-			else kull_m_sock_error_auto(L"WSAAddressToString");
-			LocalFree(buffer);
-		}
-	}
+	kull_m_sock_descr_addrin(&fullsocket->address);
 	switch(fullsocket->protocol)
 	{
 	case IPPROTO_TCP:
@@ -155,6 +142,22 @@ void kull_m_sock_descr(PKULL_M_SOCK fullsocket)
 		proto = L"?";
 	}
 	kprintf(L"Protocol: %s\n", proto);
+}
+
+void kull_m_sock_descr_addrin(PSOCKADDR_IN addr)
+{
+	LPWSTR buffer;
+	DWORD size = 0;
+	if((WSAAddressToString((LPSOCKADDR) addr, sizeof(SOCKADDR_IN), NULL, NULL, &size) == SOCKET_ERROR) && (WSAGetLastError() == WSAEFAULT))
+	{
+		if(buffer = (LPWSTR) LocalAlloc(LPTR, size * sizeof(wchar_t)))
+		{
+			if(WSAAddressToString((LPSOCKADDR) addr, sizeof(SOCKADDR_IN), NULL, buffer, &size) == ERROR_SUCCESS)
+				kprintf(L"%s\n", buffer);
+			else kull_m_sock_error_auto(L"WSAAddressToString");
+			LocalFree(buffer);
+		}
+	}
 }
 
 BOOL kull_m_sock_init_addr_protocol(PCWSTR Server, PCWSTR Service, WORD Port, IPPROTO Protocol, PKULL_M_SOCK fullsocket)
@@ -192,9 +195,9 @@ BOOL kull_m_sock_init_addr_protocol(PCWSTR Server, PCWSTR Service, WORD Port, IP
 	else if(!(status = kull_m_sock_init_addr_string(Server, Port, Protocol, fullsocket)))
 	{
 		dnsStatus = DnsQuery(Server, DNS_TYPE_A, DNS_QUERY_NO_NETBT | DNS_QUERY_NO_MULTICAST | DNS_QUERY_TREAT_AS_FQDN, NULL, &pRecords, NULL);
-		if(dnsStatus == ERROR_SUCCESS)
+		if((dnsStatus == ERROR_SUCCESS) && pRecords)
 		{
-			if(pRecords && (pRecords->wType == DNS_TYPE_A))
+			if(pRecords->wType == DNS_TYPE_A)
 			{
 				fullsocket->address.sin_family = AF_INET;
 				fullsocket->address.sin_port = htons(Port);
@@ -204,10 +207,9 @@ BOOL kull_m_sock_init_addr_protocol(PCWSTR Server, PCWSTR Service, WORD Port, IP
 				fullsocket->socket = WSASocket(fullsocket->address.sin_family, (fullsocket->protocol == IPPROTO_TCP) ? SOCK_STREAM : SOCK_DGRAM, fullsocket->protocol, NULL, 0, 0);
 				if(!(status = (fullsocket->socket != INVALID_SOCKET)))
 					kull_m_sock_error_auto(L"WSASocket");
-
-				DnsRecordListFree(pRecords, DnsFreeRecordList);
 			}
 			else PRINT_ERROR(L"DnsQuery no A record\n");
+			DnsRecordListFree(pRecords, DnsFreeRecordList);
 		}
 		else PRINT_ERROR(L"DnsQuery: %08x\n", dnsStatus);
 	}

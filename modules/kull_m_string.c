@@ -299,14 +299,37 @@ BOOL kull_m_string_args_bool_byName(int argc, wchar_t * argv[], LPCWSTR name, PB
 	return status;
 }
 
+BOOL kull_m_string_copy_len(LPWSTR *dst, LPCWSTR src, size_t size)
+{
+	BOOL status = FALSE;
+	if(src && dst && size)
+	{
+		size = (size + 1) * sizeof(wchar_t);
+		if(*dst = (LPWSTR) LocalAlloc(LPTR, size))
+		{
+			RtlCopyMemory(*dst, src, size);
+			status = TRUE;
+		}
+	}
+	return status;
+}
+
 BOOL kull_m_string_copy(LPWSTR *dst, LPCWSTR src)
 {
 	BOOL status = FALSE;
 	size_t size;
 	if(src && dst && (size = wcslen(src)))
+		status = kull_m_string_copy_len(dst, src, size);
+	return status;
+}
+
+BOOL kull_m_string_copyA_len(LPSTR *dst, LPCSTR src, size_t size)
+{
+	BOOL status = FALSE;
+	if(src && dst && size)
 	{
-		size = (size + 1) * sizeof(wchar_t);
-		if(*dst = (LPWSTR) LocalAlloc(LPTR, size))
+		size = (size + 1) * sizeof(char);
+		if(*dst = (LPSTR) LocalAlloc(LPTR, size))
 		{
 			RtlCopyMemory(*dst, src, size);
 			status = TRUE;
@@ -320,14 +343,7 @@ BOOL kull_m_string_copyA(LPSTR *dst, LPCSTR src)
 	BOOL status = FALSE;
 	size_t size;
 	if(src && dst && (size = strlen(src)))
-	{
-		size = (size + 1) * sizeof(char);
-		if(*dst = (LPSTR) LocalAlloc(LPTR, size))
-		{
-			RtlCopyMemory(*dst, src, size);
-			status = TRUE;
-		}
-	}
+		status = kull_m_string_copyA_len(dst, src, size);
 	return status;
 }
 
@@ -404,6 +420,27 @@ BOOL kull_m_string_sprintf(PWSTR *outBuffer, PCWSTR format, ...)
 			if(varBuf > 0)
 				status = TRUE;
 			else *outBuffer = (PWSTR) LocalFree(outBuffer);
+		}
+	}
+	return status;
+}
+
+BOOL kull_m_string_sprintfA(PSTR *outBuffer, PCSTR format, ...)
+{
+	BOOL status = FALSE;
+	int varBuf;
+	va_list args;
+	va_start(args, format);
+	varBuf = _vscprintf(format, args);
+	if(varBuf > 0)
+	{
+		varBuf++;
+		if(*outBuffer = (PSTR) LocalAlloc(LPTR, varBuf * sizeof(char)))
+		{
+			varBuf = vsprintf_s(*outBuffer, varBuf, format, args);
+			if(varBuf > 0)
+				status = TRUE;
+			else *outBuffer = (PSTR) LocalFree(outBuffer);
 		}
 	}
 	return status;

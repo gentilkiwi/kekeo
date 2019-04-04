@@ -29,6 +29,7 @@ BOOL kull_m_sock_termSocket(PKULL_M_SOCK fullsocket);
 
 BOOL kull_m_sock_init_addr_protocol(PCWSTR Server, PCWSTR Service, WORD Port, IPPROTO Protocol, PKULL_M_SOCK fullsocket);
 void kull_m_sock_descr(PKULL_M_SOCK fullsocket);
+void kull_m_sock_descr_addrin(PSOCKADDR_IN addr);
 BOOL kull_m_sock_init_addr_string(PCWSTR String, WORD Port, IPPROTO Protocol, PKULL_M_SOCK fullsocket);
 BOOL kull_m_sock_init_socket_from_socket(PSOCKADDR_IN oSocket, IPPROTO protocol, PKULL_M_SOCK fullsocket);
 BOOL kull_m_sock_init_socket_from_socket_port(PKULL_M_SOCK sourceSocket, USHORT port, PKULL_M_SOCK fullsocket);
