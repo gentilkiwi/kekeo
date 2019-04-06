@@ -420,8 +420,8 @@ BOOL kuhl_m_tgt_httpserver_recvForMe(SOCKET clientSocket, LPBYTE *data, DWORD *d
 {
 	BOOL status = FALSE, toContinue;
 	DWORD t = KULL_M_SOCK_DEFAULT_BUFLEN;
+	LPSTR myBuffer;
 	int iResult;
-	char *ptr;
 
 	*dataLen = 0;
 	if(*data = (LPBYTE) LocalAlloc(LPTR, t))
@@ -430,14 +430,17 @@ BOOL kuhl_m_tgt_httpserver_recvForMe(SOCKET clientSocket, LPBYTE *data, DWORD *d
 		{
 			status = FALSE;
 			toContinue = FALSE;
-			ptr = (char *) *data + (KULL_M_SOCK_DEFAULT_BUFLEN - t);
-			iResult = recv(clientSocket, ptr, t, 0);
+			iResult = recv(clientSocket, (char *) *data + (KULL_M_SOCK_DEFAULT_BUFLEN - t), t, 0);
 			if(iResult > 0)
 			{
-				toContinue = !strstr(ptr, "\r\n\r\n");
-				status = TRUE;
 				*dataLen += iResult;
 				t -= iResult;
+				if(kull_m_string_copyA_len(&myBuffer, (char *) *data, *dataLen))
+				{
+					toContinue = !strstr(myBuffer, "\r\n\r\n");
+					status = TRUE;
+					LocalFree(&myBuffer);
+				}
 			}
 			else if(iResult == 0)
 				kull_m_sock_error(0, L"recv/Connection closed");
