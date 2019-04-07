@@ -420,7 +420,6 @@ BOOL kuhl_m_tgt_httpserver_recvForMe(SOCKET clientSocket, LPBYTE *data, DWORD *d
 {
 	BOOL status = FALSE, toContinue;
 	DWORD t = KULL_M_SOCK_DEFAULT_BUFLEN;
-	LPSTR myBuffer;
 	int iResult;
 
 	*dataLen = 0;
@@ -435,12 +434,8 @@ BOOL kuhl_m_tgt_httpserver_recvForMe(SOCKET clientSocket, LPBYTE *data, DWORD *d
 			{
 				*dataLen += iResult;
 				t -= iResult;
-				if(kull_m_string_copyA_len(&myBuffer, (char *) *data, *dataLen))
-				{
-					toContinue = !strstr(myBuffer, "\r\n\r\n");
-					status = TRUE;
-					LocalFree(&myBuffer);
-				}
+				toContinue = !kuhl_m_tgt_deleg_searchInMemory("\r\n\r\n", 4, *data, *dataLen);
+				status = TRUE;
 			}
 			else if(iResult == 0)
 				kull_m_sock_error(0, L"recv/Connection closed");
@@ -594,18 +589,18 @@ PBYTE kuhl_m_tgt_deleg_searchDataAferOIDInBuffer(IN LPCVOID data, IN SIZE_T Size
 	DWORD i;
 	PBYTE ret = NULL;
 	for(i = 0; (i < ARRAYSIZE(kerberosOIDs)) && !ret; i++)
-		ret = (PBYTE) kuhl_m_tgt_deleg_searchInMemory(&kerberosOIDs[i], data, Size);
+		ret = (PBYTE) kuhl_m_tgt_deleg_searchInMemory(kerberosOIDs[i].value, kerberosOIDs[i].length, data, Size);
 	if(ret)
 		ret += kerberosOIDs[i - 1].length;
 	return ret;
 }
 
-PVOID kuhl_m_tgt_deleg_searchInMemory(IN const OssEncodedOID *oid, IN LPCVOID Start, IN SIZE_T Size)
+PVOID kuhl_m_tgt_deleg_searchInMemory(IN LPCVOID Pattern, IN SIZE_T PatternSize, IN LPCVOID Start, IN SIZE_T Size)
 {
 	BOOL status = FALSE;
 	PBYTE Result = NULL, CurrentPtr, limite = (PBYTE) Start + Size;
-	for(CurrentPtr = (PBYTE) Start; !status && (CurrentPtr + oid->length <= limite); CurrentPtr++)
-		status = RtlEqualMemory(oid->value, CurrentPtr, oid->length);
+	for(CurrentPtr = (PBYTE) Start; !status && (CurrentPtr + PatternSize <= limite); CurrentPtr++)
+		status = RtlEqualMemory(Pattern, CurrentPtr, PatternSize);
 	if(status)
 		Result = CurrentPtr - 1;
 	return Result;
