@@ -70,6 +70,7 @@ typedef struct _KULL_M_CRYPTO_CERT_INFO {
 #define PA_TYPE_PK_AS_REP_OLD		15
 #define PA_TYPE_PK_AS_REQ			16
 #define PA_TYPE_PK_AS_REP			17
+#define PA_TYPE_ETYPE_INFO2			19
 #define PA_TYPE_PAC_REQUEST			128
 #define PA_TYPE_FOR_USER			129
 #define PA_TYPE_X509_USER			130
@@ -105,6 +106,7 @@ typedef enum _KIWI_AUTH_INFOS_TYPE {
 	KIWI_AUTH_INFOS_TYPE_OTF_RSA,
 	KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH,
 	KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH,
+	KIWI_AUTH_INFOS_TYPE_ANON,
 } KIWI_AUTH_INFOS_TYPE, *PKIWI_AUTH_INFOS_TYPE;
 
 typedef struct _KIWI_AUTH_INFOS {
@@ -170,6 +172,7 @@ void kull_m_kerberos_asn1_KdcReqBody_free(KDC_REQ_BODY *body);
 
 
 BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, AS_REP **AsRep, EncKDCRepPart **encAsRepPart, EncryptionKey *replyKey);
+BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, int pduRep, LPVOID *Rep);
 
 BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *time, PrincipalName *altService, OssBuf *OutKdcReq);
 void kull_m_kerberos_asn1_PA_DATAs_build(_seqof4 *padata, DWORD count, ...);

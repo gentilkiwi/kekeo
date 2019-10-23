@@ -330,6 +330,9 @@ PKIWI_AUTH_INFOS kull_m_kerberos_asn1_Authinfos_create(int argc, wchar_t * argv[
 				kull_m_kerberos_asn1_PrincipalName_create_fromName(&infos->sname, NULL, szData);
 			else kull_m_kerberos_asn1_PrincipalName_create(&infos->sname, KRB_NT_SRV_INST, 2, "krbtgt", infos->realm);
 
+			if(kull_m_string_args_byName(argc, argv, L"anon", NULL, NULL))
+				infos->type = KIWI_AUTH_INFOS_TYPE_ANON;
+
 			if(infos->type == KIWI_AUTH_INFOS_TYPE_INVALID)
 				kull_m_kerberos_asn1_Authinfos_create_for_key(infos, argc, argv);
 
@@ -430,6 +433,9 @@ void kull_m_kerberos_asn1_Authinfos_descr(PKIWI_AUTH_INFOS infos)
 			break;
 		case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
 			kprintf(L"RSA with DH AS-REQ (PKINIT Mustiness)\n");
+			break;
+		case KIWI_AUTH_INFOS_TYPE_ANON:
+			kprintf(L"Anonymous (without authenticator)\n");
 			break;
 		default:
 			kprintf(L"???\n");

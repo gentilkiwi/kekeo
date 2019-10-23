@@ -304,6 +304,19 @@ BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fu
 	return status;
 }
 
+BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, int pduRep, LPVOID *Rep)
+{
+	BOOL status = FALSE;
+	OssBuf AsReq = {0, NULL};
+	
+	if(kull_m_kerberos_asn1_AsReq_build(authinfos, time, altService, &AsReq))
+	{
+		status = kull_m_kerberos_asn1_net_callKdcOssBuf(fullsocket, &AsReq, (LPVOID *) Rep, pduRep);
+		ossFreeBuf(&kull_m_kerberos_asn1_world, AsReq.value);
+	}
+	return status;
+}
+
 BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *time, PrincipalName *altService, OssBuf *OutKdcReq)
 {
 	BOOL status = FALSE, goodPa = FALSE;
@@ -335,19 +348,23 @@ BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *
 			case KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH:
 				goodPa = kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(&PaGeneric, NULL /* todo, one day...*/, time, &authinfos->u.certinfos, &authinfos->u.certinfos.dhKeyInfo);
 				break;
+			case KIWI_AUTH_INFOS_TYPE_ANON:
 			default:
 				;
 			}
 
 			if(goodPa)
-			{
 				kull_m_kerberos_asn1_PA_DATAs_build(&asreq.padata, 2, &PaGeneric, &PaPacRequest);
-				if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AS_REQ_PDU, &asreq, OutKdcReq)))
-					PRINT_ERROR(L"Unable to encode AS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
-				if(asreq.padata)
-					LocalFree(asreq.padata);
+			else kull_m_kerberos_asn1_PA_DATAs_build(&asreq.padata, 1, &PaPacRequest);
+
+			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AS_REQ_PDU, &asreq, OutKdcReq)))
+				PRINT_ERROR(L"Unable to encode AS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
+			if(asreq.padata)
+				LocalFree(asreq.padata);
+
+			if(goodPa)
 				ossFreeBuf(&kull_m_kerberos_asn1_world, PaGeneric.padata_value.value);
-			}
+
 			ossFreeBuf(&kull_m_kerberos_asn1_world, PaPacRequest.padata_value.value);
 		}
 		kull_m_kerberos_asn1_KdcReqBody_free(&asreq.req_body);
