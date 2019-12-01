@@ -167,7 +167,7 @@ PKIWI_HTTP kuhl_m_ntlm_http_giveHTTP(LPCWSTR url, LPCWSTR verb);
 void kuhl_m_ntlm_http_closeHTTP(PKIWI_HTTP kHttp, BOOL freeIt);
 BOOL kuhl_m_ntlm_http_getHeaders(PKIWI_HTTP pHttp, DWORD dwInfoLevel, PDWORD pdwIndex, PBYTE *data, DWORD *len);
 BOOL kuhl_m_ntlm_http_sendReceiveHTTP(PKIWI_HTTP pHttp, PCWCHAR headers, PBYTE *data, DWORD *len, WORD *httpStatus);
-PWCHAR kuhl_m_ntlm_http_encodeAuthNTLMB64(LPCWCHAR Scheme, PSecBufferDesc pBuf);
+PWCHAR kuhl_m_ntlm_http_encodeAuthNTLMB64(LPCWCHAR Scheme, BOOL isProxy, PSecBufferDesc pBuf);
 BOOL kuhl_m_ntlm_http_decodeB64NTLMAuth(LPCWCHAR Scheme, PCWCHAR b64, PSecBufferDesc pBuf);
 
 void kuhl_m_ntlm_descrGeneric(PSecBufferDesc buff, ULONG WantedMessageType);

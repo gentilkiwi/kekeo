@@ -261,11 +261,11 @@ DECLARE_UNICODE_STRING(uNegotiate, L"Negotiate");
 NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 {
 	PKIWI_HTTP pHttp;
-	DWORD dwIndex, dwLen, dwDisableRedirect = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
+	DWORD dwIndex, dwLen, dwDisableRedirect = WINHTTP_OPTION_REDIRECT_POLICY_NEVER, dwInfoLevel;
 	WORD httpStatus;
 	wchar_t *text, *inputChallenge;
 	UNICODE_STRING scheme;
-	BOOL isNTLM, isNego;
+	BOOL isNTLM, isNego, isProxy;
 
 	SECURITY_STATUS status;
 	CredHandle Credentials;
@@ -274,7 +274,7 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 	SecBuffer InBuff, OutBuff = {0, SECBUFFER_TOKEN, NULL}, Out2Buff = {0, SECBUFFER_TOKEN, NULL};
 	SecBufferDesc Output = {SECBUFFER_VERSION, 1, &OutBuff}, Input = {SECBUFFER_VERSION, 1, &InBuff}, Output2 = {SECBUFFER_VERSION, 1, &Out2Buff};
 	ULONG ContextAttr;
-	PCWCHAR szUrl;
+	PCWCHAR szUrl, szHeader;
 	PWCHAR package, negoHeader, authHeader;
 	SEC_WINNT_AUTH_IDENTITY altIdentity = {NULL, 0, NULL, 0, NULL, 0, SEC_WINNT_AUTH_IDENTITY_UNICODE};
 
@@ -299,10 +299,22 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 					kprintf(L"  Server: %.*s\n", dwLen / sizeof(wchar_t), text);
 					LocalFree(text);
 				}
-				if(httpStatus == HTTP_STATUS_DENIED)
+				if((httpStatus == HTTP_STATUS_DENIED) || (httpStatus == HTTP_STATUS_PROXY_AUTH_REQ))
 				{
-					kprintf(L"  WWW-Authenticate: ");
-					for(isNTLM = isNego = FALSE, dwIndex = 0; kuhl_m_ntlm_http_getHeaders(pHttp, WINHTTP_QUERY_WWW_AUTHENTICATE, &dwIndex, (PBYTE *) &text, &dwLen);)
+					if(httpStatus == HTTP_STATUS_DENIED)
+					{
+						isProxy = FALSE;
+						dwInfoLevel = WINHTTP_QUERY_WWW_AUTHENTICATE;
+						szHeader = L"WWW-Authenticate";
+					}
+					else
+					{
+						isProxy = TRUE;
+						dwInfoLevel = WINHTTP_QUERY_PROXY_AUTHENTICATE;
+						szHeader = L"Proxy-Authenticate";
+					}
+					kprintf(L"  %s: ", szHeader);
+					for(isNTLM = isNego = FALSE, dwIndex = 0; kuhl_m_ntlm_http_getHeaders(pHttp, dwInfoLevel, &dwIndex, (PBYTE *) &text, &dwLen);)
 					{
 						scheme.Length = scheme.MaximumLength = (WORD) dwLen;
 						scheme.Buffer = text;
@@ -314,7 +326,6 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 						LocalFree(text);
 					}
 					kprintf(L"\n");
-
 					if(isNego || isNTLM)
 					{
 						package = isNego ? L"Negotiate" : L"NTLM";
@@ -326,13 +337,13 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 							if(status == SEC_I_CONTINUE_NEEDED)
 							{
 								kuhl_m_ntlm_descrGeneric(&Output, NTLMSSP_TypeOneMessage);
-								if(negoHeader = kuhl_m_ntlm_http_encodeAuthNTLMB64(package, &Output))
+								if(negoHeader = kuhl_m_ntlm_http_encodeAuthNTLMB64(package, isProxy, &Output))
 								{
 									kprintf(L"[Client]\n  %s\n\n[Server]\n", negoHeader);
 									if(kuhl_m_ntlm_http_sendReceiveHTTP(pHttp, negoHeader, NULL, NULL, &httpStatus))
 									{
-										kprintf(L"  WWW-Authenticate: ");
-										if(kuhl_m_ntlm_http_getHeaders(pHttp, WINHTTP_QUERY_WWW_AUTHENTICATE, WINHTTP_NO_HEADER_INDEX, (PBYTE *) &inputChallenge, &dwLen))
+										kprintf(L"  %s: ", szHeader);
+										if(kuhl_m_ntlm_http_getHeaders(pHttp, dwInfoLevel, WINHTTP_NO_HEADER_INDEX, (PBYTE *) &inputChallenge, &dwLen))
 										{
 											kprintf(L"%.*s\n[SSPI - CHALLENGE]\n", dwLen / sizeof(wchar_t), inputChallenge);
 											if(kuhl_m_ntlm_http_decodeB64NTLMAuth(package, inputChallenge, &Input))
@@ -345,7 +356,7 @@ NTSTATUS kuhl_m_ntlm_http(int argc, wchar_t * argv[])
 													if(status == SEC_E_OK)
 													{
 														kuhl_m_ntlm_descrGeneric(&Output2, NTLMSSP_TypeThreeMessage);
-														if(authHeader = kuhl_m_ntlm_http_encodeAuthNTLMB64(package, &Output2))
+														if(authHeader = kuhl_m_ntlm_http_encodeAuthNTLMB64(package, isProxy, &Output2))
 														{
 															kprintf(L"[Client]\n  %s\n\n[Server]\n", authHeader);
 															if(!WinHttpSetOption(pHttp->hRequest, WINHTTP_OPTION_REDIRECT_POLICY, &dwDisableRedirect, sizeof(dwDisableRedirect)))
@@ -524,7 +535,7 @@ BOOL kuhl_m_ntlm_http_sendReceiveHTTP(PKIWI_HTTP pHttp, PCWCHAR headers, PBYTE *
 	return status;
 }
 
-PWCHAR kuhl_m_ntlm_http_encodeAuthNTLMB64(LPCWCHAR Scheme, PSecBufferDesc pBuf)
+PWCHAR kuhl_m_ntlm_http_encodeAuthNTLMB64(LPCWCHAR Scheme, BOOL isProxy, PSecBufferDesc pBuf)
 {
 	PWCHAR out = NULL, Base64, ptr;
 	DWORD dwNeed = 0;
@@ -536,7 +547,7 @@ PWCHAR kuhl_m_ntlm_http_encodeAuthNTLMB64(LPCWCHAR Scheme, PSecBufferDesc pBuf)
 			{
 				if(MIMIKATZ_NT_MAJOR_VERSION < 6)
 					for(ptr = Base64; ptr = wcsstr(ptr, L"\r\n"); RtlMoveMemory(ptr, ptr + 2, (lstrlen(ptr + 2) + 1) * sizeof(wchar_t)));
-				kull_m_string_sprintf(&out, L"Authorization: %s %s", Scheme, Base64);
+				kull_m_string_sprintf(&out, L"%s: %s %s", isProxy ? L"Proxy-Authorization": L"Authorization", Scheme, Base64);
 			}
 			else PRINT_ERROR_AUTO(L"CryptBinaryToString(data)");
 			LocalFree(Base64);
