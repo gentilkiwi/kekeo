@@ -121,7 +121,7 @@ BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PKULL_M_CRYPTO_CER
 	RtlZeroMemory(certInfo, sizeof(KULL_M_CRYPTO_CERT_INFO));
 	if(certInfo->hCertStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, (HCRYPTPROV_LEGACY) NULL, CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_OPEN_EXISTING_FLAG | CERT_STORE_READONLY_FLAG, L"My"))
 		if(certInfo->pCertContext = CertFindCertificateInStore(certInfo->hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_SUBJECT_STR, Subject, NULL))
-			status = CryptAcquireCertificatePrivateKey(certInfo->pCertContext, CRYPT_ACQUIRE_CACHE_FLAG, NULL, &certInfo->provider.hProv, &certInfo->provider.dwKeySpec, &keyToFree);
+			status = CryptAcquireCertificatePrivateKey(certInfo->pCertContext, CRYPT_ACQUIRE_CACHE_FLAG | CRYPT_ACQUIRE_ALLOW_NCRYPT_KEY_FLAG, NULL, &certInfo->provider.hProv, &certInfo->provider.dwKeySpec, &keyToFree);
 	if(!status)
 		kull_m_kerberos_asn1_crypto_free_CertInfo(certInfo);
 	return status;
