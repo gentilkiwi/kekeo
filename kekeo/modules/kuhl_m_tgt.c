@@ -434,7 +434,7 @@ BOOL kuhl_m_tgt_httpserver_recvForMe(SOCKET clientSocket, LPBYTE *data, DWORD *d
 			{
 				*dataLen += iResult;
 				t -= iResult;
-				toContinue = !kuhl_m_tgt_deleg_searchInMemory("\r\n\r\n", 4, *data, *dataLen);
+				toContinue = !kull_m_memory_search("\r\n\r\n", 4, *data, *dataLen);
 				status = TRUE;
 			}
 			else if(iResult == 0)
@@ -589,21 +589,10 @@ PBYTE kuhl_m_tgt_deleg_searchDataAferOIDInBuffer(IN LPCVOID data, IN SIZE_T Size
 	DWORD i;
 	PBYTE ret = NULL;
 	for(i = 0; (i < ARRAYSIZE(kerberosOIDs)) && !ret; i++)
-		ret = (PBYTE) kuhl_m_tgt_deleg_searchInMemory(kerberosOIDs[i].value, kerberosOIDs[i].length, data, Size);
+		ret = (PBYTE) kull_m_memory_search(kerberosOIDs[i].value, kerberosOIDs[i].length, data, Size);
 	if(ret)
 		ret += kerberosOIDs[i - 1].length;
 	return ret;
-}
-
-PVOID kuhl_m_tgt_deleg_searchInMemory(IN LPCVOID Pattern, IN SIZE_T PatternSize, IN LPCVOID Start, IN SIZE_T Size)
-{
-	BOOL status = FALSE;
-	PBYTE Result = NULL, CurrentPtr, limite = (PBYTE) Start + Size;
-	for(CurrentPtr = (PBYTE) Start; !status && (CurrentPtr + PatternSize <= limite); CurrentPtr++)
-		status = RtlEqualMemory(Pattern, CurrentPtr, PatternSize);
-	if(status)
-		Result = CurrentPtr - 1;
-	return Result;
 }
 
 BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(AP_REQ *ApReq, EncryptionKey *key, LPVOID UserData)

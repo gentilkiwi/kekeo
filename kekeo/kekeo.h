@@ -15,6 +15,7 @@
 #include "modules/kuhl_m_smb.h"
 #include "modules/kuhl_m_ntlm.h"
 #include "modules/kuhl_m_tsssp.h"
+#include "modules/kuhl_m_server.h"
 
 #include "../modules/kull_m_file.h"
 #include "../modules/asn1/kull_m_kerberos_asn1.h"

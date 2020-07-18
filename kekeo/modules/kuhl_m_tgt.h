@@ -9,6 +9,7 @@
 #include "../../modules/asn1/kull_m_kerberos_asn1_authinfos.h"
 #include "../../modules/kull_m_file.h"
 #include "../../modules/kull_m_sock.h"
+#include "../../modules/kull_m_memory.h"
 #include "kerberos/kuhl_m_kerberos_pac.h"
 #include "kerberos/kuhl_m_kerberos.h"
 
@@ -42,7 +43,6 @@ PSTR kuhl_m_tgt_httpserver_dealWithHeaders(LPCSTR data, DWORD size, LPCSTR toFin
 
 BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERBEROS_GETENCRYPTIONKEYFROMAPREQ callback, PVOID userdata);
 PBYTE kuhl_m_tgt_deleg_searchDataAferOIDInBuffer(IN LPCVOID data, IN SIZE_T Size);
-PVOID kuhl_m_tgt_deleg_searchInMemory(IN LPCVOID Pattern, IN SIZE_T PatternSize, IN LPCVOID Start, IN SIZE_T Size);
 
 BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(AP_REQ *ApReq, EncryptionKey *key, LPVOID UserData);
 BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromTicket(AP_REQ *ApReq, EncryptionKey *key, LPVOID UserData); // TODO

@@ -112,6 +112,12 @@
     <ClCompile Include="modules\kuhl_m_tsssp.c">
       <Filter>local modules</Filter>
     </ClCompile>
+    <ClCompile Include="modules\kuhl_m_server.c">
+      <Filter>local modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\kull_m_memory.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -213,6 +219,12 @@
     </ClInclude>
     <ClInclude Include="modules\kuhl_m_tsssp.h">
       <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\kuhl_m_server.h">
+      <Filter>local modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\kull_m_memory.h">
+      <Filter>common modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

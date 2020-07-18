@@ -98,6 +98,7 @@
     <ClCompile Include="..\modules\asn1\kull_m_kerberos_asn1_net.c" />
     <ClCompile Include="..\modules\asn1\kull_m_kerberos_oss_asn1_internal_$(Platform).c" />
     <ClCompile Include="..\modules\kull_m_file.c" />
+    <ClCompile Include="..\modules\kull_m_memory.c" />
     <ClCompile Include="..\modules\kull_m_net.c" />
     <ClCompile Include="..\modules\kull_m_output.c" />
     <ClCompile Include="..\modules\kull_m_pipe.c" />
@@ -118,6 +119,7 @@
     <ClCompile Include="modules\kuhl_m_exploit.c" />
     <ClCompile Include="modules\kuhl_m_misc.c" />
     <ClCompile Include="modules\kuhl_m_ntlm.c" />
+    <ClCompile Include="modules\kuhl_m_server.c" />
     <ClCompile Include="modules\kuhl_m_smb.c" />
     <ClCompile Include="modules\kuhl_m_tgs.c" />
     <ClCompile Include="modules\kuhl_m_tgt.c" />
@@ -132,6 +134,7 @@
     <ClInclude Include="..\modules\asn1\kull_m_kerberos_oss_asn1_internal.h" />
     <ClInclude Include="..\modules\kull_m_crypto_system.h" />
     <ClInclude Include="..\modules\kull_m_file.h" />
+    <ClInclude Include="..\modules\kull_m_memory.h" />
     <ClInclude Include="..\modules\kull_m_net.h" />
     <ClInclude Include="..\modules\kull_m_output.h" />
     <ClInclude Include="..\modules\kull_m_pipe.h" />
@@ -154,6 +157,7 @@
     <ClInclude Include="modules\kuhl_m_exploit.h" />
     <ClInclude Include="modules\kuhl_m_misc.h" />
     <ClInclude Include="modules\kuhl_m_ntlm.h" />
+    <ClInclude Include="modules\kuhl_m_server.h" />
     <ClInclude Include="modules\kuhl_m_smb.h" />
     <ClInclude Include="modules\kuhl_m_tgs.h" />
     <ClInclude Include="modules\kuhl_m_tgt.h" />
