@@ -349,6 +349,6 @@ NTSTATUS kuhl_m_kerberos_ask(int argc, wchar_t * argv[])
 			LocalFree(pKerbRetrieveRequest);
 		}
 	}
-	else PRINT_ERROR(L"At least /target argument is required (eg: /target:cifs/server.lab.local)\n");
+	else PRINT_ERROR(L"At least /service argument is required (eg: /service:cifs/server.lab.local)\n");
 	return STATUS_SUCCESS;
 }
