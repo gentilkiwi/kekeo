@@ -658,7 +658,7 @@ WINLDAPAPI LDAP * LDAPAPI cldap_open( __in PCHAR HostName, ULONG PortNumber );
 //  ldap_bind on the connection.
 //
 //  multi-thread: ldap_unbind* calls are safe EXCEPT don't use the LDAP *
-//                stucture after it's been freed.
+//                structure after it's been freed.
 //
 
 WINLDAPAPI ULONG LDAPAPI ldap_unbind( LDAP *ld );
