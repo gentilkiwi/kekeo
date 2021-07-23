@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -18,15 +18,15 @@ void kuhl_m_tsssp_list_data(HKEY hPd);
 
 BOOL kuhl_m_tsssp_send_recv(HANDLE hPipe, PSecBuffer toSend, PSecBuffer toRecv);
 void kuhl_m_tsssp_freeBuffer(PSecBuffer buffer, BOOL isContext);
-void kuhl_m_tsssp_printOctet1String(_octet1 *data);
+void kuhl_m_tsssp_printOctet1String(KULL_M_ASN1__octet1 *data);
 
 SECURITY_STATUS kuhl_m_tsssp_AcquireCredentialsHandle(__in_opt LPWSTR pszPrincipal, __out PCredHandle phCredential);
 SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCredential, __in_opt PCtxtHandle phContext, __in_opt PSecBufferDesc pInput, __in_opt PCtxtHandle phNewContext, __in_opt PSecBufferDesc pOutput);
 void kuhl_m_tsssp_TSCredentials(PSecBuffer data);
 
-BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out);
-BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, _octet1 *data, PSecBuffer out);
-BOOL kuhl_m_tsssp_SHA256(BOOL isClient, _octet1 *Nonce, _octet1 *PublicKey, PSecBuffer out);
+BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, KULL_M_ASN1__octet1 *out);
+BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, KULL_M_ASN1__octet1 *data, PSecBuffer out);
+BOOL kuhl_m_tsssp_SHA256(BOOL isClient, KULL_M_ASN1__octet1 *Nonce, KULL_M_ASN1__octet1 *PublicKey, PSecBuffer out);
 
 #define CLIENT_FLAGS	ISC_REQ_ALLOCATE_MEMORY | ISC_REQ_CONFIDENTIALITY | ISC_REQ_DELEGATE | ISC_REQ_EXTENDED_ERROR | ISC_REQ_REPLAY_DETECT | ISC_REQ_SEQUENCE_DETECT | ISC_REQ_STREAM
 

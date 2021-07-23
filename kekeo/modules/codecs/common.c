@@ -1,29 +1,29 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 #include "common.h"
 
-void addCred(KRB_CRED *cred, KRB_CRED **dst)
+void addCred(KULL_M_ASN1_KRB_CRED *cred, KULL_M_ASN1_KRB_CRED **dst)
 {
-	EncKrbCredPart *encCred = NULL, *encDst = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encCred = NULL, *encDst = NULL;
 	OssBuf original;
-	KRB_CRED *tmp = NULL;
-	struct _seqof3 **tickets = NULL;
-	struct _seqof5 **ticket_info = NULL;
+	KULL_M_ASN1_KRB_CRED *tmp = NULL;
+	struct KULL_M_ASN1__seqof3 **tickets = NULL;
+	struct KULL_M_ASN1__seqof5 **ticket_info = NULL;
 	int pduNum;
 	if(!*dst)
 	{
-		if(ossCpyValue(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, cred, (LPVOID *) dst))
+		if(ossCpyValue(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, cred, (LPVOID *) dst))
 			PRINT_ERROR(L"Unable to copy KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	}
 	else
 	{
-		pduNum = EncKrbCredPart_PDU;
+		pduNum = KULL_M_ASN1_EncKrbCredPart_PDU;
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &cred->enc_part.cipher, (LPVOID *) &encCred))
 		{
-			pduNum = EncKrbCredPart_PDU;
+			pduNum = KULL_M_ASN1_EncKrbCredPart_PDU;
 			if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &(*dst)->enc_part.cipher, (LPVOID *) &encDst))
 			{
 				if((tickets = &(*dst)->tickets) && (ticket_info = &encDst->ticket_info))
@@ -39,41 +39,41 @@ void addCred(KRB_CRED *cred, KRB_CRED **dst)
 					original = *(OssBuf *) &(*dst)->enc_part.cipher;
 					(*dst)->enc_part.cipher.length = 0;
 					(*dst)->enc_part.cipher.value = NULL;
-					if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encDst, (OssBuf *) &(*dst)->enc_part.cipher))
+					if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encDst, (OssBuf *) &(*dst)->enc_part.cipher))
 					{
-						if(ossCpyValue(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, *dst, (LPVOID *) &tmp))
+						if(ossCpyValue(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, *dst, (LPVOID *) &tmp))
 							PRINT_ERROR(L"Unable to copy KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 						ossFreeBuf(&kull_m_kerberos_asn1_world, (*dst)->enc_part.cipher.value);
 					}
 					else PRINT_ERROR(L"Unable to encode EncKrbCredPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
-					(*dst)->enc_part.cipher = *(_octet1 *) &original;
+					(*dst)->enc_part.cipher = *(KULL_M_ASN1__octet1 *) &original;
 					(*tickets)->next = NULL;
 					(*ticket_info)->next = NULL;
 				}
 				if(tmp)
 				{
-					ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, *dst);
+					ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, *dst);
 					*dst = tmp;
 				}
-				ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encDst);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encDst);
 			}
 			else PRINT_ERROR(L"Unable to decode EncKrbCredPart(dst): %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encCred);
 		}
 		else PRINT_ERROR(L"Unable to decode EncKrbCredPart(cred): %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	}
 }
 
-void writeData(const KERB_FORMAT_MODULE * module, BOOL multiple, KRB_CRED *cred)
+void writeData(const KERB_FORMAT_MODULE * module, BOOL multiple, KULL_M_ASN1_KRB_CRED *cred)
 {
 	OssBuf output = {0, NULL};
-	EncKrbCredPart * encKrbCredPart = NULL, credpart;
-	struct _seqof5 * nextInfos, infos;
-	struct _seqof3 * nextTicket, ticket;
+	KULL_M_ASN1_EncKrbCredPart * encKrbCredPart = NULL, credpart;
+	struct KULL_M_ASN1__seqof5 * nextInfos, infos;
+	struct KULL_M_ASN1__seqof3 * nextTicket, ticket;
 	DWORD i;
-	KRB_CRED tmp;
+	KULL_M_ASN1_KRB_CRED tmp;
 	LPWSTR filename;
-	int pduNum = EncKrbCredPart_PDU;
+	int pduNum = KULL_M_ASN1_EncKrbCredPart_PDU;
 
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &cred->enc_part.cipher, (LPVOID *) &encKrbCredPart))
 	{
@@ -96,7 +96,7 @@ void writeData(const KERB_FORMAT_MODULE * module, BOOL multiple, KRB_CRED *cred)
 				infos = *nextInfos;
 				infos.next = NULL;
 
-				if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, &credpart, (OssBuf *) &tmp.enc_part.cipher))
+				if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, &credpart, (OssBuf *) &tmp.enc_part.cipher))
 				{
 					if(module->writeData(&tmp, &output))
 					{
@@ -141,6 +141,6 @@ void writeData(const KERB_FORMAT_MODULE * module, BOOL multiple, KRB_CRED *cred)
 				LocalFree(output.value);
 			}
 		}
-		ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCredPart);
+		ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCredPart);
 	}
 }

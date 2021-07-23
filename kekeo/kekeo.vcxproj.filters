@@ -118,6 +118,9 @@
     <ClCompile Include="..\modules\kull_m_memory.c">
       <Filter>common modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\kull_m_ntlm.c">
+      <Filter>common modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kekeo.h" />
@@ -226,6 +229,9 @@
     <ClInclude Include="..\modules\kull_m_memory.h">
       <Filter>common modules</Filter>
     </ClInclude>
+    <ClInclude Include="..\modules\kull_m_ntlm.h">
+      <Filter>common modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="kekeo.rc" />
@@ -257,6 +263,9 @@
       <Filter>common modules\asn1</Filter>
     </None>
     <None Include="..\modules\asn1\GSSAPI.asn">
+      <Filter>common modules\asn1</Filter>
+    </None>
+    <None Include="..\modules\asn1\ldapv3.asn">
       <Filter>common modules\asn1</Filter>
     </None>
   </ItemGroup>

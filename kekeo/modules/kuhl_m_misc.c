@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -23,18 +23,18 @@ NTSTATUS kuhl_m_misc_changepw(int argc, wchar_t * argv[])
 	PWSTR domain;
 	PKULL_M_SOCK socket;
 
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 
-	AP_REP *ApRep = NULL;
-	KRB_PRIV *KrbPriv = NULL;
-	EncKrbPrivPart *encKrbPrivPart = NULL;
-	EncryptionKey authKey;
-	UInt32 seq;
+	KULL_M_ASN1_AP_REP *ApRep = NULL;
+	KULL_M_ASN1_KRB_PRIV *KrbPriv = NULL;
+	KULL_M_ASN1_EncKrbPrivPart *encKrbPrivPart = NULL;
+	KULL_M_ASN1_EncryptionKey authKey;
+	KULL_M_ASN1_UInt32 seq;
 
 	OssBuf ApReq = {0, NULL}, KrbPrivReq = {0, NULL};
 	USHORT version;
-	_octet1 data;
+	KULL_M_ASN1__octet1 data;
 
 	if(kull_m_string_args_byName(argc, argv, L"tgt", &szData, NULL))
 	{
@@ -57,10 +57,10 @@ NTSTATUS kuhl_m_misc_changepw(int argc, wchar_t * argv[])
 									{
 										kprintf(L"[changepw] ");
 										kull_m_kadmin_passwd_retFromKadmin(&encKrbPrivPart->user_data);
-										ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbPrivPart_PDU, encKrbPrivPart);
+										ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbPrivPart_PDU, encKrbPrivPart);
 									}
-									ossFreePDU(&kull_m_kerberos_asn1_world, KRB_PRIV_PDU, KrbPriv);
-									ossFreePDU(&kull_m_kerberos_asn1_world, AP_REP_PDU, ApRep);
+									ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_PRIV_PDU, KrbPriv);
+									ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AP_REP_PDU, ApRep);
 								}
 								kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 							}
@@ -73,8 +73,8 @@ NTSTATUS kuhl_m_misc_changepw(int argc, wchar_t * argv[])
 					LocalFree(data.value);
 				}
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
-			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 		}
 	}
 	else PRINT_ERROR(L"A TGT is needed ( /tgt:filename.kirbi )\n");
@@ -100,7 +100,7 @@ PCWSTR kull_m_kadmin_passwd_err_to_string(DWORD id)
 	return L"ERROR ?";
 }
 
-void kull_m_kadmin_passwd_retFromKadmin(_octet1 * data)
+void kull_m_kadmin_passwd_retFromKadmin(KULL_M_ASN1__octet1 * data)
 {
 	WORD code;
 	if(data->length >= 2)
@@ -130,7 +130,7 @@ NTSTATUS kuhl_m_misc_convert(int argc, wchar_t * argv[])
 	DWORD i, j;
 	KERB_FORMAT_MODULE const * readModule, * writeModule;
 	OssBuf input, output = {0, NULL};
-	KRB_CRED *cred = NULL, *dst = NULL;
+	KULL_M_ASN1_KRB_CRED *cred = NULL, *dst = NULL;
 	BOOL explodeIt;
 
 	if(argc > 1)
@@ -179,7 +179,7 @@ NTSTATUS kuhl_m_misc_convert(int argc, wchar_t * argv[])
 						if(readModule->readData && readModule->readData(&input, &cred))
 						{
 							addCred(cred, &dst);
-							ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, cred);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, cred);
 						}
 						else kprintf(L": error when reading!");
 					}
@@ -193,7 +193,7 @@ NTSTATUS kuhl_m_misc_convert(int argc, wchar_t * argv[])
 			if(dst)
 			{
 				writeData(writeModule, explodeIt, dst);
-				ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, dst);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, dst);
 			}
 		}
 	}
@@ -469,10 +469,10 @@ NTSTATUS kuhl_m_misc_keytab(int argc, wchar_t * argv[])
 {
 	PKIWI_AUTH_INFOS infos;
 	PKULL_M_SOCK socket;
-	KRB_ERROR *error = NULL;
+	KULL_M_ASN1_KRB_ERROR *error = NULL;
 	UNICODE_STRING uPassword, uSalt;
-	_octet1 padata;
-	EncryptionKey key = {KERB_ETYPE_AES256_CTS_HMAC_SHA1_96, {0, NULL}};
+	KULL_M_ASN1__octet1 padata;
+	KULL_M_ASN1_EncryptionKey key = {KERB_ETYPE_AES256_CTS_HMAC_SHA1_96, {0, NULL}};
 	LPCWSTR filename = NULL;
 
 	if(infos = kull_m_kerberos_asn1_Authinfos_create(argc, argv))
@@ -481,11 +481,11 @@ NTSTATUS kuhl_m_misc_keytab(int argc, wchar_t * argv[])
 		kull_m_string_args_byName(argc, argv, L"kt", &filename, NULL);
 		if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(infos->w_realm, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 		{
-			if(kull_m_kerberos_asn1_AsReqGenericRep(infos, socket, NULL, NULL, KRB_ERROR_PDU, (LPVOID *) &error))
+			if(kull_m_kerberos_asn1_AsReqGenericRep(infos, socket, NULL, NULL, KULL_M_ASN1_KRB_ERROR_PDU, (LPVOID *) &error))
 			{
 				if(error->error_code == 25 /*KDC_ERR_PREAUTH_REQUIRED*/)
 				{
-					if(error->bit_mask & e_data_present)
+					if(error->bit_mask & KULL_M_ASN1_e_data_present)
 					{
 						if(kuhl_m_misc_keytab_padata_from_edata(&error->e_data, PA_TYPE_ETYPE_INFO2, &padata))
 						{
@@ -512,7 +512,7 @@ NTSTATUS kuhl_m_misc_keytab(int argc, wchar_t * argv[])
 					kull_m_kerberos_asn1_KerberosTime_print(&error->stime);
 					kprintf(L"\n");
 				}
-				ossFreePDU(&kull_m_kerberos_asn1_world, KRB_ERROR_PDU, error);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_ERROR_PDU, error);
 			}
 			kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 		}
@@ -521,11 +521,11 @@ NTSTATUS kuhl_m_misc_keytab(int argc, wchar_t * argv[])
 	return STATUS_SUCCESS;
 }
 
-BOOL kuhl_m_misc_keytab_salt_from_info2(_octet1 *info2, Int32 etype, PUNICODE_STRING salt)
+BOOL kuhl_m_misc_keytab_salt_from_info2(KULL_M_ASN1__octet1 *info2, KULL_M_ASN1_Int32 etype, PUNICODE_STRING salt)
 {
 	BOOL status = FALSE;
-	int pdu = ETYPE_INFO2_PDU;
-	ETYPE_INFO2 *einfos = NULL, curEInfos;
+	int pdu = KULL_M_ASN1_ETYPE_INFO2_PDU;
+	KULL_M_ASN1_ETYPE_INFO2 *einfos = NULL, curEInfos;
 	ANSI_STRING aSalt;
 	
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &pdu, (OssBuf *) info2, (LPVOID *) &einfos))
@@ -542,7 +542,7 @@ BOOL kuhl_m_misc_keytab_salt_from_info2(_octet1 *info2, Int32 etype, PUNICODE_ST
 				break;
 			}
 		}
-		ossFreePDU(&kull_m_kerberos_asn1_world, ETYPE_INFO2_PDU, einfos);
+		ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_ETYPE_INFO2_PDU, einfos);
 		if(!status)
 			PRINT_ERROR(L"Unable to get a salt or ETYPE_INFO2 entry for %i\n", etype);
 	}
@@ -550,11 +550,11 @@ BOOL kuhl_m_misc_keytab_salt_from_info2(_octet1 *info2, Int32 etype, PUNICODE_ST
 	return status;
 }
 
-BOOL kuhl_m_misc_keytab_padata_from_edata(_octet1 *e_data, Int32 type, _octet1 *padata)
+BOOL kuhl_m_misc_keytab_padata_from_edata(KULL_M_ASN1__octet1 *e_data, KULL_M_ASN1_Int32 type, KULL_M_ASN1__octet1 *padata)
 {
 	BOOL status = FALSE;
-	int pdu = METHOD_DATA_PDU;
-	METHOD_DATA *methods = NULL, curMethod;
+	int pdu = KULL_M_ASN1_METHOD_DATA_PDU;
+	KULL_M_ASN1_METHOD_DATA *methods = NULL, curMethod;
 
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &pdu, (OssBuf *) e_data, (LPVOID *) &methods))
 	{
@@ -571,7 +571,7 @@ BOOL kuhl_m_misc_keytab_padata_from_edata(_octet1 *e_data, Int32 type, _octet1 *
 				break;
 			}
 		}
-		ossFreePDU(&kull_m_kerberos_asn1_world, METHOD_DATA_PDU, methods);
+		ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_METHOD_DATA_PDU, methods);
 		if(!status)
 			PRINT_ERROR(L"Unable to get a PA_DATA entry for %i\n", type);
 	}
@@ -579,7 +579,7 @@ BOOL kuhl_m_misc_keytab_padata_from_edata(_octet1 *e_data, Int32 type, _octet1 *
 	return status;
 }
 
-BOOL kuhl_m_misc_keytab_ekey_with_salt(LPCWSTR password, PCUNICODE_STRING salt, EncryptionKey *ekey)
+BOOL kuhl_m_misc_keytab_ekey_with_salt(LPCWSTR password, PCUNICODE_STRING salt, KULL_M_ASN1_EncryptionKey *ekey)
 {
 	NTSTATUS nStatus;
 	PKERB_ECRYPT pCSystem;
@@ -603,13 +603,13 @@ BOOL kuhl_m_misc_keytab_ekey_with_salt(LPCWSTR password, PCUNICODE_STRING salt, 
 	return NT_SUCCESS(nStatus);
 }
 
-BOOL kuhl_m_misc_keytab_tofile(PKIWI_AUTH_INFOS infos, EncryptionKey *key, LPCWSTR filename)
+BOOL kuhl_m_misc_keytab_tofile(PKIWI_AUTH_INFOS infos, KULL_M_ASN1_EncryptionKey *key, LPCWSTR filename)
 {
 	BOOL status = FALSE;
 	WORD components, componentsLen, realmLen;
 	DWORD structLen;
 	__time32_t timestamp;
-	struct _seqof1 *names;
+	struct KULL_M_ASN1__seqof1 *names;
 	PBYTE myStruct, myPtr;
 
 	for(components = 0, componentsLen = 0, names = infos->cname.name_string; names; components++, componentsLen += lstrlenA(names->value), names = names->next);

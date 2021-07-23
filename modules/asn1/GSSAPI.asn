@@ -1,18 +1,18 @@
-         GSS-API DEFINITIONS ::=
+GSS-API DEFINITIONS ::=
 
-         BEGIN
+BEGIN
 
-         MechType ::= OBJECT IDENTIFIER
-         -- representing Kerberos V5 mechanism
+MechType ::= OBJECT IDENTIFIER
+-- representing Kerberos V5 mechanism
 
-         GSSAPI-Token ::=
-         -- option indication (delegation, etc.) indicated within
-         -- mechanism-specific token
-         [APPLICATION 0] IMPLICIT SEQUENCE {
-                 thisMech MechType,
-                 innerToken ANY DEFINED BY thisMech
-                    -- contents mechanism-specific
-                    -- ASN.1 structure not required
-                 }
+GSSAPI-Token ::=
+-- option indication (delegation, etc.) indicated within
+-- mechanism-specific token
+[APPLICATION 0] IMPLICIT SEQUENCE {
+        thisMech MechType,
+        innerToken ANY DEFINED BY thisMech
+        -- contents mechanism-specific
+        -- ASN.1 structure not required
+        }
 
-         END
+END

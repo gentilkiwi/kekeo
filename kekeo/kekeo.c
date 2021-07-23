@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -22,29 +22,18 @@ int wmain(int argc, wchar_t * argv[])
 {
 	NTSTATUS status = STATUS_SUCCESS;
 	int i;
-#ifndef _WINDLL
+#if !defined(_POWERKATZ)
 	size_t len;
 	wchar_t input[0xffff];
-	kull_m_output_init();
-	SetConsoleTitle(MIMIKATZ L" " MIMIKATZ_VERSION L" " MIMIKATZ_ARCH L" (oe.eo)");
-	SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 #endif
-	kprintf(L"\n"
-		L"  ___ _    " MIMIKATZ_FULL L"\n"
-		L" /   ('>-  " MIMIKATZ_SECOND L"\n"
-		L" | K  |    /* * *\n"
-		L" \\____/     Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )\n"
-		L"  L\\_       http://blog.gentilkiwi.com/kekeo                (oe.eo)\n"
-		L"            " MIMIKATZ_SPECIAL L" with %2u modules * * */\n", ARRAYSIZE(mimikatz_modules));
-
-	mimikatz_initOrClean(TRUE);
+	mimikatz_begin();
 	for(i = MIMIKATZ_AUTO_COMMAND_START ; (i < argc) && (status != STATUS_FATAL_APP_EXIT) ; i++)
 	{
 		kprintf(L"\n" MIMIKATZ L"(" MIMIKATZ_AUTO_COMMAND_STRING L") # %s\n", argv[i]);
 		status = mimikatz_dispatchCommand(argv[i]);
 	}
-#ifndef _WINDLL
-	while (status != STATUS_FATAL_APP_EXIT)
+#if !defined(_POWERKATZ)
+	while ((status != STATUS_PROCESS_IS_TERMINATING) && (status != STATUS_THREAD_IS_TERMINATING))
 	{
 		kprintf(L"\n" MIMIKATZ L" # "); fflush(stdin);
 		if(fgetws(input, ARRAYSIZE(input), stdin) && (len = wcslen(input)) && (input[0] != L'\n'))
@@ -56,12 +45,39 @@ int wmain(int argc, wchar_t * argv[])
 		}
 	}
 #endif
-	mimikatz_initOrClean(FALSE);
-#ifndef _WINDLL
-	SetConsoleCtrlHandler(HandlerRoutine, FALSE);
-	kull_m_output_clean();
-#endif
+	mimikatz_end(status);
 	return STATUS_SUCCESS;
+}
+
+void mimikatz_begin()
+{
+	kull_m_output_init();
+#if !defined(_POWERKATZ)
+	SetConsoleTitle(MIMIKATZ L" " MIMIKATZ_VERSION L" " MIMIKATZ_ARCH L" (oe.eo)");
+	SetConsoleCtrlHandler(HandlerRoutine, TRUE);
+#endif
+	kprintf(L"\n"
+		L"  ___ _    " MIMIKATZ_FULL L"\n"
+		L" /   ('>-  " MIMIKATZ_SECOND L"\n"
+		L" | K  |    /* * *\n"
+		L" \\____/     Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )\n"
+		L"  L\\_       https://blog.gentilkiwi.com/kekeo                (oe.eo)\n"
+		L"            " MIMIKATZ_SPECIAL L" with %2u modules * * */\n", ARRAYSIZE(mimikatz_modules));
+	mimikatz_initOrClean(TRUE);
+}
+
+void mimikatz_end(NTSTATUS status)
+{
+	mimikatz_initOrClean(FALSE);
+#if !defined(_POWERKATZ)
+	SetConsoleCtrlHandler(HandlerRoutine, FALSE);
+#endif
+	kull_m_output_clean();
+#if !defined(_WINDLL)
+	if(status == STATUS_THREAD_IS_TERMINATING)
+		ExitThread(STATUS_SUCCESS);
+	else ExitProcess(STATUS_SUCCESS);
+#endif
 }
 
 BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
@@ -200,7 +216,7 @@ NTSTATUS mimikatz_doLocal(wchar_t * input)
 	return status;
 }
 
-#ifdef _WINDLL
+#if defined(_POWERKATZ)
 __declspec(dllexport) wchar_t * powershell_reflective_kekeo(LPCWSTR input)
 {
 	int argc = 0;
@@ -215,5 +231,30 @@ __declspec(dllexport) wchar_t * powershell_reflective_kekeo(LPCWSTR input)
 		LocalFree(argv);
 	}
 	return outputBuffer;
+}
+#endif
+
+#if defined(_WINDLL)
+void CALLBACK kekeo_dll(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
+{
+	int argc = 0;
+	wchar_t ** argv;
+
+	AllocConsole();
+#pragma warning(push)
+#pragma warning(disable:4996)
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+	freopen("CONIN$", "r", stdin);
+#pragma warning(pop)
+	if(lpszCmdLine && lstrlenW(lpszCmdLine))
+	{
+		if(argv = CommandLineToArgvW(lpszCmdLine, &argc))
+		{
+			wmain(argc, argv);
+			LocalFree(argv);
+		}
+	}
+	else wmain(0, NULL);
 }
 #endif

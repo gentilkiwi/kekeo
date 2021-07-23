@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -108,13 +108,49 @@ LPWSTR kull_m_kerberos_asn1_Authinfos_makeMeUpn(PKIWI_AUTH_INFOS infos)
 	return result;
 }
 
+void kull_m_kerberos_asn1_Authinfos_create_for_cert_names(PKIWI_AUTH_INFOS infos)
+{
+	DWORD l;
+	LPWSTR buffer, p;
+
+	if(!infos->w_cname || !infos->w_realm)
+	{
+		l = CertGetNameString(infos->u.certinfos.pCertContext, CERT_NAME_UPN_TYPE, 0, NULL, NULL, 0);
+		if(l > 1)
+		{
+			if(buffer = (LPWSTR) LocalAlloc(LPTR, l * sizeof(wchar_t)))
+			{
+				if(CertGetNameString(infos->u.certinfos.pCertContext, CERT_NAME_UPN_TYPE, 0, NULL, buffer, l) == l)
+				{
+					if(!infos->w_cname)
+					{
+						kull_m_string_copy(&infos->w_cname, buffer);
+						kull_m_kerberos_asn1_Authinfos_refresh(infos);
+					}
+					if(!infos->w_realm)
+					{
+						p = wcschr(buffer, L'@');
+						if(p && *(p + 1))
+						{
+							kull_m_string_copy(&infos->w_realm, p + 1);
+							kull_m_kerberos_asn1_Authinfos_refresh(infos);
+						}
+					}
+				}
+				LocalFree(buffer);
+			}
+		}
+	}
+}
+
 BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int argc, wchar_t * argv[])
 {
 	BOOL status = FALSE;
-	DWORD l;
 	LPCWSTR szData, szStoreCA, szCRLDP;
-	LPWSTR buffer, p;
+	LPWSTR buffer;
 	LPSTR abuf;
+	CRYPT_DATA_BLOB blob;
+
 	if(kull_m_string_args_byName(argc, argv, L"subject", &szData, NULL))
 	{
 		if(status = kull_m_kerberos_asn1_crypto_get_CertInfo(szData, &infos->u.certinfos))
@@ -130,34 +166,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 			}
 
 			infos->type = KIWI_AUTH_INFOS_TYPE_RSA;
-			if(!infos->w_cname || !infos->w_realm)
-			{
-				l = CertGetNameString(infos->u.certinfos.pCertContext, CERT_NAME_UPN_TYPE, 0, NULL, NULL, 0);
-				if(l > 1)
-				{
-					if(buffer = (LPWSTR) LocalAlloc(LPTR, l * sizeof(wchar_t)))
-					{
-						if(CertGetNameString(infos->u.certinfos.pCertContext, CERT_NAME_UPN_TYPE, 0, NULL, buffer, l) == l)
-						{
-							if(!infos->w_cname)
-							{
-								kull_m_string_copy(&infos->w_cname, buffer);
-								kull_m_kerberos_asn1_Authinfos_refresh(infos);
-							}
-							if(!infos->w_realm)
-							{
-								p = wcschr(buffer, L'@');
-								if(p && *(p + 1))
-								{
-									kull_m_string_copy(&infos->w_realm, p + 1);
-									kull_m_kerberos_asn1_Authinfos_refresh(infos);
-								}
-							}
-						}
-						LocalFree(buffer);
-					}
-				}
-			}
+			kull_m_kerberos_asn1_Authinfos_create_for_cert_names(infos);
 		}
 	}
 	else if(kull_m_string_args_byName(argc, argv, L"caname", &szData, NULL))
@@ -169,6 +178,21 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 			if(status = kull_m_kerberos_asn1_crypto_get_CertFromCA(szData, szStoreCA, buffer, szCRLDP, &infos->u.certinfos))
 				infos->type = KIWI_AUTH_INFOS_TYPE_OTF_RSA;
 			LocalFree(buffer);
+		}
+	}
+	else if(kull_m_string_args_byName(argc, argv, L"pfx", &szData, NULL) || kull_m_string_args_byName(argc, argv, L"pkcs12", &szData, NULL))
+	{
+		if(kull_m_file_readData(szData, &blob.pbData, &blob.cbData))
+		{
+			szData = NULL;
+			kull_m_string_args_byName(argc, argv, L"pfxpassword", &szData, NULL) || kull_m_string_args_byName(argc, argv, L"pkcs12password", &szData, NULL);
+
+			if(kull_m_kerberos_asn1_crypto_get_CertInfo_FromPFX(&blob, szData, &infos->u.certinfos))
+			{
+				infos->type = KIWI_AUTH_INFOS_TYPE_RSA;
+				kull_m_kerberos_asn1_Authinfos_create_for_cert_names(infos);
+			}
+			LocalFree(blob.pbData);
 		}
 	}
 	
@@ -206,10 +230,10 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 	LPCWSTR szData;
 	OssBuf asReqBuff = {0, NULL};
 	int pduNum;
-	PA_DATA *paData;
-	PA_PK_AS_REQ *pkAsReq = NULL;
+	KULL_M_ASN1_PA_DATA *paData;
+	KULL_M_ASN1_PA_PK_AS_REQ *pkAsReq = NULL;
 	OssBuf AuthPackBuff = {0, NULL};
-	AuthPack *auth = NULL;
+	KULL_M_ASN1_AuthPack *auth = NULL;
 	PSTR buffer = NULL;
 
 	infos->u.certinfos.tmpAsReq = NULL;
@@ -217,7 +241,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 	{
 		if(kull_m_file_readData(szData, &asReqBuff.value, (PDWORD) &asReqBuff.length))
 		{
-			pduNum = AS_REQ_PDU;
+			pduNum = KULL_M_ASN1_AS_REQ_PDU;
 			if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, &asReqBuff, (void **) &infos->u.certinfos.tmpAsReq))
 			{
 				if(!infos->w_realm && infos->u.certinfos.tmpAsReq->req_body.realm)
@@ -225,7 +249,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 					infos->w_realm = kull_m_string_qad_ansi_to_unicode(infos->u.certinfos.tmpAsReq->req_body.realm);
 					kull_m_kerberos_asn1_Authinfos_refresh(infos);
 				}
-				if(!infos->w_cname && (infos->u.certinfos.tmpAsReq->req_body.bit_mask & KDC_REQ_BODY_cname_present))
+				if(!infos->w_cname && (infos->u.certinfos.tmpAsReq->req_body.bit_mask & KULL_M_ASN1_KDC_REQ_BODY_cname_present))
 				{
 					switch(infos->u.certinfos.tmpAsReq->req_body.cname.name_type)
 					{
@@ -243,12 +267,12 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 
 				if(paData = kull_m_kerberos_asn1_PADATA_from_REQ(infos->u.certinfos.tmpAsReq, PA_TYPE_PK_AS_REQ))
 				{
-					pduNum = PA_PK_AS_REQ_PDU;
+					pduNum = KULL_M_ASN1_PA_PK_AS_REQ_PDU;
 					if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &paData->padata_value, (LPVOID *) &pkAsReq))
 					{
 						if(kull_m_kerberos_asn1_crypto_simple_message_get(&pkAsReq->signedAuthPack, &AuthPackBuff))
 						{
-							pduNum = AuthPack_PDU;
+							pduNum = KULL_M_ASN1_AuthPack_PDU;
 							if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, &AuthPackBuff, (LPVOID *) &auth))
 							{
 								kprintf(L"Authenticator time : ");
@@ -256,7 +280,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 								kprintf(L"\n");
 								if(status = kull_m_kerberos_asn1_crypto_get_DHKeyInfo(TRUE, FALSE, &infos->u.certinfos.dhKeyInfo))
 								{
-									if(auth->bit_mask & clientDHNonce_present)
+									if(auth->bit_mask & KULL_M_ASN1_clientDHNonce_present)
 										if(infos->u.certinfos.dhKeyInfo.dhClientNonce.value = (PBYTE) LocalAlloc(LPTR, auth->clientDHNonce.length))
 										{
 											infos->u.certinfos.dhKeyInfo.dhClientNonce.length = auth->clientDHNonce.length;
@@ -264,13 +288,13 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 										}
 								}
 								else PRINT_ERROR_AUTO(L"kull_m_kerberos_asn1_crypto_get_DHKeyInfo(integrated)");
-								ossFreePDU(&kull_m_kerberos_asn1_world, AuthPack_PDU, auth);
+								ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AuthPack_PDU, auth);
 							}
 							else PRINT_ERROR(L"Unable to decode AuthPack: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 							LocalFree(AuthPackBuff.value);
 						}
 						else PRINT_ERROR(L"Unable to get signed message\n");
-						ossFreePDU(&kull_m_kerberos_asn1_world, PA_PK_AS_REQ_PDU, pkAsReq);
+						ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_PK_AS_REQ_PDU, pkAsReq);
 					}
 					else PRINT_ERROR(L"Unable to decode PA_PK_AS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 				}
@@ -286,7 +310,7 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_asreq(PKIWI_AUTH_INFOS infos, int
 	else
 	{
 		if(infos->u.certinfos.tmpAsReq)
-			ossFreePDU(&kull_m_kerberos_asn1_world, AS_REQ_PDU, infos->u.certinfos.tmpAsReq);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REQ_PDU, infos->u.certinfos.tmpAsReq);
 		kull_m_kerberos_asn1_crypto_free_DHKeyInfo(&infos->u.certinfos.dhKeyInfo);
 	}
 	return status;
@@ -394,7 +418,7 @@ void kull_m_kerberos_asn1_Authinfos_delete(PKIWI_AUTH_INFOS infos)
 			break;
 		case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
 			if(infos->u.certinfos.tmpAsReq)
-				ossFreePDU(&kull_m_kerberos_asn1_world, AS_REQ_PDU, infos->u.certinfos.tmpAsReq);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REQ_PDU, infos->u.certinfos.tmpAsReq);
 			kull_m_kerberos_asn1_crypto_free_DHKeyInfo(&infos->u.certinfos.dhKeyInfo);
 			break;
 		default:
@@ -443,10 +467,10 @@ void kull_m_kerberos_asn1_Authinfos_descr(PKIWI_AUTH_INFOS infos)
 	}
 }
 
-USHORT kull_m_kerberos_asn1_Authinfos_changepw(_octet1 *data, int argc, wchar_t * argv[], Realm domain)
+USHORT kull_m_kerberos_asn1_Authinfos_changepw(KULL_M_ASN1__octet1 *data, int argc, wchar_t * argv[], KULL_M_ASN1_Realm domain)
 {
 	USHORT version = 0;
-	ChangePasswdData change = {0};
+	KULL_M_ASN1_ChangePasswdData change = {0};
 	OssBuf ChangePwd = {0, NULL};
 	LPCWSTR username = NULL, password;
 
@@ -463,13 +487,13 @@ USHORT kull_m_kerberos_asn1_Authinfos_changepw(_octet1 *data, int argc, wchar_t 
 				if(username && domain)
 				{
 					kull_m_kerberos_asn1_PrincipalName_create_fromName(&change.targname, NULL, username);
-					change.bit_mask |= targname_present;
+					change.bit_mask |= KULL_M_ASN1_targname_present;
 					change.targrealm = domain;
 					kprintf(L"[changepw] targname : ");
 					kull_m_kerberos_asn1_PrincipalName_descr(&change.targname, TRUE);
 					kprintf(L"\n[changepw] targrealm: %S\n", change.targrealm);
 				}
-				if(!ossEncode(&kull_m_kerberos_asn1_world, ChangePasswdData_PDU, &change, &ChangePwd))
+				if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_ChangePasswdData_PDU, &change, &ChangePwd))
 				{
 					if(data->value = (PBYTE) LocalAlloc(LPTR, ChangePwd.length))
 					{
@@ -480,7 +504,7 @@ USHORT kull_m_kerberos_asn1_Authinfos_changepw(_octet1 *data, int argc, wchar_t 
 					ossFreeBuf(&kull_m_kerberos_asn1_world, ChangePwd.value);
 				}
 				else PRINT_ERROR(L"Unable to encode ChangePasswdData: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
-				if(change.bit_mask & targname_present)
+				if(change.bit_mask & KULL_M_ASN1_targname_present)
 					kull_m_kerberos_asn1_PrincipalName_delete(&change.targname);
 				LocalFree(change.newpasswd.value);
 			}

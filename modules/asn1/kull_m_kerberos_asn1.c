@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -38,16 +38,16 @@ void kull_m_kerberos_asn1_term()
 	}
 }
 
-void kull_m_kerberos_asn1_PrincipalName_create(PrincipalName *principal_name, Int32 name_type, DWORD count, ...)
+void kull_m_kerberos_asn1_PrincipalName_create(KULL_M_ASN1_PrincipalName *principal_name, KULL_M_ASN1_Int32 name_type, DWORD count, ...)
 {
 	DWORD i;
 	va_list vaList;
 	if(principal_name)
 	{
-		RtlZeroMemory(principal_name, sizeof(PrincipalName));
+		RtlZeroMemory(principal_name, sizeof(KULL_M_ASN1_PrincipalName));
 		va_start(vaList, count); 
 		principal_name->name_type = name_type;
-		if(principal_name->name_string = (struct _seqof1 *) LocalAlloc(LPTR, sizeof(struct _seqof1) * count))
+		if(principal_name->name_string = (struct KULL_M_ASN1__seqof1 *) LocalAlloc(LPTR, sizeof(struct KULL_M_ASN1__seqof1) * count))
 		{
 			for(i = 0; i < count; i++)
 			{
@@ -59,7 +59,7 @@ void kull_m_kerberos_asn1_PrincipalName_create(PrincipalName *principal_name, In
 	}
 }
 
-void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, Realm *pRealm, LPCWSTR name)
+void kull_m_kerberos_asn1_PrincipalName_create_fromName(KULL_M_ASN1_PrincipalName *principal_name, KULL_M_ASN1_Realm *pRealm, LPCWSTR name)
 {
 	DWORD count = 0, i;
 	char *dupName, *nextToken, *token;
@@ -68,7 +68,7 @@ void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal
 	{
 		if(aName = kull_m_string_unicode_to_ansi(name))
 		{
-			RtlZeroMemory(principal_name, sizeof(PrincipalName));
+			RtlZeroMemory(principal_name, sizeof(KULL_M_ASN1_PrincipalName));
 			if(strchr(aName, '/'))
 			{
 				if(pRealm)
@@ -93,7 +93,7 @@ void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal
 						if(dupName = _strdup(aName))
 						{
 							principal_name->name_type = KRB_NT_SRV_INST;
-							if(principal_name->name_string = (struct _seqof1 *) LocalAlloc(LPTR, sizeof(struct _seqof1) * count))
+							if(principal_name->name_string = (struct KULL_M_ASN1__seqof1 *) LocalAlloc(LPTR, sizeof(struct KULL_M_ASN1__seqof1) * count))
 							{
 								for(nextToken = NULL, token = strtok_s(dupName, "/", &nextToken), i = 0; token; token = strtok_s(NULL, "/", &nextToken), i++)
 								{
@@ -115,7 +115,7 @@ void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal
 				else
 					principal_name->name_type = KRB_NT_PRINCIPAL;
 
-				if(principal_name->name_string = (struct _seqof1 *) LocalAlloc(LPTR, sizeof(struct _seqof1)))
+				if(principal_name->name_string = (struct KULL_M_ASN1__seqof1 *) LocalAlloc(LPTR, sizeof(struct KULL_M_ASN1__seqof1)))
 					kull_m_string_copyA(&principal_name->name_string->value, aName);
 			}
 			LocalFree(aName);
@@ -123,9 +123,9 @@ void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal
 	}
 }
 
-void kull_m_kerberos_asn1_PrincipalName_delete(PrincipalName *principal_name)
+void kull_m_kerberos_asn1_PrincipalName_delete(KULL_M_ASN1_PrincipalName *principal_name)
 {
-	struct _seqof1 *names;
+	struct KULL_M_ASN1__seqof1 *names;
 	if(principal_name)
 	{
 		for(names = principal_name->name_string; names; names = names->next)
@@ -136,10 +136,10 @@ void kull_m_kerberos_asn1_PrincipalName_delete(PrincipalName *principal_name)
 	}
 }
 
-void kull_m_kerberos_asn1_PrincipalName_descr(PrincipalName *principal_name, BOOL withType)
+void kull_m_kerberos_asn1_PrincipalName_descr(KULL_M_ASN1_PrincipalName *principal_name, BOOL withType)
 {
 	PCWCHAR type;
-	struct _seqof1 *names;
+	struct KULL_M_ASN1__seqof1 *names;
 	DWORD j;
 	if(principal_name)
 	{
@@ -173,8 +173,8 @@ void kull_m_kerberos_asn1_PrincipalName_descr(PrincipalName *principal_name, BOO
 	}
 }
 
-const KerberosTime MAX_MS_2037_GT = {2037, 9, 13, 2, 48, 5, 0, 0, TRUE};
-void kull_m_kerberos_asn1_KerberosTime_build_systemtime(KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037)
+const KULL_M_ASN1_KerberosTime MAX_MS_2037_GT = {2037, 9, 13, 2, 48, 5, 0, 0, TRUE};
+void kull_m_kerberos_asn1_KerberosTime_build_systemtime(KULL_M_ASN1_KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037)
 {
 	SYSTEMTIME systemTime;
 	if(isMaxMs2037)
@@ -200,7 +200,7 @@ void kull_m_kerberos_asn1_KerberosTime_build_systemtime(KerberosTime *time, PSYS
 	}
 }
 
-void kull_m_kerberos_asn1_KerberosTime_build_filetime(KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037)
+void kull_m_kerberos_asn1_KerberosTime_build_filetime(KULL_M_ASN1_KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037)
 {
 	SYSTEMTIME systemTime;
 	BOOL isPtr = FALSE;
@@ -209,14 +209,14 @@ void kull_m_kerberos_asn1_KerberosTime_build_filetime(KerberosTime *time, PFILET
 	kull_m_kerberos_asn1_KerberosTime_build_systemtime(time, isPtr ? &systemTime : NULL, isMaxMs2037);
 }
 
-void kull_m_kerberos_asn1_KerberosTime_build_time_t(KerberosTime *time, time_t uTime)
+void kull_m_kerberos_asn1_KerberosTime_build_time_t(KULL_M_ASN1_KerberosTime *time, time_t uTime)
 {
 	FILETIME fileTime;
 	*(PLONGLONG) &fileTime = Int32x32To64(uTime, 10000000) + 116444736000000000;
 	kull_m_kerberos_asn1_KerberosTime_build_filetime(time, &fileTime, FALSE);
 }
 
-void kull_m_kerberos_asn1_KerberosTime_to_systemtime(KerberosTime *time, PSYSTEMTIME pSystemTime)
+void kull_m_kerberos_asn1_KerberosTime_to_systemtime(KULL_M_ASN1_KerberosTime *time, PSYSTEMTIME pSystemTime)
 {
 	pSystemTime->wYear = time->year;
 	pSystemTime->wMonth = time->month;
@@ -228,33 +228,37 @@ void kull_m_kerberos_asn1_KerberosTime_to_systemtime(KerberosTime *time, PSYSTEM
 	pSystemTime->wDayOfWeek = 0;
 }
 
-void kull_m_kerberos_asn1_KerberosTime_to_filetime(KerberosTime *time, PFILETIME pFileTime)
+void kull_m_kerberos_asn1_KerberosTime_to_filetime(KULL_M_ASN1_KerberosTime *time, PFILETIME pFileTime)
 {
 	SYSTEMTIME systemTime;
 	kull_m_kerberos_asn1_KerberosTime_to_systemtime(time, &systemTime);
 	SystemTimeToFileTime(&systemTime, pFileTime);
 }
 
-void kull_m_kerberos_asn1_KerberosTime_to_time_t(KerberosTime *time, time_t * uTime)
+void kull_m_kerberos_asn1_KerberosTime_to_time_t(KULL_M_ASN1_KerberosTime *time, time_t * uTime)
 {
 	FILETIME fileTime;
 	kull_m_kerberos_asn1_KerberosTime_to_filetime(time, &fileTime);
 	*uTime = (time_t) (*(PLONGLONG) &fileTime - 116444736000000000) / 10000000; 
 }
 
-void kull_m_kerberos_asn1_KerberosTime_print(KerberosTime *time)
+void kull_m_kerberos_asn1_KerberosTime_print(KULL_M_ASN1_KerberosTime *time)
 {
 	FILETIME ft;
 	kull_m_kerberos_asn1_KerberosTime_to_filetime(time, &ft);
 	kull_m_string_displayLocalFileTime(&ft);
 }
 
-const struct _seqof2	suppEtypeRC4 = {NULL, KERB_ETYPE_RC4_HMAC_NT},
-						suppEtypeAES128 = {(struct _seqof2 *) &suppEtypeRC4, KERB_ETYPE_AES128_CTS_HMAC_SHA1_96},
-						suppEtypeAES256 = {(struct _seqof2 *) &suppEtypeAES128, KERB_ETYPE_AES256_CTS_HMAC_SHA1_96};
-void kull_m_kerberos_asn1_KdcReqBody_build(KDC_REQ_BODY *body, PrincipalName *cname, Realm realm, PrincipalName *sname, DWORD Options, struct _seqof2 *suppEtype)
+const struct KULL_M_ASN1__seqof2	suppEtypeRC4 = {NULL, KERB_ETYPE_RC4_HMAC_NT},
+									suppEtypeAES128 = {(struct KULL_M_ASN1__seqof2 *) &suppEtypeRC4, KERB_ETYPE_AES128_CTS_HMAC_SHA1_96},
+									suppEtypeAES256 = {(struct KULL_M_ASN1__seqof2 *) &suppEtypeAES128, KERB_ETYPE_AES256_CTS_HMAC_SHA1_96};
+const struct KULL_M_ASN1__seqof2	suppEtypeEVP = {NULL, KERB_ETYPE_DES_EDE3_CBC_ENV},
+									suppEtypeE_RC4 = {(struct KULL_M_ASN1__seqof2 *) &suppEtypeEVP, KERB_ETYPE_RC4_HMAC_NT},
+									suppEtypeE_AES128 = {(struct KULL_M_ASN1__seqof2 *) &suppEtypeE_RC4, KERB_ETYPE_AES128_CTS_HMAC_SHA1_96},
+									suppEtypeE_AES256 = {(struct KULL_M_ASN1__seqof2 *) &suppEtypeE_AES128, KERB_ETYPE_AES256_CTS_HMAC_SHA1_96};
+void kull_m_kerberos_asn1_KdcReqBody_build(KULL_M_ASN1_KDC_REQ_BODY *body, KULL_M_ASN1_PrincipalName *cname, KULL_M_ASN1_Realm realm, KULL_M_ASN1_PrincipalName *sname, DWORD Options, struct KULL_M_ASN1__seqof2 *suppEtype)
 {
-	RtlZeroMemory(body, sizeof(KDC_REQ_BODY));
+	RtlZeroMemory(body, sizeof(KULL_M_ASN1_KDC_REQ_BODY));
 	body->kdc_options.length = sizeof(DWORD) * 8;
 	body->kdc_options.value = (unsigned char *) LocalAlloc(LPTR, sizeof(DWORD));
 	if(!Options)
@@ -264,20 +268,20 @@ void kull_m_kerberos_asn1_KdcReqBody_build(KDC_REQ_BODY *body, PrincipalName *cn
 	if(cname)
 	{
 		body->cname = *cname;
-		body->bit_mask |= KDC_REQ_BODY_cname_present;
+		body->bit_mask |= KULL_M_ASN1_KDC_REQ_BODY_cname_present;
 	}
 	body->realm = realm;
 	if(sname)
 	{
 		body->sname = *sname;
-		body->bit_mask |= KDC_REQ_BODY_sname_present;
+		body->bit_mask |= KULL_M_ASN1_KDC_REQ_BODY_sname_present;
 	}
 	kull_m_kerberos_asn1_KerberosTime_build_systemtime(&body->till, NULL, TRUE);
 	body->nonce = MIMIKATZ_NONCE;
-	body->etype = suppEtype ? suppEtype : (struct _seqof2 *) ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? &suppEtypeRC4 : &suppEtypeAES256);
+	body->etype = suppEtype ? suppEtype : (struct KULL_M_ASN1__seqof2 *) ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? &suppEtypeRC4 : &suppEtypeAES256);
 }
 
-void kull_m_kerberos_asn1_KdcReqBody_free(KDC_REQ_BODY *body)
+void kull_m_kerberos_asn1_KdcReqBody_free(KULL_M_ASN1_KDC_REQ_BODY *body)
 {
 	if(body->enc_authorization_data.cipher.value)
 		body->enc_authorization_data.cipher.value = (unsigned char *) LocalFree(body->enc_authorization_data.cipher.value);
@@ -285,7 +289,7 @@ void kull_m_kerberos_asn1_KdcReqBody_free(KDC_REQ_BODY *body)
 		body->kdc_options.value = (unsigned char *) LocalFree(body->kdc_options.value);
 }
 
-BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, AS_REP **AsRep, EncKDCRepPart **encAsRepPart, EncryptionKey *replyKey)
+BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, KULL_M_ASN1_AS_REP **AsRep, KULL_M_ASN1_EncKDCRepPart **encAsRepPart, KULL_M_ASN1_EncryptionKey *replyKey)
 {
 	BOOL status = FALSE;
 	OssBuf AsReq = {0, NULL};
@@ -294,17 +298,17 @@ BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fu
 	*encAsRepPart = NULL;
 	if(kull_m_kerberos_asn1_AsReq_build(authinfos, time, altService, &AsReq))
 	{
-		if(kull_m_kerberos_asn1_net_callKdcOssBuf(fullsocket, &AsReq, (LPVOID *) AsRep, AS_REP_PDU))
+		if(kull_m_kerberos_asn1_net_callKdcOssBuf(fullsocket, &AsReq, (LPVOID *) AsRep, KULL_M_ASN1_AS_REP_PDU))
 		{
 			if(!(status = kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(authinfos, *AsRep, encAsRepPart, replyKey)))
-				ossFreePDU(&kull_m_kerberos_asn1_world, AS_REP_PDU, *AsRep);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REP_PDU, *AsRep);
 		}
 		ossFreeBuf(&kull_m_kerberos_asn1_world, AsReq.value);
 	}
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, int pduRep, LPVOID *Rep)
+BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, int pduRep, LPVOID *Rep)
 {
 	BOOL status = FALSE;
 	OssBuf AsReq = {0, NULL};
@@ -317,19 +321,19 @@ BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SO
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *time, PrincipalName *altService, OssBuf *OutKdcReq)
+BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, OssBuf *OutKdcReq)
 {
 	BOOL status = FALSE, goodPa = FALSE;
-	AS_REQ asreq = {0};
-	PrincipalName sname = {0};
-	PA_DATA PaGeneric = {0}, PaPacRequest = {0};
+	KULL_M_ASN1_AS_REQ asreq = {0};
+	KULL_M_ASN1_PrincipalName sname = {0};
+	KULL_M_ASN1_PA_DATA PaGeneric = {0}, PaPacRequest = {0};
 
 	RtlZeroMemory(OutKdcReq, sizeof(OssBuf));
 	if(authinfos->type != KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH)
 	{
 		asreq.pvno = 5;
 		asreq.msg_type = 10;
-		asreq.bit_mask = KDC_REQ_padata_present;
+		asreq.bit_mask = KULL_M_ASN1_KDC_REQ_padata_present;
 
 		kull_m_kerberos_asn1_PrincipalName_create(&sname, KRB_NT_SRV_INST, 2, "krbtgt", authinfos->realm); // maybe to move in kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build
 		kull_m_kerberos_asn1_KdcReqBody_build(&asreq.req_body, &authinfos->cname, authinfos->realm, &authinfos->sname, 0, NULL);
@@ -353,11 +357,16 @@ BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *
 				;
 			}
 
+			if((authinfos->type == KIWI_AUTH_INFOS_TYPE_RSA) || (authinfos->type == KIWI_AUTH_INFOS_TYPE_OTF_RSA) || (authinfos->type == KIWI_AUTH_INFOS_TYPE_RSA_DH) || (authinfos->type == KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH))
+			{
+				asreq.req_body.etype = (struct KULL_M_ASN1__seqof2 *) ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? &suppEtypeE_RC4 : &suppEtypeE_AES256);
+			}
+
 			if(goodPa)
 				kull_m_kerberos_asn1_PA_DATAs_build(&asreq.padata, 2, &PaGeneric, &PaPacRequest);
 			else kull_m_kerberos_asn1_PA_DATAs_build(&asreq.padata, 1, &PaPacRequest);
 
-			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AS_REQ_PDU, &asreq, OutKdcReq)))
+			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REQ_PDU, &asreq, OutKdcReq)))
 				PRINT_ERROR(L"Unable to encode AS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 			if(asreq.padata)
 				LocalFree(asreq.padata);
@@ -372,30 +381,30 @@ BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *
 	}
 	else
 	{
-		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AS_REQ_PDU, authinfos->u.certinfos.tmpAsReq, OutKdcReq)))
+		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REQ_PDU, authinfos->u.certinfos.tmpAsReq, OutKdcReq)))
 			PRINT_ERROR(L"Unable to encode AS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	}
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(PKIWI_AUTH_INFOS authInfo, KDC_REP *AsRep, EncKDCRepPart **encAsRepPart, EncryptionKey *replyKey)
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(PKIWI_AUTH_INFOS authInfo, KULL_M_ASN1_KDC_REP *AsRep, KULL_M_ASN1_EncKDCRepPart **encAsRepPart, KULL_M_ASN1_EncryptionKey *replyKey)
 {
 	BOOL status = FALSE;
 	if(replyKey)
-		RtlZeroMemory(replyKey, sizeof(EncryptionKey));
+		RtlZeroMemory(replyKey, sizeof(KULL_M_ASN1_EncryptionKey));
 	switch(authInfo->type)
 	{
 	case KIWI_AUTH_INFOS_TYPE_KEY:
-		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(AsRep, &authInfo->u.ekey, EncASRepPart_PDU, encAsRepPart);
+		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(AsRep, &authInfo->u.ekey, KULL_M_ASN1_EncASRepPart_PDU, encAsRepPart);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA:
 	case KIWI_AUTH_INFOS_TYPE_OTF_RSA:
-		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(AsRep, &authInfo->u.certinfos.provider, EncASRepPart_PDU, encAsRepPart, replyKey);
+		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(AsRep, &authInfo->u.certinfos.provider, KULL_M_ASN1_EncASRepPart_PDU, encAsRepPart, replyKey);
 		break;
 	case KIWI_AUTH_INFOS_TYPE_RSA_DH:
 	case KIWI_AUTH_INFOS_TYPE_OTF_RSA_DH:
 	case KIWI_AUTH_INFOS_TYPE_ASREQ_RSA_DH:
-		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(AsRep, &authInfo->u.certinfos.dhKeyInfo, EncASRepPart_PDU, encAsRepPart, replyKey);
+		status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(AsRep, &authInfo->u.certinfos.dhKeyInfo, KULL_M_ASN1_EncASRepPart_PDU, encAsRepPart, replyKey);
 		break;
 	default:
 		;
@@ -403,14 +412,14 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(PKIWI_AUTH_INFOS authIn
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(KDC_REP *rep, EncryptionKey *key, int pdu, EncKDCRepPart **encRepPart)
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncryptionKey *key, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart)
 {
 	BOOL status = FALSE;
 	OssBuf EncRepPartBuff;
 	NTSTATUS ntStatus;
 	*encRepPart = NULL;
 
-	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(((pdu == EncASRepPart_PDU) && (key->keytype != KERB_ETYPE_RC4_HMAC_NT)) ? KRB_KEY_USAGE_AS_REP_EP_SESSION_KEY : KRB_KEY_USAGE_TGS_REP_EP_SESSION_KEY, key, (OssBuf *) &rep->enc_part.cipher, &EncRepPartBuff, FALSE);
+	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(((pdu == KULL_M_ASN1_EncASRepPart_PDU) && (key->keytype != KERB_ETYPE_RC4_HMAC_NT)) ? KRB_KEY_USAGE_AS_REP_EP_SESSION_KEY : KRB_KEY_USAGE_TGS_REP_EP_SESSION_KEY, key, (OssBuf *) &rep->enc_part.cipher, &EncRepPartBuff, FALSE);
 	if(NT_SUCCESS(ntStatus))
 	{
 		if(!(status = !ossDecode(&kull_m_kerberos_asn1_world, &pdu, &EncRepPartBuff, (LPVOID *) encRepPart)))
@@ -421,25 +430,25 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(KDC_REP *rep, Encrypt
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(KDC_REP *rep, PKULL_M_CRYPTO_PROV_INFO provInfo, int pdu, EncKDCRepPart **encRepPart, EncryptionKey *replyKey)
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(KULL_M_ASN1_KDC_REP *rep, PKULL_M_CRYPTO_PROV_INFO provInfo, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart, KULL_M_ASN1_EncryptionKey *replyKey)
 {
 	BOOL status = FALSE;
-	int internDpu = PA_PK_AS_REP_PDU;
-	PA_DATA *paAsRepOld;
+	int internDpu = KULL_M_ASN1_PA_PK_AS_REP_PDU;
+	KULL_M_ASN1_PA_DATA *paAsRepOld;
 	OssBuf KeyData;
-	PA_PK_AS_REP *pkAsRep = NULL;
-	KERB_REPLY_KEY_PACKAGE *KeyPack = NULL;
+	KULL_M_ASN1_PA_PK_AS_REP *pkAsRep = NULL;
+	KULL_M_ASN1_KERB_REPLY_KEY_PACKAGE *KeyPack = NULL;
 
 	*encRepPart = NULL;
 	if(paAsRepOld = kull_m_kerberos_asn1_PADATA_from_REP(rep, PA_TYPE_PK_AS_REP_OLD))
 	{
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &internDpu, (OssBuf *) &paAsRepOld->padata_value, (LPVOID *) &pkAsRep))
 		{
-			if(pkAsRep->choice == encKeyPack_chosen)
+			if(pkAsRep->choice == KULL_M_ASN1_encKeyPack_chosen)
 			{
 				if(kull_m_kerberos_asn1_crypto_simple_message_dec(provInfo, &pkAsRep->u.encKeyPack, &KeyData))
 				{
-					internDpu = KERB_REPLY_KEY_PACKAGE_PDU;
+					internDpu = KULL_M_ASN1_KERB_REPLY_KEY_PACKAGE_PDU;
 					if(!ossDecode(&kull_m_kerberos_asn1_world, &internDpu, &KeyData, (LPVOID *) &KeyPack))
 					{
 						status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(rep, &KeyPack->replyKey, pdu, encRepPart);
@@ -449,28 +458,28 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(KDC_REP *rep, PKULL_M
 							if(replyKey->keyvalue.value = (PBYTE) LocalAlloc(LPTR, replyKey->keyvalue.length))
 								RtlCopyMemory(replyKey->keyvalue.value, KeyPack->replyKey.keyvalue.value, replyKey->keyvalue.length);
 						}
-						ossFreePDU(&kull_m_kerberos_asn1_world, KERB_REPLY_KEY_PACKAGE_PDU, KeyPack);
+						ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KERB_REPLY_KEY_PACKAGE_PDU, KeyPack);
 					}
 					else PRINT_ERROR(L"Unable to decode KERB_REPLY_KEY_PACKAGE from encKeyPack: %s\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));;
 					LocalFree(KeyData.value);
 				}
 			}
 			else PRINT_ERROR(L"PA_PK_AS_REP (old) is not encKeyPack\n");
-			ossFreePDU(&kull_m_kerberos_asn1_world, PA_PK_AS_REP_PDU, pkAsRep);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_PK_AS_REP_PDU, pkAsRep);
 		}
 		else PRINT_ERROR(L"Unable to decode PA_PK_AS_REP from REP: %s\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));;
 	}
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, int pdu, EncKDCRepPart **encRepPart, EncryptionKey *replyKey)
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KULL_M_ASN1_KDC_REP *rep, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart, KULL_M_ASN1_EncryptionKey *replyKey)
 {
 	BOOL status = FALSE;
-	int internDpu = PA_PK_AS_REP_PDU;
-	PA_DATA *paAsRep;
-	PA_PK_AS_REP *pkAsRep = NULL;
+	int internDpu = KULL_M_ASN1_PA_PK_AS_REP_PDU;
+	KULL_M_ASN1_PA_DATA *paAsRep;
+	KULL_M_ASN1_PA_PK_AS_REP *pkAsRep = NULL;
 	OssBuf buffer = {0, NULL};
-	KDCDHKeyInfo *keyInfo = NULL;
+	KULL_M_ASN1_KDCDHKeyInfo *keyInfo = NULL;
 	PCRYPT_INTEGER_BLOB pIntegerBlob;
 	
 	DWORD szPublicKey;
@@ -479,7 +488,7 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 
 	DWORD dwSessionKey = 0;
 	PBYTE pSessionKey;
-	EncryptionKey eKey = {rep->enc_part.etype, {0, NULL}};
+	KULL_M_ASN1_EncryptionKey eKey = {rep->enc_part.etype, {0, NULL}};
 
 	*encRepPart = NULL;
 
@@ -487,11 +496,11 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 	{
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &internDpu, (OssBuf *) &paAsRep->padata_value, (LPVOID *) &pkAsRep))
 		{
-			if(pkAsRep->choice == dhInfo_chosen)
+			if(pkAsRep->choice == KULL_M_ASN1_dhInfo_chosen)
 			{
-				if((!(dhKeyInfo->dhClientNonce.length && dhKeyInfo->dhClientNonce.value) == !(pkAsRep->u.dhInfo.bit_mask & serverDHNonce_present))
+				if((!(dhKeyInfo->dhClientNonce.length && dhKeyInfo->dhClientNonce.value) == !(pkAsRep->u.dhInfo.bit_mask & KULL_M_ASN1_serverDHNonce_present))
 					||
-					((dhKeyInfo->dhClientNonce.length && dhKeyInfo->dhClientNonce.value) && (pkAsRep->u.dhInfo.bit_mask & serverDHNonce_present)))
+					((dhKeyInfo->dhClientNonce.length && dhKeyInfo->dhClientNonce.value) && (pkAsRep->u.dhInfo.bit_mask & KULL_M_ASN1_serverDHNonce_present)))
 				{
 					//if(pkAsRep->u.dhInfo.bit_mask & serverDHNonce_present)
 					//{
@@ -499,7 +508,7 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 					//}
 					if(kull_m_kerberos_asn1_crypto_simple_message_get(&pkAsRep->u.dhInfo.dhSignedData, &buffer))
 					{
-						internDpu = KDCDHKeyInfo_PDU;
+						internDpu = KULL_M_ASN1_KDCDHKeyInfo_PDU;
 						if(!ossDecode(&kull_m_kerberos_asn1_world, &internDpu, &buffer, (LPVOID *) &keyInfo))
 						{
 							if(kull_m_kerberos_asn1_crypto_genericDecode(X509_DH_PUBLICKEY, keyInfo->subjectPublicKey.value, keyInfo->subjectPublicKey.length / 8, (LPVOID *) &pIntegerBlob))
@@ -526,7 +535,7 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 													//kprintf(L"(W) SessionKey:\n"); kull_m_string_wprintf_hex(pSessionKey, dwSessionKey, 0 | (32 << 16)); kprintf(L"\n"); //
 													kull_m_kerberos_asn1_crypto_reverseit(pSessionKey, dwSessionKey);
 													//kprintf(L"(-) SessionKey:\n"); kull_m_string_wprintf_hex(pSessionKey, dwSessionKey, 0 | (32 << 16)); kprintf(L"\n"); //
-													if(kull_m_kerberos_asn1_crypto_octetstring2key(pSessionKey, dwSessionKey, &dhKeyInfo->dhClientNonce, (pkAsRep->u.dhInfo.bit_mask & serverDHNonce_present) ? &pkAsRep->u.dhInfo.serverDHNonce : NULL, &eKey))
+													if(kull_m_kerberos_asn1_crypto_octetstring2key(pSessionKey, dwSessionKey, &dhKeyInfo->dhClientNonce, (pkAsRep->u.dhInfo.bit_mask & KULL_M_ASN1_serverDHNonce_present) ? &pkAsRep->u.dhInfo.serverDHNonce : NULL, &eKey))
 													{
 														//kprintf(L"(-) Kerberos key (%s):\n", kull_m_kerberos_asn1_crypto_etype(eKey.keytype)); kull_m_string_wprintf_hex(eKey.keyvalue.value, eKey.keyvalue.length, 0 | (32 << 16)); kprintf(L"\n");
 														status = kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(rep, &eKey, pdu, encRepPart);
@@ -549,7 +558,7 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 									LocalFree(PublicKey);
 								}
 							}
-							ossFreePDU(&kull_m_kerberos_asn1_world, KDCDHKeyInfo_PDU, keyInfo);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KDCDHKeyInfo_PDU, keyInfo);
 						}
 						LocalFree(buffer.value);
 					}
@@ -557,34 +566,34 @@ BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL
 				else PRINT_ERROR(L"Illogic nonce between client and server\n");
 			}
 			else PRINT_ERROR(L"PA_PK_AS_REP is not dhInfo\n");
-			ossFreePDU(&kull_m_kerberos_asn1_world, PA_PK_AS_REP_PDU, pkAsRep);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_PK_AS_REP_PDU, pkAsRep);
 		}
 		else PRINT_ERROR(L"Unable to decode PA_PK_AS_REP from REP: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));;
 	}
 	return status;
 }
 
-void kull_m_kerberos_asn1_PA_DATAs_build(_seqof4 *padata, DWORD count, ...)
+void kull_m_kerberos_asn1_PA_DATAs_build(KULL_M_ASN1__seqof4 *padata, DWORD count, ...)
 {
 	DWORD i;
 	va_list vaList;
 	va_start(vaList, count);
-	if(*padata = (_seqof4) LocalAlloc(LPTR, sizeof(struct _seqof4) * count))
+	if(*padata = (KULL_M_ASN1__seqof4) LocalAlloc(LPTR, sizeof(struct KULL_M_ASN1__seqof4) * count))
 	{
 		for(i = 0; i < count; i++)
 		{
-			(*padata)[i].value = *va_arg(vaList, PA_DATA *);
+			(*padata)[i].value = *va_arg(vaList, KULL_M_ASN1_PA_DATA *);
 			(*padata)[i].next = (i + 1 < count) ? &((*padata)[i + 1]) : NULL;
 		}
 	}
 	va_end(vaList);
 }
 
-PA_DATA * kull_m_kerberos_asn1_PADATA_from_REP(KDC_REP *Rep, Int32 type)
+KULL_M_ASN1_PA_DATA * kull_m_kerberos_asn1_PADATA_from_REP(KULL_M_ASN1_KDC_REP *Rep, KULL_M_ASN1_Int32 type)
 {
-	PA_DATA *result = NULL;
-	struct _seqof4  *padata;
-	if(Rep->bit_mask & KDC_REP_padata_present)
+	KULL_M_ASN1_PA_DATA *result = NULL;
+	struct KULL_M_ASN1__seqof4  *padata;
+	if(Rep->bit_mask & KULL_M_ASN1_KDC_REP_padata_present)
 	{
 		for(padata = Rep->padata; padata; padata = padata->next)
 			if(padata->value.padata_type == type)
@@ -596,11 +605,11 @@ PA_DATA * kull_m_kerberos_asn1_PADATA_from_REP(KDC_REP *Rep, Int32 type)
 	return result;
 }
 
-PA_DATA * kull_m_kerberos_asn1_PADATA_from_REQ(KDC_REQ *Req, Int32 type)
+KULL_M_ASN1_PA_DATA * kull_m_kerberos_asn1_PADATA_from_REQ(KULL_M_ASN1_KDC_REQ *Req, KULL_M_ASN1_Int32 type)
 {
-	PA_DATA *result = NULL;
-	struct _seqof4  *padata;
-	if(Req->bit_mask & KDC_REQ_padata_present)
+	KULL_M_ASN1_PA_DATA *result = NULL;
+	struct KULL_M_ASN1__seqof4  *padata;
+	if(Req->bit_mask & KULL_M_ASN1_KDC_REQ_padata_present)
 	{
 		for(padata = Req->padata; padata; padata = padata->next)
 			if(padata->value.padata_type == type)
@@ -612,12 +621,12 @@ PA_DATA * kull_m_kerberos_asn1_PADATA_from_REQ(KDC_REQ *Req, Int32 type)
 	return result;
 }
 
-_octet1 * kull_m_kerberos_asn1_AuthorizationData_from_Type(AuthorizationData data, Int32 ad_type)
+KULL_M_ASN1__octet1 * kull_m_kerberos_asn1_AuthorizationData_from_Type(KULL_M_ASN1_AuthorizationData data, KULL_M_ASN1_Int32 ad_type)
 {
-	_octet1 *ad_data = NULL;
-	AuthorizationData cur;
-	AD_IF_RELEVANT *adIfRelevant = NULL; // *?
-	int myPdu = AD_IF_RELEVANT_PDU;
+	KULL_M_ASN1__octet1 *ad_data = NULL;
+	KULL_M_ASN1_AuthorizationData cur;
+	KULL_M_ASN1_AD_IF_RELEVANT *adIfRelevant = NULL; // *?
+	int myPdu = KULL_M_ASN1_AD_IF_RELEVANT_PDU;
 
 	for(cur = data; cur && !ad_data; cur = cur->next)
 	{
@@ -628,33 +637,33 @@ _octet1 * kull_m_kerberos_asn1_AuthorizationData_from_Type(AuthorizationData dat
 			if(!ossDecode(&kull_m_kerberos_asn1_world, &myPdu, (OssBuf *) &cur->value.ad_data, (LPVOID *) &adIfRelevant))
 			{
 				ad_data = kull_m_kerberos_asn1_AuthorizationData_from_Type(*adIfRelevant, ad_type);
-				ossFreePDU(&kull_m_kerberos_asn1_world, AD_IF_RELEVANT_PDU, *adIfRelevant);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AD_IF_RELEVANT_PDU, *adIfRelevant);
 			}
 		}
 	}
 	return ad_data;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_encTimeStamp_build(PA_DATA *data, KerberosTime *time, EncryptionKey *key)
+BOOL kull_m_kerberos_asn1_PA_DATA_encTimeStamp_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_EncryptionKey *key)
 {
 	BOOL status = FALSE;
-	PA_ENC_TS_ENC tsEnc = {0};
-	PA_ENC_TIMESTAMP timeStampEnc = {0};
+	KULL_M_ASN1_PA_ENC_TS_ENC tsEnc = {0};
+	KULL_M_ASN1_PA_ENC_TIMESTAMP timeStampEnc = {0};
 	OssBuf encodedTsEnc = {0, NULL}, encodedTimeStamp = {0, NULL};
 	NTSTATUS ntStatus;
 
-	RtlZeroMemory(data, sizeof(PA_DATA));
+	RtlZeroMemory(data, sizeof(KULL_M_ASN1_PA_DATA));
 	timeStampEnc.etype = key->keytype;
 	if(time)
 		tsEnc.patimestamp = *time;
 	else
 		kull_m_kerberos_asn1_KerberosTime_build_systemtime(&tsEnc.patimestamp, NULL, FALSE);
-	if(!ossEncode(&kull_m_kerberos_asn1_world, PA_ENC_TS_ENC_PDU, &tsEnc, &encodedTsEnc))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_ENC_TS_ENC_PDU, &tsEnc, &encodedTsEnc))
 	{
 		ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AS_REQ_PA_ENC_TIMESTAMP, key, &encodedTsEnc, (OssBuf *) &timeStampEnc.cipher, TRUE);
 		if(NT_SUCCESS(ntStatus))
 		{
-			if(status = !ossEncode(&kull_m_kerberos_asn1_world, PA_ENC_TIMESTAMP_PDU, &timeStampEnc, &encodedTimeStamp))
+			if(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_ENC_TIMESTAMP_PDU, &timeStampEnc, &encodedTimeStamp))
 			{
 				data->padata_type = PA_TYPE_ENC_TIMESTAMP;
 				data->padata_value.length = encodedTimeStamp.length;
@@ -670,16 +679,16 @@ BOOL kull_m_kerberos_asn1_PA_DATA_encTimeStamp_build(PA_DATA *data, KerberosTime
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build(PA_DATA *data, PrincipalName *sname, Realm srealm, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo)
+BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo)
 {
 	BOOL status = FALSE;
-	PA_PK_AS_REQ pkAsReq = {0, {0, NULL}};
+	KULL_M_ASN1_PA_PK_AS_REQ pkAsReq = {0, {0, NULL}};
 	OssBuf encodedPkAsReq = {0, NULL};
 
-	RtlZeroMemory(data, sizeof(PA_DATA));
+	RtlZeroMemory(data, sizeof(KULL_M_ASN1_PA_DATA));
 	if(kull_m_kerberos_asn1_AuthPackOld_signed_build(&pkAsReq.signedAuthPack, sname, srealm, time, certSignInfo))
 	{
-		if(status = !ossEncode(&kull_m_kerberos_asn1_world, PA_PK_AS_REQ_PDU, &pkAsReq, &encodedPkAsReq))
+		if(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_PK_AS_REQ_PDU, &pkAsReq, &encodedPkAsReq))
 		{
 			data->padata_type = PA_TYPE_PK_AS_REP_OLD;
 			data->padata_value.length = encodedPkAsReq.length;
@@ -692,12 +701,12 @@ BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build(PA_DATA *data, Principa
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AuthPackOld_signed_build(_octet1 *signedInfo, PrincipalName *sname, Realm srealm, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo)
+BOOL kull_m_kerberos_asn1_AuthPackOld_signed_build(KULL_M_ASN1__octet1 *signedInfo, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo)
 {
 	BOOL status = FALSE;
 	OssBuf AuthPackOld = {0, NULL};
 
-	RtlZeroMemory(signedInfo, sizeof(_octet1));
+	RtlZeroMemory(signedInfo, sizeof(KULL_M_ASN1__octet1));
 	if(kull_m_kerberos_asn1_AuthPackOld_build(&AuthPackOld, sname, srealm, time))
 	{
 		status = kull_m_kerberos_asn1_crypto_simple_message_sign(certSignInfo, &AuthPackOld, signedInfo);
@@ -706,10 +715,10 @@ BOOL kull_m_kerberos_asn1_AuthPackOld_signed_build(_octet1 *signedInfo, Principa
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AuthPackOld_build(OssBuf *AuthPackOld, PrincipalName *sname, Realm srealm, KerberosTime *time)
+BOOL kull_m_kerberos_asn1_AuthPackOld_build(OssBuf *AuthPackOld, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time)
 {
 	BOOL status = FALSE;
-	AuthPack_OLD auth = {0};
+	KULL_M_ASN1_AuthPack_OLD auth = {0};
 
 	RtlZeroMemory(AuthPackOld, sizeof(OssBuf));
 	auth.pkAuthenticator.kdc_name = *sname;
@@ -720,21 +729,21 @@ BOOL kull_m_kerberos_asn1_AuthPackOld_build(OssBuf *AuthPackOld, PrincipalName *
 		auth.pkAuthenticator.ctime = *time;
 	else
 		kull_m_kerberos_asn1_KerberosTime_build_systemtime(&auth.pkAuthenticator.ctime, NULL, FALSE);
-	if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AuthPack_OLD_PDU, &auth, AuthPackOld)))
+	if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AuthPack_OLD_PDU, &auth, AuthPackOld)))
 		PRINT_ERROR(L"Unable to encode AuthPack_OLD: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(PA_DATA *data, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
+BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(KULL_M_ASN1_PA_DATA *data, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
 {
 	BOOL status = FALSE;
-	PA_PK_AS_REQ pkAsReq = {0, {0, NULL}};
+	KULL_M_ASN1_PA_PK_AS_REQ pkAsReq = {0, {0, NULL}};
 	OssBuf encodedPkAsReq = {0, NULL};
 
-	RtlZeroMemory(data, sizeof(PA_DATA));
+	RtlZeroMemory(data, sizeof(KULL_M_ASN1_PA_DATA));
 	if(kull_m_kerberos_asn1_AuthPack_signed_build(&pkAsReq.signedAuthPack, digest, time, certSignInfo, dhKeyInfo))
 	{
-		if(status = !ossEncode(&kull_m_kerberos_asn1_world, PA_PK_AS_REQ_PDU, &pkAsReq, &encodedPkAsReq))
+		if(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_PK_AS_REQ_PDU, &pkAsReq, &encodedPkAsReq))
 		{
 			data->padata_type = PA_TYPE_PK_AS_REQ;
 			data->padata_value.length = encodedPkAsReq.length;
@@ -747,12 +756,12 @@ BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(PA_DATA *data, PSHA_DIGEST 
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AuthPack_signed_build(_octet1 * signedInfo, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
+BOOL kull_m_kerberos_asn1_AuthPack_signed_build(KULL_M_ASN1__octet1 * signedInfo, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
 {
 	BOOL status = FALSE;
 	OssBuf AuthPack = {0, NULL};
 
-	RtlZeroMemory(signedInfo, sizeof(_octet1));
+	RtlZeroMemory(signedInfo, sizeof(KULL_M_ASN1__octet1));
 	if(kull_m_kerberos_asn1_AuthPack_build(&AuthPack, digest, time, dhKeyInfo))
 	{
 		status = kull_m_kerberos_asn1_crypto_simple_message_sign(certSignInfo, &AuthPack, signedInfo);
@@ -762,10 +771,10 @@ BOOL kull_m_kerberos_asn1_AuthPack_signed_build(_octet1 * signedInfo, PSHA_DIGES
 }
 
 const BYTE sha_req[SHA_DIGEST_LENGTH] = {0}; // Windows does not check? :))
-BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
+BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo)
 {
 	BOOL status = FALSE;
-	AuthPack auth = {0};
+	KULL_M_ASN1_AuthPack auth = {0};
 	DWORD szPublicKey = 0;
 	PUBLICKEYSTRUC *PublicKey = NULL;
 	CRYPT_INTEGER_BLOB integerBlob = {0};
@@ -779,7 +788,7 @@ BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, K
 		//kprintf("(W) Client G param:\n"); kull_m_string_printf_hex(parameters.g.pbData, parameters.g.cbData, 0 | (32 << 16)); kprintf("\n");
 		if(kull_m_kerberos_asn1_crypto_genericEncode(X509_DH_PARAMETERS, &parameters, &auth.clientPublicValue.algorithm.parameters.value, (PDWORD) &auth.clientPublicValue.algorithm.parameters.length))
 		{
-			auth.clientPublicValue.algorithm.bit_mask = parameters_present;
+			auth.clientPublicValue.algorithm.bit_mask = KULL_M_ASN1_parameters_present;
 			if(CryptExportKey(dhKeyInfo->hKey, 0, PUBLICKEYBLOB, 0, NULL, &szPublicKey))
 			{
 				if(PublicKey = (PUBLICKEYSTRUC *) LocalAlloc(LPTR, szPublicKey))
@@ -792,14 +801,14 @@ BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, K
 						if(kull_m_kerberos_asn1_crypto_genericEncode(X509_DH_PUBLICKEY, &integerBlob, &auth.clientPublicValue.subjectPublicKey.value, (PDWORD) &auth.clientPublicValue.subjectPublicKey.length))
 						{
 							auth.clientPublicValue.subjectPublicKey.length *= 8; // in bits
-							auth.bit_mask = clientPublicValue_present;
+							auth.bit_mask = KULL_M_ASN1_clientPublicValue_present;
 							if(dhKeyInfo->dhClientNonce.length && dhKeyInfo->dhClientNonce.value)
 							{
-								auth.bit_mask |= clientDHNonce_present;
+								auth.bit_mask |= KULL_M_ASN1_clientDHNonce_present;
 								auth.clientDHNonce = dhKeyInfo->dhClientNonce;
 								//kprintf("(-) Client Nonce:\n"); kull_m_string_printf_hex(auth.clientDHNonce.value, auth.clientDHNonce.length, 0 | (32 << 16)); kprintf("\n");
 							}
-							auth.pkAuthenticator.bit_mask = paChecksum_present;
+							auth.pkAuthenticator.bit_mask = KULL_M_ASN1_paChecksum_present;
 							auth.pkAuthenticator.cusec = 0;
 							if(time)
 								auth.pkAuthenticator.ctime = *time;
@@ -812,7 +821,7 @@ BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, K
 							{
 								auth.clientPublicValue.algorithm.algorithm.length = eoid.length;
 								auth.clientPublicValue.algorithm.algorithm.value = eoid.value;
-								if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AuthPack_PDU, &auth, authPack)))
+								if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AuthPack_PDU, &auth, authPack)))
 									ossFreeBuf(&kull_m_kerberos_asn1_world, authPack->value);
 								ossFreeBuf(&kull_m_kerberos_asn1_world, eoid.value);
 							}
@@ -829,7 +838,7 @@ BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, K
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(PA_DATA *data, PrincipalName *user, Realm realm, EncryptionKey *key)
+BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *user, KULL_M_ASN1_Realm realm, KULL_M_ASN1_EncryptionKey *key)
 {
 	BOOL status = FALSE;
 	OssBuf encodedReq = {0, NULL};
@@ -844,14 +853,14 @@ BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(PA_DATA *data, PrincipalName *u
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, PrincipalName *user, Realm realm, EncryptionKey *key)
+BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, KULL_M_ASN1_PrincipalName *user, KULL_M_ASN1_Realm realm, KULL_M_ASN1_EncryptionKey *key)
 {
 	BOOL status = FALSE;
-	PA_FOR_USER_ENC forUser;
+	KULL_M_ASN1_PA_FOR_USER_ENC forUser;
 	BYTE hmacMd5[MD5_DIGEST_LENGTH] = {0};
 	PKERB_CHECKSUM pCheckSum;
 	PVOID Context;
-	_seqof1 pname;
+	KULL_M_ASN1__seqof1 pname;
 
 	ForUserData->length = 0;
 	ForUserData->value = NULL;
@@ -878,19 +887,19 @@ BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, PrincipalName *user
 			}
 		}
 	}
-	if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, PA_FOR_USER_ENC_PDU, &forUser, ForUserData)))
+	if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_PA_FOR_USER_ENC_PDU, &forUser, ForUserData)))
 			PRINT_ERROR(L"Unable to encode PA_FOR_USER_ENC: %s\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm crealm, PrincipalName *sname, Realm srealm, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa)
+BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, KULL_M_ASN1_PrincipalName *cname, KULL_M_ASN1_Realm crealm, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, DWORD options, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_Ticket *addTicket, KULL_M_ASN1__octet1 *pac, KULL_M_ASN1_PA_DATA *optPa)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
-	TGS_REQ tgsReq = {0};
-	PA_DATA PaGeneric = {0};
+	KULL_M_ASN1_TGS_REQ tgsReq = {0};
+	KULL_M_ASN1_PA_DATA PaGeneric = {0};
 	OssBuf AuthData = {0, NULL};
-	struct _seqof3 seqofTickets;
+	struct KULL_M_ASN1__seqof3 seqofTickets;
 	
 	OutKdcReq->length = 0;
 	OutKdcReq->value = NULL;
@@ -902,16 +911,16 @@ BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, 
 		seqofTickets.next = NULL;
 		seqofTickets.value = *addTicket;
 		tgsReq.req_body.additional_tickets = &seqofTickets;
-		tgsReq.req_body.bit_mask |= additional_tickets_present;
+		tgsReq.req_body.bit_mask |= KULL_M_ASN1_additional_tickets_present;
 	}
 	if(pac)
 	{
 		if(kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(&AuthData, pac))
 		{
-			ntStatus = kull_m_kerberos_asn1_crypto_encrypt((ticket->enc_part.bit_mask & kvno_present) ? KRB_KEY_USAGE_AS_REQ_AUTHORIZATION_SESSION : KRB_KEY_USAGE_AS_DATA_ENCRYPTED_NO_SPEC, key, &AuthData, (OssBuf *) &tgsReq.req_body.enc_authorization_data.cipher, TRUE);
+			ntStatus = kull_m_kerberos_asn1_crypto_encrypt((ticket->enc_part.bit_mask & KULL_M_ASN1_kvno_present) ? KRB_KEY_USAGE_AS_REQ_AUTHORIZATION_SESSION : KRB_KEY_USAGE_AS_DATA_ENCRYPTED_NO_SPEC, key, &AuthData, (OssBuf *) &tgsReq.req_body.enc_authorization_data.cipher, TRUE);
 			if(NT_SUCCESS(ntStatus))
 			{
-				tgsReq.req_body.bit_mask |= enc_authorization_data_present;
+				tgsReq.req_body.bit_mask |= KULL_M_ASN1_enc_authorization_data_present;
 				tgsReq.req_body.enc_authorization_data.etype = key->keytype;
 			}
 			else PRINT_ERROR(L"Encrypt: %08x\n", ntStatus);
@@ -921,8 +930,8 @@ BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, 
 	if(kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(&PaGeneric, cname, crealm, ticket, key))
 	{
 		kull_m_kerberos_asn1_PA_DATAs_build(&tgsReq.padata, optPa ? 2 : 1, &PaGeneric, optPa);
-		tgsReq.bit_mask = KDC_REQ_padata_present;
-		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, TGS_REQ_PDU, &tgsReq, OutKdcReq)))
+		tgsReq.bit_mask = KULL_M_ASN1_KDC_REQ_padata_present;
+		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REQ_PDU, &tgsReq, OutKdcReq)))
 			PRINT_ERROR(L"Unable to encode TGS_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		if(tgsReq.padata)
 			LocalFree(tgsReq.padata);
@@ -933,14 +942,14 @@ BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, 
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(PA_DATA *data, BOOL request)
+BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(KULL_M_ASN1_PA_DATA *data, BOOL request)
 {
 	BOOL status = FALSE;
-	KERB_PA_PAC_REQUEST pacRequest = {request};
+	KULL_M_ASN1_KERB_PA_PAC_REQUEST pacRequest = {request};
 	OssBuf encodedReq = {0, NULL};
 
-	RtlZeroMemory(data, sizeof(PA_DATA));
-	if(status = !ossEncode(&kull_m_kerberos_asn1_world, KERB_PA_PAC_REQUEST_PDU, &pacRequest, &encodedReq))
+	RtlZeroMemory(data, sizeof(KULL_M_ASN1_PA_DATA));
+	if(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KERB_PA_PAC_REQUEST_PDU, &pacRequest, &encodedReq))
 	{
 		data->padata_type = PA_TYPE_PAC_REQUEST;
 		data->padata_value.length = encodedReq.length;
@@ -950,7 +959,7 @@ BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(PA_DATA *data, BOOL request)
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(PA_DATA *data, PrincipalName *pname, Realm prealm, Ticket *ticket, EncryptionKey *key)
+BOOL kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *pname, KULL_M_ASN1_Realm prealm, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key)
 {
 	BOOL status = FALSE;
 	OssBuf encodedReq = {0, NULL};
@@ -965,12 +974,12 @@ BOOL kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(PA_DATA *data, PrincipalName *pn
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, PrincipalName *pname, Realm prealm, Ticket *ticket, EncryptionKey *key, ULONG keyUsage, EncryptionKey *authenticatorNewKey, UInt32 *authenticatorNewSeq)
+BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, KULL_M_ASN1_PrincipalName *pname, KULL_M_ASN1_Realm prealm, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key, ULONG keyUsage, KULL_M_ASN1_EncryptionKey *authenticatorNewKey, KULL_M_ASN1_UInt32 *authenticatorNewSeq)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
-	AP_REQ req = {0};
-	Authenticator authenticator = {0};
+	KULL_M_ASN1_AP_REQ req = {0};
+	KULL_M_ASN1_Authenticator authenticator = {0};
 	DWORD apOptions = 0;
 	OssBuf encodedAuthenticator = {0, NULL};
 
@@ -996,7 +1005,7 @@ BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, PrincipalName *pname, R
 			if(NT_SUCCESS(ntStatus))
 			{
 				authenticator.subkey = *authenticatorNewKey;
-				authenticator.bit_mask |= Authenticator_subkey_present;
+				authenticator.bit_mask |= KULL_M_ASN1_Authenticator_subkey_present;
 			}
 			else
 			{
@@ -1008,14 +1017,14 @@ BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, PrincipalName *pname, R
 	if(authenticatorNewSeq)
 	{
 		authenticator.seq_number = *authenticatorNewSeq = MIMIKATZ_NONCE;
-		authenticator.bit_mask |= Authenticator_seq_number_present;
+		authenticator.bit_mask |= KULL_M_ASN1_Authenticator_seq_number_present;
 	}
-	if(!ossEncode(&kull_m_kerberos_asn1_world, Authenticator_PDU, &authenticator, &encodedAuthenticator))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_Authenticator_PDU, &authenticator, &encodedAuthenticator))
 	{
 		ntStatus = kull_m_kerberos_asn1_crypto_encrypt(keyUsage, key, &encodedAuthenticator, (OssBuf *) &req.authenticator.cipher, TRUE);
 		if(NT_SUCCESS(ntStatus))
 		{
-			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, AP_REQ_PDU, &req, ApReqData)))
+			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AP_REQ_PDU, &req, ApReqData)))
 				 PRINT_ERROR(L"Unable to encode AP_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 			LocalFree(req.authenticator.cipher.value);
 		}
@@ -1026,21 +1035,21 @@ BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, PrincipalName *pname, R
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(OssBuf *AuthData, _octet1 *pac)
+BOOL kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(OssBuf *AuthData, KULL_M_ASN1__octet1 *pac)
 {
 	BOOL status = FALSE;
 	OssBuf adPacBuff = {0, NULL};
-	struct AuthorizationData adIf = {NULL, {AD_TYPE_IF_RELEVANT}}, adPac = {NULL, {AD_TYPE_WIN2K_PAC}}, adRoot = {NULL, {0, {0, NULL}}};
+	struct KULL_M_ASN1_AuthorizationData adIf = {NULL, {AD_TYPE_IF_RELEVANT}}, adPac = {NULL, {AD_TYPE_WIN2K_PAC}}, adRoot = {NULL, {0, {0, NULL}}};
 
 	*AuthData = adPacBuff;// to do !!!
 
 	adPac.value.ad_data = *pac;
 	adRoot.next = &adPac;
-	if(!ossEncode(&kull_m_kerberos_asn1_world, AD_IF_RELEVANT_PDU, &adRoot, &adPacBuff))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AD_IF_RELEVANT_PDU, &adRoot, &adPacBuff))
 	{
-		adIf.value.ad_data = *(_octet1 *) &adPacBuff;
+		adIf.value.ad_data = *(KULL_M_ASN1__octet1 *) &adPacBuff;
 		adRoot.next = &adIf;
-		status = !ossEncode(&kull_m_kerberos_asn1_world, AD_IF_RELEVANT_PDU, &adRoot, AuthData);
+		status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AD_IF_RELEVANT_PDU, &adRoot, AuthData);
 		ossFreeBuf(&kull_m_kerberos_asn1_world, adPacBuff.value);
 	}
 	if(!status)
@@ -1048,24 +1057,24 @@ BOOL kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(OssBuf *AuthData, _oc
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(EncryptionKey *key, EncryptedData *data, _octet1 *pac)
+BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_EncryptedData *data, KULL_M_ASN1__octet1 *pac)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
 	OssBuf binTicket = {0, NULL};
 	int myPdu;
-	EncTicketPart *ticket = NULL;
-	_octet1 *extractedPac;
+	KULL_M_ASN1_EncTicketPart *ticket = NULL;
+	KULL_M_ASN1__octet1 *extractedPac;
 
 	pac->length = 0;
 	pac->value = NULL;
 	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AS_REP_TGS_REP, key, (OssBuf *) &data->cipher, &binTicket, FALSE);
 	if(NT_SUCCESS(ntStatus))
 	{
-		myPdu = EncTicketPart_PDU;
+		myPdu = KULL_M_ASN1_EncTicketPart_PDU;
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &myPdu, &binTicket, (LPVOID *) &ticket))
 		{
-			if(ticket->bit_mask & EncTicketPart_authorization_data_present)
+			if(ticket->bit_mask & KULL_M_ASN1_EncTicketPart_authorization_data_present)
 			{
 				if(extractedPac = kull_m_kerberos_asn1_AuthorizationData_from_Type(ticket->authorization_data, AD_TYPE_WIN2K_PAC))
 				{
@@ -1079,7 +1088,7 @@ BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(EncryptionKey *key, EncryptedDa
 				else PRINT_ERROR(L"No AD_TYPE_WIN2K_PAC found\n");
 			}
 			else PRINT_ERROR(L"No authorization data\n");
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncTicketPart_PDU, ticket);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTicketPart_PDU, ticket);
 		}
 		else PRINT_ERROR(L"Unable to decode EncTicketPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		LocalFree(binTicket.value);
@@ -1088,12 +1097,12 @@ BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(EncryptionKey *key, EncryptedDa
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_KrbPriv_build(_octet1 *data, EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, UInt32 *seq)
+BOOL kull_m_kerberos_asn1_KrbPriv_build(KULL_M_ASN1__octet1 *data, KULL_M_ASN1_EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, KULL_M_ASN1_UInt32 *seq)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
-	EncKrbPrivPart encPart;
-	KRB_PRIV kPriv;
+	KULL_M_ASN1_EncKrbPrivPart encPart;
+	KULL_M_ASN1_KRB_PRIV kPriv;
 	unsigned char src[16];
 	OssBuf bufEncPart = {0, NULL};
 	
@@ -1118,15 +1127,15 @@ BOOL kull_m_kerberos_asn1_KrbPriv_build(_octet1 *data, EncryptionKey *key, PCSTR
 	if(seq)
 	{
 		encPart.seq_number = *seq;
-		encPart.bit_mask |= EncKrbPrivPart_seq_number_present;
+		encPart.bit_mask |= KULL_M_ASN1_EncKrbPrivPart_seq_number_present;
 	}
 
-	if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbPrivPart_PDU, &encPart, &bufEncPart))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbPrivPart_PDU, &encPart, &bufEncPart))
 	{
 		ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_KRB_PRIV_ENCRYPTED_PART, key, &bufEncPart, (OssBuf *) &kPriv.enc_part.cipher, TRUE);
 		if(NT_SUCCESS(ntStatus))
 		{
-			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KRB_PRIV_PDU, &kPriv, OutKrbPriv)))
+			if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_PRIV_PDU, &kPriv, OutKrbPriv)))
 				PRINT_ERROR(L"Unable to encode KRB_PRIV: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 			LocalFree(kPriv.enc_part.cipher.value);
 		}
@@ -1137,12 +1146,12 @@ BOOL kull_m_kerberos_asn1_KrbPriv_build(_octet1 *data, EncryptionKey *key, PCSTR
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_EncKrbPrivPart_from_Priv_build(KRB_PRIV *priv, EncKrbPrivPart ** encKrbPrivPart, EncryptionKey *authKey)
+BOOL kull_m_kerberos_asn1_EncKrbPrivPart_from_Priv_build(KULL_M_ASN1_KRB_PRIV *priv, KULL_M_ASN1_EncKrbPrivPart ** encKrbPrivPart, KULL_M_ASN1_EncryptionKey *authKey)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
 	OssBuf encKrbPrivPartBuff;
-	int pdu = EncKrbPrivPart_PDU;
+	int pdu = KULL_M_ASN1_EncKrbPrivPart_PDU;
 	*encKrbPrivPart = NULL;
 
 	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_KRB_PRIV_ENCRYPTED_PART, authKey, (OssBuf *) &priv->enc_part.cipher, &encKrbPrivPartBuff, FALSE);
@@ -1156,13 +1165,13 @@ BOOL kull_m_kerberos_asn1_EncKrbPrivPart_from_Priv_build(KRB_PRIV *priv, EncKrbP
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_KrbCred_build(KDC_REP *rep, EncKDCRepPart *repPart, OssBuf *OutKrbCred)
+BOOL kull_m_kerberos_asn1_KrbCred_build(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *repPart, OssBuf *OutKrbCred)
 {
 	BOOL status = FALSE;
-	KRB_CRED cred;
-	struct _seqof3 seqTicket;
-	EncKrbCredPart encKrbCredPart;
-	struct _seqof5 krbCredInfo;
+	KULL_M_ASN1_KRB_CRED cred;
+	struct KULL_M_ASN1__seqof3 seqTicket;
+	KULL_M_ASN1_EncKrbCredPart encKrbCredPart;
+	struct KULL_M_ASN1__seqof5 krbCredInfo;
 
 	OutKrbCred->length = 0;
 	OutKrbCred->value = NULL;
@@ -1181,7 +1190,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_build(KDC_REP *rep, EncKDCRepPart *repPart, Os
 	encKrbCredPart.ticket_info = &krbCredInfo;
 
 	krbCredInfo.next = NULL;
-	krbCredInfo.value.bit_mask = pname_present | flags_present | endtime_present | KrbCredInfo_sname_present;
+	krbCredInfo.value.bit_mask = KULL_M_ASN1_pname_present | KULL_M_ASN1_flags_present | KULL_M_ASN1_endtime_present | KULL_M_ASN1_KrbCredInfo_sname_present;
 	krbCredInfo.value.key = repPart->key;
 	krbCredInfo.value.prealm = rep->crealm;
 	krbCredInfo.value.pname = rep->cname;
@@ -1190,24 +1199,24 @@ BOOL kull_m_kerberos_asn1_KrbCred_build(KDC_REP *rep, EncKDCRepPart *repPart, Os
 	krbCredInfo.value.sname = repPart->sname;
 	krbCredInfo.value.srealm = repPart->srealm;
 
-	if(repPart->bit_mask & EncKDCRepPart_starttime_present)
+	if(repPart->bit_mask & KULL_M_ASN1_EncKDCRepPart_starttime_present)
 	{
 		krbCredInfo.value.starttime = repPart->starttime;
-		krbCredInfo.value.bit_mask |= KrbCredInfo_starttime_present;
+		krbCredInfo.value.bit_mask |= KULL_M_ASN1_KrbCredInfo_starttime_present;
 	}
-	if(repPart->bit_mask & EncKDCRepPart_renew_till_present)
+	if(repPart->bit_mask & KULL_M_ASN1_EncKDCRepPart_renew_till_present)
 	{
 		krbCredInfo.value.renew_till = repPart->renew_till;
-		krbCredInfo.value.bit_mask |= KrbCredInfo_renew_till_present;
+		krbCredInfo.value.bit_mask |= KULL_M_ASN1_KrbCredInfo_renew_till_present;
 	}
-	if(repPart->bit_mask & EncKDCRepPart_caddr_present)
+	if(repPart->bit_mask & KULL_M_ASN1_EncKDCRepPart_caddr_present)
 	{
 		krbCredInfo.value.caddr = repPart->caddr;
-		krbCredInfo.value.bit_mask |= KrbCredInfo_caddr_present;
+		krbCredInfo.value.bit_mask |= KULL_M_ASN1_KrbCredInfo_caddr_present;
 	}
-	if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, &encKrbCredPart, (OssBuf *) &cred.enc_part.cipher))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, &encKrbCredPart, (OssBuf *) &cred.enc_part.cipher))
 	{
-		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, &cred, OutKrbCred)))
+		if(!(status = !ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, &cred, OutKrbCred)))
 			PRINT_ERROR(L"Unable to encode KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		ossFreeBuf(&kull_m_kerberos_asn1_world, cred.enc_part.cipher.value);
 	}
@@ -1215,9 +1224,9 @@ BOOL kull_m_kerberos_asn1_KrbCred_build(KDC_REP *rep, EncKDCRepPart *repPart, Os
 	return status;
 }
 
-LPWSTR kull_m_kerberos_asn1_KdcRep_filename(KDC_REP *rep, EncKDCRepPart *enc, PCWCHAR opt, PCWCHAR ext)
+LPWSTR kull_m_kerberos_asn1_KdcRep_filename(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *enc, PCWCHAR opt, PCWCHAR ext)
 {
-	struct _seqof1 *names;
+	struct KULL_M_ASN1__seqof1 *names;
 	DWORD len = 4; // TGT_ or TGS_
 	LPWSTR buffer = NULL, nbuffer, sep;
 	PCWCHAR pExt = ext ? ext : MIMIKATZ_KERBEROS_EXT;
@@ -1282,22 +1291,22 @@ LPWSTR kull_m_kerberos_asn1_KdcRep_filename(KDC_REP *rep, EncKDCRepPart *enc, PC
 	return buffer;
 }
 
-LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHAR ext)
+LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KULL_M_ASN1_KRB_CRED *cred, PCWCHAR opt, PCWCHAR ext)
 {
-	struct _seqof1 *names;
+	struct KULL_M_ASN1__seqof1 *names;
 	DWORD len = 0;
 	LPWSTR buffer = NULL, nbuffer;
 	PCWCHAR pExt = ext ? ext : MIMIKATZ_KERBEROS_EXT;
-	int pduNum = EncKrbCredPart_PDU;
-	EncKrbCredPart *KrbCred = NULL;
-	KrbCredInfo *infos;
+	int pduNum = KULL_M_ASN1_EncKrbCredPart_PDU;
+	KULL_M_ASN1_EncKrbCredPart *KrbCred = NULL;
+	KULL_M_ASN1_KrbCredInfo *infos;
 
 	if(cred->enc_part.etype == KERB_ETYPE_NULL)
 	{
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &cred->enc_part.cipher, (LPVOID *) &KrbCred))
 		{
 			infos = &KrbCred->ticket_info->value;
-			if(infos->bit_mask & pname_present)
+			if(infos->bit_mask & KULL_M_ASN1_pname_present)
 			{
 				for(names = infos->pname.name_string; names; names = names->next)
 					len += lstrlenA(names->value) + 1; // + ~ or @
@@ -1305,7 +1314,7 @@ LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHA
 					len += lstrlenA(infos->prealm);
 				else len--;
 			}
-			if(infos->bit_mask & KrbCredInfo_sname_present)
+			if(infos->bit_mask & KULL_M_ASN1_KrbCredInfo_sname_present)
 			{
 				len += 1; // + _
 				for(names = infos->sname.name_string; names; names = names->next)
@@ -1320,7 +1329,7 @@ LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHA
 
 			if(buffer = (LPWSTR) LocalAlloc(LPTR, len * sizeof(wchar_t)))
 			{
-				if(infos->bit_mask & pname_present)
+				if(infos->bit_mask & KULL_M_ASN1_pname_present)
 				{
 					for(names = infos->pname.name_string; names; names = names->next)
 					{
@@ -1342,7 +1351,7 @@ LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHA
 						}
 					}
 				}
-				if(infos->bit_mask & KrbCredInfo_sname_present)
+				if(infos->bit_mask & KULL_M_ASN1_KrbCredInfo_sname_present)
 				{
 					wcscat_s(buffer, len, L"_");
 					for(names = infos->sname.name_string; names; names = names->next)
@@ -1371,14 +1380,14 @@ LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHA
 				wcscat_s(buffer, len, pExt);
 				kull_m_file_cleanFilename(buffer);
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, KrbCred);
 		}
 		else PRINT_ERROR(L"Unable to decode EncKrbCredPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	}
 	return buffer;
 }
 
-BOOL kull_m_kerberos_asn1_KdcRep_save(KDC_REP *rep, EncKDCRepPart *encRepPart, LPCWSTR filename, LPCWSTR opt, PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback)
+BOOL kull_m_kerberos_asn1_KdcRep_save(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *encRepPart, LPCWSTR filename, LPCWSTR opt, PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback)
 {
 	BOOL status = FALSE;
 	OssBuf KrbCred = {0, NULL};
@@ -1427,11 +1436,11 @@ void kull_m_kerberos_asn1_displayFlags(ULONG flags)
 		if((flags >> (i + 16)) & 1)
 			kprintf(L"%s ; ", TicketFlagsToStrings[i]);
 }
-BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB_CRED **KrbCred, EncKrbCredPart **encKrbCred)
+BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_KRB_CRED **KrbCred, KULL_M_ASN1_EncKrbCredPart **encKrbCred)
 {
 	BOOL status = FALSE;
 	DWORD flags;
-	int myPdu = KRB_CRED_PDU;
+	int myPdu = KULL_M_ASN1_KRB_CRED_PDU;
 	*KrbCred = NULL;
 	*encKrbCred = NULL;
 
@@ -1442,10 +1451,10 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 		kprintf(L" @ %S\n  [krb-cred]     E: [%08x] %s\n", (*KrbCred)->tickets->value.realm, (*KrbCred)->tickets->value.enc_part.etype, kull_m_kerberos_asn1_crypto_etype((*KrbCred)->tickets->value.enc_part.etype));
 				
 		// TODO: decryption with key
-		myPdu = EncKrbCredPart_PDU;
+		myPdu = KULL_M_ASN1_EncKrbCredPart_PDU;
 		if(status = !ossDecode(&kull_m_kerberos_asn1_world, &myPdu, (OssBuf *) &(*KrbCred)->enc_part.cipher, (LPVOID *) encKrbCred))
 		{
-			if((*encKrbCred)->ticket_info->value.bit_mask & pname_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_pname_present)
 			{
 				kprintf(L"  [enc-krb-cred] P: ");
 				kull_m_kerberos_asn1_PrincipalName_descr(&(*encKrbCred)->ticket_info->value.pname, FALSE);
@@ -1453,7 +1462,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 					kprintf(L" @ %S", (*encKrbCred)->ticket_info->value.prealm);
 				kprintf(L"\n");
 			}
-			if((*encKrbCred)->ticket_info->value.bit_mask & KrbCredInfo_sname_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_KrbCredInfo_sname_present)
 			{
 				kprintf(L"  [enc-krb-cred] S: ");
 				kull_m_kerberos_asn1_PrincipalName_descr(&(*encKrbCred)->ticket_info->value.sname, FALSE);
@@ -1463,24 +1472,24 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 			}
 
 			kprintf(L"  [enc-krb-cred] T: ");
-			if((*encKrbCred)->ticket_info->value.bit_mask & authtime_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_authtime_present)
 			{
 				kprintf(L"{A:");
 				kull_m_kerberos_asn1_KerberosTime_print(&(*encKrbCred)->ticket_info->value.authtime);
 				kprintf(L"} ");
 			}
-			if((*encKrbCred)->ticket_info->value.bit_mask & KrbCredInfo_starttime_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_KrbCredInfo_starttime_present)
 			{
 				kprintf(L"[");
 				kull_m_kerberos_asn1_KerberosTime_print(&(*encKrbCred)->ticket_info->value.starttime);
 				kprintf(L" ; ");
 			}
-			if((*encKrbCred)->ticket_info->value.bit_mask & endtime_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_endtime_present)
 			{
 				kull_m_kerberos_asn1_KerberosTime_print(&(*encKrbCred)->ticket_info->value.endtime);
 				kprintf(L"]");
 			}
-			if((*encKrbCred)->ticket_info->value.bit_mask & KrbCredInfo_renew_till_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_KrbCredInfo_renew_till_present)
 			{
 				kprintf(L" {R:");
 				kull_m_kerberos_asn1_KerberosTime_print(&(*encKrbCred)->ticket_info->value.renew_till);
@@ -1488,7 +1497,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 			}
 			kprintf(L"\n");
 
-			if((*encKrbCred)->ticket_info->value.bit_mask & flags_present)
+			if((*encKrbCred)->ticket_info->value.bit_mask & KULL_M_ASN1_flags_present)
 			{
 				if((*encKrbCred)->ticket_info->value.flags.length >= (sizeof(DWORD) * 8))
 				{
@@ -1504,7 +1513,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 		else
 		{
 			PRINT_ERROR(L"Unable to decode EncKrbCredPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
-			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, *KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, *KrbCred);
 			*KrbCred = NULL;
 		}
 	}
@@ -1512,7 +1521,7 @@ BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_KrbCred_load(LPCWSTR filename, EncryptionKey *key, KRB_CRED **KrbCred, EncKrbCredPart **encKrbCred)
+BOOL kull_m_kerberos_asn1_KrbCred_load(LPCWSTR filename, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_KRB_CRED **KrbCred, KULL_M_ASN1_EncKrbCredPart **encKrbCred)
 {
 	BOOL status = FALSE;
 	OssBuf ossTgtBuff = {0, NULL};

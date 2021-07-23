@@ -8,6 +8,7 @@
   <File>SPNEGO.asn</File>
   <File>CredSSP.asn</File>
   <File>GSSAPI.asn</File>
+  <File>ldapv3.asn</File>
  </Asn1Files>
  <CompilerSettings>
   <Setting name="cCommentsRadioButton" present="true"/>

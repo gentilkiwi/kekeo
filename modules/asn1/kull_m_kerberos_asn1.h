@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -13,7 +13,7 @@
 typedef struct _KULL_M_CRYPTO_DH_KEY_INFO {
 	HCRYPTPROV hProv;
 	HCRYPTKEY hKey;
-	DHNonce dhClientNonce;
+	KULL_M_ASN1_DHNonce dhClientNonce;
 } KULL_M_CRYPTO_DH_KEY_INFO, *PKULL_M_CRYPTO_DH_KEY_INFO;
 
 typedef struct _KULL_M_CRYPTO_PROV_INFO {
@@ -29,7 +29,7 @@ typedef struct _KULL_M_CRYPTO_CERT_INFO {
 	
 	KULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo;
 	//CRYPT_KEY_PROV_INFO tmpKey;
-	AS_REQ *tmpAsReq;
+	KULL_M_ASN1_AS_REQ *tmpAsReq;
 } KULL_M_CRYPTO_CERT_INFO, *PKULL_M_CRYPTO_CERT_INFO;
 
 #define KERB_KDCOPTION_reserved					0x80000000
@@ -111,23 +111,23 @@ typedef enum _KIWI_AUTH_INFOS_TYPE {
 
 typedef struct _KIWI_AUTH_INFOS {
 	LPWSTR w_realm;
-	Realm realm;
+	KULL_M_ASN1_Realm realm;
 	LPWSTR w_short_realm;
 
 
 	LPWSTR w_cname;
 	LPWSTR w_short_cname;
-	PrincipalName cname;
+	KULL_M_ASN1_PrincipalName cname;
 
 	BOOL needPac;
-	PrincipalName sname;
+	KULL_M_ASN1_PrincipalName sname;
 
 	KIWI_AUTH_INFOS_TYPE type;
 	
 	// for future negociation
 	LPWSTR w_password;
 	union {
-		EncryptionKey ekey;
+		KULL_M_ASN1_EncryptionKey ekey;
 		KULL_M_CRYPTO_CERT_INFO certinfos;
 	} u;
 	
@@ -143,7 +143,7 @@ typedef struct _KIWI_AUTHENTICATOR_CKSUM {
 	// BYTE Exts[];
 } KIWI_AUTHENTICATOR_CKSUM, *PKIWI_AUTHENTICATOR_CKSUM;
 
-typedef NTSTATUS (CALLBACK * PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK) (PVOID data, DWORD len, PrincipalName *sname);
+typedef NTSTATUS (CALLBACK * PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK) (PVOID data, DWORD len, KULL_M_ASN1_PrincipalName *sname);
 
 #include "kull_m_kerberos_asn1_crypto.h"
 #include "kull_m_kerberos_asn1_net.h"
@@ -153,65 +153,65 @@ OssGlobal kull_m_kerberos_asn1_world;
 BOOL kull_m_kerberos_asn1_init();
 void kull_m_kerberos_asn1_term();
 
-void kull_m_kerberos_asn1_PrincipalName_create(PrincipalName *principal_name, Int32 name_type, DWORD count, ...);
-void kull_m_kerberos_asn1_PrincipalName_create_fromName(PrincipalName *principal_name, Realm *pRealm, LPCWSTR name);
-void kull_m_kerberos_asn1_PrincipalName_delete(PrincipalName *principal_name);
-void kull_m_kerberos_asn1_PrincipalName_descr(PrincipalName *principal_name, BOOL withType);
+void kull_m_kerberos_asn1_PrincipalName_create(KULL_M_ASN1_PrincipalName *principal_name, KULL_M_ASN1_Int32 name_type, DWORD count, ...);
+void kull_m_kerberos_asn1_PrincipalName_create_fromName(KULL_M_ASN1_PrincipalName *principal_name, KULL_M_ASN1_Realm *pRealm, LPCWSTR name);
+void kull_m_kerberos_asn1_PrincipalName_delete(KULL_M_ASN1_PrincipalName *principal_name);
+void kull_m_kerberos_asn1_PrincipalName_descr(KULL_M_ASN1_PrincipalName *principal_name, BOOL withType);
 
-void kull_m_kerberos_asn1_KerberosTime_build_systemtime(KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037);
-void kull_m_kerberos_asn1_KerberosTime_build_filetime(KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037);
-void kull_m_kerberos_asn1_KerberosTime_build_time_t(KerberosTime *time, time_t uTime);
-void kull_m_kerberos_asn1_KerberosTime_to_systemtime(KerberosTime *time, PSYSTEMTIME pSystemTime);
-void kull_m_kerberos_asn1_KerberosTime_to_filetime(KerberosTime *time, PFILETIME pFileTime);
-void kull_m_kerberos_asn1_KerberosTime_to_time_t(KerberosTime *time, time_t * uTime);
-void kull_m_kerberos_asn1_KerberosTime_print(KerberosTime *time);
-
-
-void kull_m_kerberos_asn1_KdcReqBody_build(KDC_REQ_BODY *body, PrincipalName *cname, Realm realm, PrincipalName *sname, DWORD Options, struct _seqof2 *suppEtype);
-void kull_m_kerberos_asn1_KdcReqBody_free(KDC_REQ_BODY *body);
+void kull_m_kerberos_asn1_KerberosTime_build_systemtime(KULL_M_ASN1_KerberosTime *time, PSYSTEMTIME pSystemTime, BOOL isMaxMs2037);
+void kull_m_kerberos_asn1_KerberosTime_build_filetime(KULL_M_ASN1_KerberosTime *time, PFILETIME pFileTime, BOOL isMaxMs2037);
+void kull_m_kerberos_asn1_KerberosTime_build_time_t(KULL_M_ASN1_KerberosTime *time, time_t uTime);
+void kull_m_kerberos_asn1_KerberosTime_to_systemtime(KULL_M_ASN1_KerberosTime *time, PSYSTEMTIME pSystemTime);
+void kull_m_kerberos_asn1_KerberosTime_to_filetime(KULL_M_ASN1_KerberosTime *time, PFILETIME pFileTime);
+void kull_m_kerberos_asn1_KerberosTime_to_time_t(KULL_M_ASN1_KerberosTime *time, time_t * uTime);
+void kull_m_kerberos_asn1_KerberosTime_print(KULL_M_ASN1_KerberosTime *time);
 
 
-BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, AS_REP **AsRep, EncKDCRepPart **encAsRepPart, EncryptionKey *replyKey);
-BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KerberosTime *time, PrincipalName *altService, int pduRep, LPVOID *Rep);
+void kull_m_kerberos_asn1_KdcReqBody_build(KULL_M_ASN1_KDC_REQ_BODY *body, KULL_M_ASN1_PrincipalName *cname, KULL_M_ASN1_Realm realm, KULL_M_ASN1_PrincipalName *sname, DWORD Options, struct KULL_M_ASN1__seqof2 *suppEtype);
+void kull_m_kerberos_asn1_KdcReqBody_free(KULL_M_ASN1_KDC_REQ_BODY *body);
 
-BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KerberosTime *time, PrincipalName *altService, OssBuf *OutKdcReq);
-void kull_m_kerberos_asn1_PA_DATAs_build(_seqof4 *padata, DWORD count, ...);
-PA_DATA * kull_m_kerberos_asn1_PADATA_from_REP(KDC_REP *Rep, Int32 type);
-PA_DATA * kull_m_kerberos_asn1_PADATA_from_REQ(KDC_REQ *Req, Int32 type);
-_octet1 * kull_m_kerberos_asn1_AuthorizationData_from_Type(AuthorizationData data, Int32 ad_type);
 
-BOOL kull_m_kerberos_asn1_PA_DATA_encTimeStamp_build(PA_DATA *data, KerberosTime *time, EncryptionKey *key);
-BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build(PA_DATA *data, PrincipalName *sname, Realm srealm, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo);
-BOOL kull_m_kerberos_asn1_AuthPackOld_signed_build(_octet1 *signedInfo, PrincipalName *sname, Realm srealm, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo);
-BOOL kull_m_kerberos_asn1_AuthPackOld_build(OssBuf *AuthPackOld, PrincipalName *sname, Realm srealm, KerberosTime *time);
+BOOL kull_m_kerberos_asn1_AsReqAsRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, KULL_M_ASN1_AS_REP **AsRep, KULL_M_ASN1_EncKDCRepPart **encAsRepPart, KULL_M_ASN1_EncryptionKey *replyKey);
+BOOL kull_m_kerberos_asn1_AsReqGenericRep(PKIWI_AUTH_INFOS authinfos, PKULL_M_SOCK fullsocket, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, int pduRep, LPVOID *Rep);
 
-BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(PA_DATA *data, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
-BOOL kull_m_kerberos_asn1_AuthPack_signed_build(_octet1 * signedInfo, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
-BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
+BOOL kull_m_kerberos_asn1_AsReq_build(PKIWI_AUTH_INFOS authinfos, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_PrincipalName *altService, OssBuf *OutKdcReq);
+void kull_m_kerberos_asn1_PA_DATAs_build(KULL_M_ASN1__seqof4 *padata, DWORD count, ...);
+KULL_M_ASN1_PA_DATA * kull_m_kerberos_asn1_PADATA_from_REP(KULL_M_ASN1_KDC_REP *Rep, KULL_M_ASN1_Int32 type);
+KULL_M_ASN1_PA_DATA * kull_m_kerberos_asn1_PADATA_from_REQ(KULL_M_ASN1_KDC_REQ *Req, KULL_M_ASN1_Int32 type);
+KULL_M_ASN1__octet1 * kull_m_kerberos_asn1_AuthorizationData_from_Type(KULL_M_ASN1_AuthorizationData data, KULL_M_ASN1_Int32 ad_type);
 
-BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(PA_DATA *data, PrincipalName *user, Realm realm, EncryptionKey *key);
-BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, PrincipalName *user, Realm realm, EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_PA_DATA_encTimeStamp_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_KerberosTime *time, KULL_M_ASN1_EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_old_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo);
+BOOL kull_m_kerberos_asn1_AuthPackOld_signed_build(KULL_M_ASN1__octet1 *signedInfo, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo);
+BOOL kull_m_kerberos_asn1_AuthPackOld_build(OssBuf *AuthPackOld, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, KULL_M_ASN1_KerberosTime *time);
 
-BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, PrincipalName *cname, Realm crealm, PrincipalName *sname, Realm srealm, DWORD options, Ticket *ticket, EncryptionKey *key, Ticket *addTicket, _octet1 *pac, PA_DATA *optPa);
+BOOL kull_m_kerberos_asn1_PA_DATA_PA_PK_AS_REQ_build(KULL_M_ASN1_PA_DATA *data, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
+BOOL kull_m_kerberos_asn1_AuthPack_signed_build(KULL_M_ASN1__octet1 * signedInfo, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_CERT_INFO certSignInfo, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
+BOOL kull_m_kerberos_asn1_AuthPack_build(OssBuf *authPack, PSHA_DIGEST digest, KULL_M_ASN1_KerberosTime *time, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo);
 
-BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(PA_DATA *data, BOOL request);
+BOOL kull_m_kerberos_asn1_PA_DATA_FOR_USER_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *user, KULL_M_ASN1_Realm realm, KULL_M_ASN1_EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_ForUser_build(OssBuf *ForUserData, KULL_M_ASN1_PrincipalName *user, KULL_M_ASN1_Realm realm, KULL_M_ASN1_EncryptionKey *key);
 
-BOOL kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(PA_DATA *data, PrincipalName *pname, Realm prealm, Ticket *ticket, EncryptionKey *key);
-BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, PrincipalName *pname, Realm prealm, Ticket *ticket, EncryptionKey *key, ULONG keyUsage, EncryptionKey *authenticatorNewKey, UInt32 *authenticatorNewSeq);
-BOOL kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(OssBuf *AuthData, _octet1 *pac);
+BOOL kull_m_kerberos_asn1_TgsReq_build(OssBuf *OutKdcReq, KULL_M_ASN1_PrincipalName *cname, KULL_M_ASN1_Realm crealm, KULL_M_ASN1_PrincipalName *sname, KULL_M_ASN1_Realm srealm, DWORD options, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_Ticket *addTicket, KULL_M_ASN1__octet1 *pac, KULL_M_ASN1_PA_DATA *optPa);
 
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(PKIWI_AUTH_INFOS authInfo, KDC_REP *AsRep, EncKDCRepPart **encAsRepPart, EncryptionKey *replyKey);
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(KDC_REP *rep, EncryptionKey *key, int pdu, EncKDCRepPart **encRepPart);
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(KDC_REP *rep, PKULL_M_CRYPTO_PROV_INFO provInfo, int pdu, EncKDCRepPart **encRepPart, EncryptionKey *replyKey);
-BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KDC_REP *rep, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, int pdu, EncKDCRepPart **encRepPart, EncryptionKey *replyKey);
+BOOL kull_m_kerberos_asn1_PA_DATA_PacRequest_build(KULL_M_ASN1_PA_DATA *data, BOOL request);
 
-BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(EncryptionKey *key, EncryptedData *data, _octet1 *pac);
+BOOL kull_m_kerberos_asn1_PA_DATA_TGS_REQ_build(KULL_M_ASN1_PA_DATA *data, KULL_M_ASN1_PrincipalName *pname, KULL_M_ASN1_Realm prealm, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key);
+BOOL kull_m_kerberos_asn1_ApReq_build(OssBuf *ApReqData, KULL_M_ASN1_PrincipalName *pname, KULL_M_ASN1_Realm prealm, KULL_M_ASN1_Ticket *ticket, KULL_M_ASN1_EncryptionKey *key, ULONG keyUsage, KULL_M_ASN1_EncryptionKey *authenticatorNewKey, KULL_M_ASN1_UInt32 *authenticatorNewSeq);
+BOOL kull_m_kerberos_asn1_AuthorizationData_from_PAC_build(OssBuf *AuthData, KULL_M_ASN1__octet1 *pac);
 
-BOOL kull_m_kerberos_asn1_KrbPriv_build(_octet1 *data, EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, UInt32 *seq);
-BOOL kull_m_kerberos_asn1_EncKrbPrivPart_from_Priv_build(KRB_PRIV *priv, EncKrbPrivPart ** encKrbPrivPart, EncryptionKey *authKey);
-BOOL kull_m_kerberos_asn1_KrbCred_build(KDC_REP *rep, EncKDCRepPart *repPart, OssBuf *OutKrbCred);
-LPWSTR kull_m_kerberos_asn1_KdcRep_filename(KDC_REP *rep, EncKDCRepPart *enc, PCWCHAR opt, PCWCHAR ext);
-LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KRB_CRED *cred, PCWCHAR opt, PCWCHAR ext);
-BOOL kull_m_kerberos_asn1_KdcRep_save(KDC_REP *rep, EncKDCRepPart *encRepPart, LPCWSTR filename, LPCWSTR opt, PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback);
-BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, EncryptionKey *key, KRB_CRED **KrbCred, EncKrbCredPart **encKrbCred);
-BOOL kull_m_kerberos_asn1_KrbCred_load(LPCWSTR filename, EncryptionKey *key, KRB_CRED **KrbCred, EncKrbCredPart **encKrbCred);
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_AsRep_build(PKIWI_AUTH_INFOS authInfo, KULL_M_ASN1_KDC_REP *AsRep, KULL_M_ASN1_EncKDCRepPart **encAsRepPart, KULL_M_ASN1_EncryptionKey *replyKey);
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncryptionKey *key, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart);
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Rsa_build(KULL_M_ASN1_KDC_REP *rep, PKULL_M_CRYPTO_PROV_INFO provInfo, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart, KULL_M_ASN1_EncryptionKey *replyKey);
+BOOL kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_RsaDh_build(KULL_M_ASN1_KDC_REP *rep, PKULL_M_CRYPTO_DH_KEY_INFO dhKeyInfo, int pdu, KULL_M_ASN1_EncKDCRepPart **encRepPart, KULL_M_ASN1_EncryptionKey *replyKey);
+
+BOOL kull_m_kerberos_asn1_PAC_from_EncTicketPart(KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_EncryptedData *data, KULL_M_ASN1__octet1 *pac);
+
+BOOL kull_m_kerberos_asn1_KrbPriv_build(KULL_M_ASN1__octet1 *data, KULL_M_ASN1_EncryptionKey *key, PCSTR machineName, OssBuf *OutKrbPriv, KULL_M_ASN1_UInt32 *seq);
+BOOL kull_m_kerberos_asn1_EncKrbPrivPart_from_Priv_build(KULL_M_ASN1_KRB_PRIV *priv, KULL_M_ASN1_EncKrbPrivPart ** encKrbPrivPart, KULL_M_ASN1_EncryptionKey *authKey);
+BOOL kull_m_kerberos_asn1_KrbCred_build(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *repPart, OssBuf *OutKrbCred);
+LPWSTR kull_m_kerberos_asn1_KdcRep_filename(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *enc, PCWCHAR opt, PCWCHAR ext);
+LPWSTR kull_m_kerberos_asn1_KrbCred_filename(KULL_M_ASN1_KRB_CRED *cred, PCWCHAR opt, PCWCHAR ext);
+BOOL kull_m_kerberos_asn1_KdcRep_save(KULL_M_ASN1_KDC_REP *rep, KULL_M_ASN1_EncKDCRepPart *encRepPart, LPCWSTR filename, LPCWSTR opt, PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback);
+BOOL kull_m_kerberos_asn1_KrbCred_decode(OssBuf *ossBuf, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_KRB_CRED **KrbCred, KULL_M_ASN1_EncKrbCredPart **encKrbCred);
+BOOL kull_m_kerberos_asn1_KrbCred_load(LPCWSTR filename, KULL_M_ASN1_EncryptionKey *key, KULL_M_ASN1_KRB_CRED **KrbCred, KULL_M_ASN1_EncKrbCredPart **encKrbCred);

@@ -1,11 +1,11 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
 #include "kull_m_kerberos_asn1_crypto.h"
 
-NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromHexString(LPCWSTR key, EncryptionKey *ekey)
+NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromHexString(LPCWSTR key, KULL_M_ASN1_EncryptionKey *ekey)
 {
 	NTSTATUS status;
 	PKERB_ECRYPT pCSystem;
@@ -27,7 +27,7 @@ NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromHexString(LPCWSTR key, Encr
 	return status;
 }
 
-NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromPassword(LPCWSTR w_realm, LPCWSTR w_short_cname, LPCWSTR w_password, EncryptionKey *ekey)
+NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromPassword(LPCWSTR w_realm, LPCWSTR w_short_cname, LPCWSTR w_password, KULL_M_ASN1_EncryptionKey *ekey)
 {
 	NTSTATUS status;
 	PKERB_ECRYPT pCSystem;
@@ -65,14 +65,14 @@ NTSTATUS kull_m_kerberos_asn1_crypto_ekey_create_fromPassword(LPCWSTR w_realm, L
 	return status;
 }
 
-void kull_m_kerberos_asn1_crypto_ekey_free(EncryptionKey *ekey)
+void kull_m_kerberos_asn1_crypto_ekey_free(KULL_M_ASN1_EncryptionKey *ekey)
 {
 	if(ekey)
 		if(ekey->keyvalue.value)
 			ekey->keyvalue.value = (unsigned char *) LocalFree(ekey->keyvalue.value);
 }
 
-void kull_m_kerberos_asn1_crypto_ekey_descr(EncryptionKey *ekey)
+void kull_m_kerberos_asn1_crypto_ekey_descr(KULL_M_ASN1_EncryptionKey *ekey)
 {
 	if(ekey)
 	{
@@ -83,7 +83,7 @@ void kull_m_kerberos_asn1_crypto_ekey_descr(EncryptionKey *ekey)
 	}
 }
 
-NTSTATUS kull_m_kerberos_asn1_crypto_encrypt(DWORD keyUsage, EncryptionKey *key, OssBuf *in, OssBuf *out, BOOL encrypt)
+NTSTATUS kull_m_kerberos_asn1_crypto_encrypt(DWORD keyUsage, KULL_M_ASN1_EncryptionKey *key, OssBuf *in, OssBuf *out, BOOL encrypt)
 {
 	NTSTATUS status;
 	PKERB_ECRYPT pCSystem;
@@ -101,7 +101,7 @@ NTSTATUS kull_m_kerberos_asn1_crypto_encrypt(DWORD keyUsage, EncryptionKey *key,
 			{
 				if(modulo = out->length % pCSystem->BlockSize)
 					out->length += pCSystem->BlockSize - modulo;
-				out->length += pCSystem->Size;
+				out->length += pCSystem->HeaderSize;
 			}
 			if(out->value = (unsigned char *) LocalAlloc(LPTR, out->length))
 			{
@@ -127,6 +127,29 @@ BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PKULL_M_CRYPTO_CER
 	return status;
 }
 
+BOOL kull_m_kerberos_asn1_crypto_get_CertInfo_FromPFX(PCRYPT_DATA_BLOB pBlob, LPCWSTR szPassword, PKULL_M_CRYPTO_CERT_INFO certInfo)
+{
+	BOOL status = FALSE, keyToFree;
+	DWORD i;
+
+	if(certInfo->hCertStore = PFXImportCertStore(pBlob, szPassword, PKCS12_NO_PERSIST_KEY | CRYPT_USER_KEYSET))
+	{
+		for (i = 0, certInfo->pCertContext = CertEnumCertificatesInStore(certInfo->hCertStore, NULL); certInfo->pCertContext != NULL; certInfo->pCertContext = CertEnumCertificatesInStore(certInfo->hCertStore, certInfo->pCertContext), i++) // implicit CertFreeCertificateContext
+		{
+			if(CryptAcquireCertificatePrivateKey(certInfo->pCertContext, CRYPT_ACQUIRE_CACHE_FLAG | ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? 0 : CRYPT_ACQUIRE_ALLOW_NCRYPT_KEY_FLAG), NULL, &certInfo->provider.hProv, &certInfo->provider.dwKeySpec, &keyToFree))
+			{
+				status = TRUE;
+				break;
+			}
+		}
+	}
+	else PRINT_ERROR_AUTO(L"PFXImportCertStore");
+
+	if(!status)
+		kull_m_kerberos_asn1_crypto_free_CertInfo(certInfo);
+	return status;
+}
+
 void kull_m_kerberos_asn1_crypto_free_CertInfo(PKULL_M_CRYPTO_CERT_INFO certInfo)
 {
 	if(certInfo->pCertContext)
@@ -146,14 +169,14 @@ void kull_m_kerberos_asn1_crypto_CertInfo_descr(PKULL_M_CRYPTO_CERT_INFO certInf
 	//certInfo->
 }
 
-BOOL kull_m_kerberos_asn1_crypto_simple_message_sign(PKULL_M_CRYPTO_CERT_INFO certInfo, OssBuf *input, _octet1 *output)
+BOOL kull_m_kerberos_asn1_crypto_simple_message_sign(PKULL_M_CRYPTO_CERT_INFO certInfo, OssBuf *input, KULL_M_ASN1__octet1 *output)
 {
 	BOOL status = FALSE;
 	HCRYPTMSG hCryptMsg;
 	CERT_BLOB Certificate = {certInfo->pCertContext->cbCertEncoded, certInfo->pCertContext->pbCertEncoded};
 	CMSG_SIGNER_ENCODE_INFO Signers = {sizeof(CMSG_SIGNER_ENCODE_INFO), certInfo->pCertContext->pCertInfo, certInfo->provider.hProv, certInfo->provider.dwKeySpec, {szOID_OIWSEC_sha1, 0, NULL}, NULL, 0, NULL, 0, NULL};
 	CMSG_SIGNED_ENCODE_INFO MsgEncodeInfo = {sizeof(CMSG_SIGNED_ENCODE_INFO), 1, &Signers, 1, &Certificate, 0, NULL};
-	RtlZeroMemory(output, sizeof(_octet1));
+	RtlZeroMemory(output, sizeof(KULL_M_ASN1__octet1));
 
 	if(hCryptMsg = CryptMsgOpenToEncode(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, CMSG_CMS_ENCAPSULATED_CONTENT_FLAG, CMSG_SIGNED, &MsgEncodeInfo, "1.3.6.1.5.2.3.1", NULL))
 	{
@@ -177,12 +200,12 @@ BOOL kull_m_kerberos_asn1_crypto_simple_message_sign(PKULL_M_CRYPTO_CERT_INFO ce
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_crypto_simple_message_dec(PKULL_M_CRYPTO_PROV_INFO provInfo, _octet1 *input, OssBuf *output)
+BOOL kull_m_kerberos_asn1_crypto_simple_message_dec(PKULL_M_CRYPTO_PROV_INFO provInfo, KULL_M_ASN1__octet1 *input, OssBuf *output)
 {
 	BOOL status = FALSE;
 	HCRYPTMSG hCryptMsg;
 	CMSG_CTRL_DECRYPT_PARA DecryptParam = {sizeof(CMSG_CTRL_DECRYPT_PARA), provInfo->hProv, provInfo->dwKeySpec, 0};
-	_octet1 buffer = {0, NULL};
+	KULL_M_ASN1__octet1 buffer = {0, NULL};
 	RtlZeroMemory(output, sizeof(OssBuf));
 
 	if(hCryptMsg = CryptMsgOpenToDecode(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, 0, 0, NULL, NULL))
@@ -212,7 +235,7 @@ BOOL kull_m_kerberos_asn1_crypto_simple_message_dec(PKULL_M_CRYPTO_PROV_INFO pro
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_crypto_simple_message_get(_octet1 *input, OssBuf *output)
+BOOL kull_m_kerberos_asn1_crypto_simple_message_get(KULL_M_ASN1__octet1 *input, OssBuf *output)
 {
 	BOOL status = FALSE;
 	HCRYPTMSG hCryptMsg2;
@@ -437,7 +460,7 @@ void kull_m_kerberos_asn1_crypto_k_truncate(PVOID input, DWORD cbInput, PVOID ou
 	}
 }
 
-BOOL kull_m_kerberos_asn1_crypto_octetstring2key(PVOID input, DWORD cbInput, DHNonce *client, DHNonce *server, EncryptionKey *ekey)
+BOOL kull_m_kerberos_asn1_crypto_octetstring2key(PVOID input, DWORD cbInput, KULL_M_ASN1_DHNonce *client, KULL_M_ASN1_DHNonce *server, KULL_M_ASN1_EncryptionKey *ekey)
 {
 	BOOL status = FALSE;
 	PKERB_ECRYPT pCSystem;

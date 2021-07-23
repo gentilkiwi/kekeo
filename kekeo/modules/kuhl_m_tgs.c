@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -20,14 +20,14 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 	PCWSTR szData;
 	PKULL_M_SOCK socket;
 	OssBuf TgsReq = {0, NULL};
-	KRB_CRED *KrbCred = NULL, *AddKrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL, *AddEncKrbCred = NULL;
-	TGS_REP *TgsRep = NULL;
-	EncKDCRepPart *encTgsRepPart = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL, *AddKrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL, *AddEncKrbCred = NULL;
+	KULL_M_ASN1_TGS_REP *TgsRep = NULL;
+	KULL_M_ASN1_EncKDCRepPart *encTgsRepPart = NULL;
 	PWSTR domain, dupService, nextSetToken, SetToken;
-	PrincipalName pService;
+	KULL_M_ASN1_PrincipalName pService;
 	PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback = NULL;
-	Realm realm;
+	KULL_M_ASN1_Realm realm;
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
 		callback = kuhl_m_kerberos_ptt_data;
@@ -59,16 +59,16 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 								if(realm)
 									kprintf(L" @ %S", realm);
 								kprintf(L"\n");
-								if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, (encKrbCred->ticket_info->value.bit_mask & pname_present) ? &encKrbCred->ticket_info->value.pname : NULL, KrbCred->tickets->value.realm, &pService, realm, AddKrbCred ? (KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous) : 0, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, AddKrbCred ? &AddKrbCred->tickets->value : NULL, NULL, NULL))
+								if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq, (encKrbCred->ticket_info->value.bit_mask & KULL_M_ASN1_pname_present) ? &encKrbCred->ticket_info->value.pname : NULL, KrbCred->tickets->value.realm, &pService, realm, AddKrbCred ? (KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous) : 0, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, AddKrbCred ? &AddKrbCred->tickets->value : NULL, NULL, NULL))
 								{
-									if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
+									if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, KULL_M_ASN1_TGS_REP_PDU))
 									{
-										if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, EncTGSRepPart_PDU, &encTgsRepPart))
+										if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, KULL_M_ASN1_EncTGSRepPart_PDU, &encTgsRepPart))
 										{
 											kull_m_kerberos_asn1_KdcRep_save(TgsRep, encTgsRepPart, NULL, NULL, callback);
-											ossFreePDU(&kull_m_kerberos_asn1_world, EncTGSRepPart_PDU, encTgsRepPart);
+											ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTGSRepPart_PDU, encTgsRepPart);
 										}
-										ossFreePDU(&kull_m_kerberos_asn1_world, TGS_REP_PDU, TgsRep);
+										ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REP_PDU, TgsRep);
 									}
 									ossFreeBuf(&kull_m_kerberos_asn1_world, TgsReq.value);
 								}
@@ -83,13 +83,13 @@ NTSTATUS kuhl_m_tgs_ask(int argc, wchar_t * argv[])
 					kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 				}
 				if(AddEncKrbCred)
-					ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, AddEncKrbCred);
+					ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, AddEncKrbCred);
 				if(AddKrbCred)
-					ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, AddKrbCred);
+					ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, AddKrbCred);
 				LocalFree(domain);
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
-			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 		}
 	}
 	else PRINT_ERROR(L"A TGT is needed ( /tgt:filename.kirbi )\n");
@@ -101,15 +101,15 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 	PCWSTR szData;
 	PKULL_M_SOCK socket;
 	OssBuf TgsReq = {0, NULL}, TgsReq2 = {0, NULL};
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
-	TGS_REP *TgsRep = NULL, *TgsRep2 = NULL;
-	EncKDCRepPart *encTgsRepPart = NULL, *encTgsRepPart2 = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_TGS_REP *TgsRep = NULL, *TgsRep2 = NULL;
+	KULL_M_ASN1_EncKDCRepPart *encTgsRepPart = NULL, *encTgsRepPart2 = NULL;
 	PWSTR domain, dupService, nextSetToken, SetToken, separator;
-	PrincipalName pUser, pService, pAltService, tmp, tmp2;
-	PA_DATA PaForUser = {0};
+	KULL_M_ASN1_PrincipalName pUser, pService, pAltService, tmp, tmp2;
+	KULL_M_ASN1_PA_DATA PaForUser = {0};
 	BOOL pacWanted = kull_m_string_args_byName(argc, argv, L"pac", NULL, NULL);
-	_octet1 pac;
+	KULL_M_ASN1__octet1 pac;
 	PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback = NULL;
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
@@ -133,12 +133,12 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 						{
 							if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(domain, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 							{
-								if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
+								if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, KULL_M_ASN1_TGS_REP_PDU))
 								{
-									if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, EncTGSRepPart_PDU, &encTgsRepPart))
+									if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, KULL_M_ASN1_EncTGSRepPart_PDU, &encTgsRepPart))
 									{
 										kull_m_kerberos_asn1_KdcRep_save(TgsRep, encTgsRepPart, NULL, NULL, callback);
-										ossFreePDU(&kull_m_kerberos_asn1_world, EncTGSRepPart_PDU, encTgsRepPart);
+										ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTGSRepPart_PDU, encTgsRepPart);
 									}
 									if(pacWanted)
 									{
@@ -179,9 +179,9 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 												
 												if(kull_m_kerberos_asn1_TgsReq_build(&TgsReq2, &encKrbCred->ticket_info->value.pname, KrbCred->tickets->value.realm, &pService, NULL, KERB_KDCOPTION_standard | KERB_KDCOPTION_request_anonymous, &KrbCred->tickets->value, &encKrbCred->ticket_info->value.key, &TgsRep->ticket, NULL, NULL))
 												{
-													if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq2, (LPVOID *) &TgsRep2, TGS_REP_PDU))
+													if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq2, (LPVOID *) &TgsRep2, KULL_M_ASN1_TGS_REP_PDU))
 													{
-														if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep2, &encKrbCred->ticket_info->value.key, EncTGSRepPart_PDU, &encTgsRepPart2))
+														if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep2, &encKrbCred->ticket_info->value.key, KULL_M_ASN1_EncTGSRepPart_PDU, &encTgsRepPart2))
 														{
 															if(separator)
 															{
@@ -196,9 +196,9 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 																TgsRep2->ticket.sname = tmp;
 																encTgsRepPart2->sname = tmp2;
 															}
-															ossFreePDU(&kull_m_kerberos_asn1_world, EncTGSRepPart_PDU, encTgsRepPart2);
+															ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTGSRepPart_PDU, encTgsRepPart2);
 														}
-														ossFreePDU(&kull_m_kerberos_asn1_world, TGS_REP_PDU, TgsRep2);
+														ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REP_PDU, TgsRep2);
 													}
 													ossFreeBuf(&kull_m_kerberos_asn1_world, TgsReq2.value);
 												}
@@ -210,7 +210,7 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 											free(dupService);
 										}
 									}
-									ossFreePDU(&kull_m_kerberos_asn1_world, TGS_REP_PDU, TgsRep);
+									ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REP_PDU, TgsRep);
 								}
 								kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 							}
@@ -223,8 +223,8 @@ NTSTATUS kuhl_m_tgs_s4u(int argc, wchar_t * argv[])
 				else PRINT_ERROR(L"A user/account is needed ( /user:username )\n");
 				LocalFree(domain);
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
-			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 		}
 	}
 	else PRINT_ERROR(L"A TGT is needed ( /tgt:filename.kirbi )\n");
@@ -236,11 +236,11 @@ NTSTATUS kuhl_m_tgs_renew(int argc, wchar_t * argv[])
 	PCWSTR szData;
 	PKULL_M_SOCK socket;
 	OssBuf TgsReq = {0, NULL};
-	KRB_CRED *KrbCred = NULL;
-	EncKrbCredPart *encKrbCred = NULL;
+	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
+	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 	PWSTR domain;
-	TGS_REP *TgsRep = NULL;
-	EncKDCRepPart *encTgsRepPart = NULL;
+	KULL_M_ASN1_TGS_REP *TgsRep = NULL;
+	KULL_M_ASN1_EncKDCRepPart *encTgsRepPart = NULL;
 	PKULL_M_KERBEROS_ASN1_SAVEKDCREP_CALLBACK callback = NULL;
 
 	if(kull_m_string_args_byName(argc, argv, L"ptt", NULL, NULL))
@@ -256,14 +256,14 @@ NTSTATUS kuhl_m_tgs_renew(int argc, wchar_t * argv[])
 				{
 					if(socket = kull_m_kerberos_asn1_net_AddressSocket_create(domain, KERBEROS_DEFAULT_PORT, argc, argv, TRUE))
 					{
-						if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, TGS_REP_PDU))
+						if(kull_m_kerberos_asn1_net_callKdcOssBuf(socket, &TgsReq, (LPVOID *) &TgsRep, KULL_M_ASN1_TGS_REP_PDU))
 						{
-							if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, EncTGSRepPart_PDU, &encTgsRepPart))
+							if(kull_m_kerberos_asn1_EncKDCRepPart_from_Rep_Key_build(TgsRep, &encKrbCred->ticket_info->value.key, KULL_M_ASN1_EncTGSRepPart_PDU, &encTgsRepPart))
 							{
 								kull_m_kerberos_asn1_KdcRep_save(TgsRep, encTgsRepPart, NULL, L"(renew)", callback);
-								ossFreePDU(&kull_m_kerberos_asn1_world, EncTGSRepPart_PDU, encTgsRepPart);
+								ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncTGSRepPart_PDU, encTgsRepPart);
 							}
-							ossFreePDU(&kull_m_kerberos_asn1_world, TGS_REP_PDU, TgsRep);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TGS_REP_PDU, TgsRep);
 						}
 						kull_m_kerberos_asn1_net_AddressSocket_delete(socket);
 					}
@@ -271,8 +271,8 @@ NTSTATUS kuhl_m_tgs_renew(int argc, wchar_t * argv[])
 				}
 				LocalFree(domain);
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCred);
-			ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, KrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCred);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, KrbCred);
 		}
 	}
 	else PRINT_ERROR(L"A ticket is needed ( /ticket|tgt|tgs:filename.kirbi )\n");

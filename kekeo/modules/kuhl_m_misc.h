@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -27,7 +27,7 @@ typedef struct _KULL_M_KADMIN_PASSWD_ERR{
 } KULL_M_KADMIN_PASSWD_ERR, *PKULL_M_KADMIN_PASSWD_ERR;
 
 PCWSTR kull_m_kadmin_passwd_err_to_string(DWORD id);
-void kull_m_kadmin_passwd_retFromKadmin(_octet1 * data);
+void kull_m_kadmin_passwd_retFromKadmin(KULL_M_ASN1__octet1 * data);
 
 #define DIRTY_ASN1_ID_GENERAL_STRING	0x1b
 #define DIRTY_ASN1_ID_GENERALIZED_TIME	0x18
@@ -47,10 +47,10 @@ BOOL kuhl_m_misc_storm_add(PCUNICODE_STRING name);
 PBERVAL kuhl_m_misc_storm_giveBERForUser(PCANSI_STRING user);
 DWORD kuhl_m_misc_storm_giveUsersForServer(PCWSTR server);
 
-BOOL kuhl_m_misc_keytab_salt_from_info2(_octet1 *info2, Int32 etype, PUNICODE_STRING salt);
-BOOL kuhl_m_misc_keytab_padata_from_edata(_octet1 *e_data, Int32 type, _octet1 *padata);
-BOOL kuhl_m_misc_keytab_ekey_with_salt(LPCWSTR password, PCUNICODE_STRING salt, EncryptionKey *ekey);
-BOOL kuhl_m_misc_keytab_tofile(PKIWI_AUTH_INFOS infos, EncryptionKey *key, LPCWSTR filename);
+BOOL kuhl_m_misc_keytab_salt_from_info2(KULL_M_ASN1__octet1 *info2, KULL_M_ASN1_Int32 etype, PUNICODE_STRING salt);
+BOOL kuhl_m_misc_keytab_padata_from_edata(KULL_M_ASN1__octet1 *e_data, KULL_M_ASN1_Int32 type, KULL_M_ASN1__octet1 *padata);
+BOOL kuhl_m_misc_keytab_ekey_with_salt(LPCWSTR password, PCUNICODE_STRING salt, KULL_M_ASN1_EncryptionKey *ekey);
+BOOL kuhl_m_misc_keytab_tofile(PKIWI_AUTH_INFOS infos, KULL_M_ASN1_EncryptionKey *key, LPCWSTR filename);
 
 //static const RPC_SYNTAX_IDENTIFIER AbstractSyntax =			{{0xe1af8308, 0x5d1f, 0x11c9, {0x91, 0xa4, 0x08, 0x00, 0x2b, 0x14, 0xa0, 0xfa}}, {3, 0}};
 //static const RPC_SYNTAX_IDENTIFIER NdrTransferSyntax =		{{0x8a885d04, 0x1ceb, 0x11c9, {0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60}}, {2, 0}};

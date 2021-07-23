@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -240,7 +240,7 @@ void kuhl_m_tsssp_freeBuffer(PSecBuffer buffer, BOOL isContext)
 	}
 }
 
-void kuhl_m_tsssp_printOctet1String(_octet1 *data)
+void kuhl_m_tsssp_printOctet1String(KULL_M_ASN1__octet1 *data)
 {
 	if(data)
 		kprintf(L"%.*s", data->length / sizeof(wchar_t), data->value);
@@ -255,13 +255,13 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 {
 	SECURITY_STATUS status = SEC_E_INVALID_PARAMETER;
 	ULONG ContextAttr = 0;
-	TSRequest *InputTsReq = NULL, OutputTsReq = {0};
+	KULL_M_ASN1_TSRequest *InputTsReq = NULL, OutputTsReq = {0};
 	OssBuf InputTsEncoded = {0, NULL}, OutputTsEncoded = {0, NULL};
-	int internDpu = TSRequest_PDU;
-	struct NegoData negoData;
+	int internDpu = KULL_M_ASN1_TSRequest_PDU;
+	struct KULL_M_ASN1_NegoData negoData;
 	SecBuffer SBServerIn = {0, SECBUFFER_TOKEN, NULL}, SBServerOut = {0, SECBUFFER_TOKEN, NULL}, SBDecodedData = {0, SECBUFFER_DATA, NULL}, SBToEncrypt = {0, SECBUFFER_DATA, NULL};
 	SecBufferDesc SBDServerIn = {SECBUFFER_VERSION, 1, &SBServerIn}, SBDServerOut = {SECBUFFER_VERSION, 1, &SBServerOut};
-	_octet1 PublicKey = {TSSSP_HC_CERTIFICATE_PUBLICKEY_LENGTH, (PBYTE) TSSSP_HC_CERTIFICATE + TSSSP_HC_CERTIFICATE_PUBLICKEY_OFFSET};
+	KULL_M_ASN1__octet1 PublicKey = {TSSSP_HC_CERTIFICATE_PUBLICKEY_LENGTH, (PBYTE) TSSSP_HC_CERTIFICATE + TSSSP_HC_CERTIFICATE_PUBLICKEY_OFFSET};
 
 	SecPkgContext_NegotiationInfo negoInfo = {0};
 	SecPkgContext_Names names = {0};
@@ -274,9 +274,9 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 		{
 			kprintf(L"\n[InputTsReq v%i]\n", InputTsReq->version);
 			OutputTsReq.version = InputTsReq->version;
-			if(InputTsReq->bit_mask & (negoTokens_present | pubKeyAuth_present))
+			if(InputTsReq->bit_mask & (KULL_M_ASN1_negoTokens_present | KULL_M_ASN1_pubKeyAuth_present))
 			{
-				if(InputTsReq->bit_mask & negoTokens_present)
+				if(InputTsReq->bit_mask & KULL_M_ASN1_negoTokens_present)
 				{
 					kprintf(L"  [negoTokens]\n");
 					SBServerIn.pvBuffer = InputTsReq->negoTokens->value.negoToken.value;
@@ -288,7 +288,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 						negoData.value.negoToken.length = SBServerOut.cbBuffer;
 						negoData.value.negoToken.value = (unsigned char *) SBServerOut.pvBuffer;
 						negoData.next = NULL;
-						OutputTsReq.bit_mask |= negoTokens_present;
+						OutputTsReq.bit_mask |= KULL_M_ASN1_negoTokens_present;
 						OutputTsReq.negoTokens = &negoData;
 					}
 
@@ -312,7 +312,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 						}
 					}
 				}
-				if(InputTsReq->bit_mask & pubKeyAuth_present)
+				if(InputTsReq->bit_mask & KULL_M_ASN1_pubKeyAuth_present)
 				{
 					kprintf(L"  [pubKeyAuth]\n    Encrypted: "); kull_m_string_wprintf_hex(InputTsReq->pubKeyAuth.value, InputTsReq->pubKeyAuth.length, 0);
 					kprintf(L"\n    Decrypted: ");
@@ -321,7 +321,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 						kull_m_string_wprintf_hex(SBDecodedData.pvBuffer, SBDecodedData.cbBuffer, 0); kprintf(L"\n");
 						LocalFree(SBDecodedData.pvBuffer); // we don't care about, really...
 					}
-					if(InputTsReq->bit_mask & clientNonce_present)
+					if(InputTsReq->bit_mask & KULL_M_ASN1_clientNonce_present)
 					{
 						if(InputTsReq->version >= 5)
 						{
@@ -355,7 +355,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 					if(SBToEncrypt.pvBuffer)
 					{
 						if(kuhl_m_tsssp_Encrypt(phContext, &SBToEncrypt, &OutputTsReq.pubKeyAuth))
-							OutputTsReq.bit_mask |= pubKeyAuth_present;
+							OutputTsReq.bit_mask |= KULL_M_ASN1_pubKeyAuth_present;
 						LocalFree(SBToEncrypt.pvBuffer);
 					}
 				}
@@ -363,7 +363,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 				if(OutputTsReq.bit_mask) // something to encode !
 				{
 					status = SEC_I_CONTINUE_NEEDED;
-					if(!ossEncode(&kull_m_kerberos_asn1_world, TSRequest_PDU, &OutputTsReq, &OutputTsEncoded))
+					if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TSRequest_PDU, &OutputTsReq, &OutputTsEncoded))
 					{
 						if(pOutput->pBuffers[0].pvBuffer = LocalAlloc(LPTR, OutputTsEncoded.length))
 						{
@@ -378,7 +378,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 					LocalFree(OutputTsReq.pubKeyAuth.value);
 				kuhl_m_tsssp_freeBuffer(&SBServerOut, TRUE);
 			}
-			else if(InputTsReq->bit_mask & authInfo_present)
+			else if(InputTsReq->bit_mask & KULL_M_ASN1_authInfo_present)
 			{
 				kprintf(L"  [authInfo]\n    Encrypted: "); kull_m_string_wprintf_hex(InputTsReq->authInfo.value, InputTsReq->authInfo.length, 0);
 				kprintf(L"\n    Decrypted: ");
@@ -391,7 +391,7 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 				}
 				else status = SEC_E_DECRYPT_FAILURE;
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, TSRequest_PDU, InputTsReq);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TSRequest_PDU, InputTsReq);
 		}
 		else PRINT_ERROR(L"Unable to decode TSRequest: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 	}
@@ -401,11 +401,11 @@ SECURITY_STATUS kuhl_m_tsssp_AcceptSecurityContext(__in_opt PCredHandle phCreden
 void kuhl_m_tsssp_TSCredentials(PSecBuffer data)
 {
 	OssBuf InputTsEncoded = {data->cbBuffer, (unsigned char *) data->pvBuffer};
-	int internDpu = TSCredentials_PDU;
-	TSCredentials *InputTsCredentials = NULL;
-	TSPasswordCreds *InputTsPasswordCreds;
-	TSSmartCardCreds *InputTsSmartCardCreds;
-	TSRemoteGuardCreds *InputTsRemoteGuardCreds;
+	int internDpu = KULL_M_ASN1_TSCredentials_PDU;
+	KULL_M_ASN1_TSCredentials *InputTsCredentials = NULL;
+	KULL_M_ASN1_TSPasswordCreds *InputTsPasswordCreds;
+	KULL_M_ASN1_TSSmartCardCreds *InputTsSmartCardCreds;
+	KULL_M_ASN1_TSRemoteGuardCreds *InputTsRemoteGuardCreds;
 	PVOID *ts;
 
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &internDpu, &InputTsEncoded, (LPVOID *) &InputTsCredentials))
@@ -414,19 +414,19 @@ void kuhl_m_tsssp_TSCredentials(PSecBuffer data)
 		{
 		case 1:
 			kprintf(L"    [Password]\n");
-			internDpu = TSPasswordCreds_PDU;
+			internDpu = KULL_M_ASN1_TSPasswordCreds_PDU;
 			ts = (PVOID *) &InputTsPasswordCreds;
 			break;
 
 		case 2:
 			kprintf(L"    [Smartcard]\n");
-			internDpu = TSSmartCardCreds_PDU;
+			internDpu = KULL_M_ASN1_TSSmartCardCreds_PDU;
 			ts = (PVOID *) &InputTsSmartCardCreds;
 			break;
 
 		case 6:
 			kprintf(L"    [Remote CredentialGuard]\n");
-			internDpu = TSRemoteGuardCreds_PDU;
+			internDpu = KULL_M_ASN1_TSRemoteGuardCreds_PDU;
 			ts = (PVOID *) &InputTsRemoteGuardCreds;
 			break;
 		default:
@@ -463,12 +463,12 @@ void kuhl_m_tsssp_TSCredentials(PSecBuffer data)
 			}
 			else PRINT_ERROR(L"Unable to decode TS*Creds: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 		}
-		ossFreePDU(&kull_m_kerberos_asn1_world, TSCredentials_PDU, InputTsCredentials);
+		ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_TSCredentials_PDU, InputTsCredentials);
 	}
 	else PRINT_ERROR(L"Unable to decode TSCredentials: %S\n", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 }
 
-BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out)
+BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, KULL_M_ASN1__octet1 *out)
 {
 	BOOL status = FALSE;
 	SECURITY_STATUS subStatus;
@@ -507,7 +507,7 @@ BOOL kuhl_m_tsssp_Encrypt(PCtxtHandle phContext, PSecBuffer data, _octet1 *out)
 	return status;
 }
 
-BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, _octet1 *data, PSecBuffer out)
+BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, KULL_M_ASN1__octet1 *data, PSecBuffer out)
 {
 	BOOL status = FALSE;
 	SECURITY_STATUS subStatus;
@@ -534,7 +534,7 @@ BOOL kuhl_m_tsssp_Decrypt(PCtxtHandle phContext, _octet1 *data, PSecBuffer out)
 }
 
 const char kuhl_m_tsssp_ClientServerHashMagic[] = "CredSSP Client-To-Server Binding Hash", kuhl_m_tsssp_ServerClientHashMagic[] = "CredSSP Server-To-Client Binding Hash";
-BOOL kuhl_m_tsssp_SHA256(BOOL isClient, _octet1 *Nonce, _octet1 *PublicKey, PSecBuffer out)
+BOOL kuhl_m_tsssp_SHA256(BOOL isClient, KULL_M_ASN1__octet1 *Nonce, KULL_M_ASN1__octet1 *PublicKey, PSecBuffer out)
 {
 	BOOL status = FALSE;
 	HCRYPTPROV hProv;

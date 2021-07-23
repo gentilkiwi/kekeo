@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -20,7 +20,7 @@ typedef struct _KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR{
 } KULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR, *PKULL_M_KERBEROS_ASN1_HELPER_UTIL_ERR;
 
 BOOL kull_m_kerberos_asn1_net_callKdcOssBuf(PKULL_M_SOCK fullsocket, OssBuf *in, LPVOID * out, int outPdu);
-BOOL kull_m_kerberos_asn1_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, USHORT version, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv);
+BOOL kull_m_kerberos_asn1_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, USHORT version, OssBuf *ReqIn, OssBuf *KrbPrivIn, KULL_M_ASN1_AP_REP **ApRep, KULL_M_ASN1_KRB_PRIV **KrbPriv);
 BOOL kull_m_kerberos_asn1_net_SendAndRecv(PKULL_M_SOCK fullsocket, LPCVOID dataIn, DWORD dataInSize, LPVOID *dataOut, DWORD *dataOutSize);
 BOOL kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(OssBuf *data, int pdu, LPVOID *out);
 PCWSTR kull_m_kerberos_asn1_helper_util_err_to_string(DWORD id);

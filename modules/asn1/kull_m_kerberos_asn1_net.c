@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -18,7 +18,7 @@ BOOL kull_m_kerberos_asn1_net_callKdcOssBuf(PKULL_M_SOCK fullsocket, OssBuf *in,
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, USHORT version, OssBuf *ReqIn, OssBuf *KrbPrivIn, AP_REP **ApRep, KRB_PRIV **KrbPriv)
+BOOL kull_m_kerberos_asn1_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, USHORT version, OssBuf *ReqIn, OssBuf *KrbPrivIn, KULL_M_ASN1_AP_REP **ApRep, KULL_M_ASN1_KRB_PRIV **KrbPriv)
 {
 	BOOL status = FALSE;
 	PVOID bufferIn, bufferOut;
@@ -41,18 +41,18 @@ BOOL kull_m_kerberos_asn1_net_callKadminOssBuf(PKULL_M_SOCK fullsocket, USHORT v
 			{
 				buf.length = _byteswap_ushort(((PWORD) bufferOut)[2]);
 				buf.value = (PBYTE) bufferOut + 6;
-				if(kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(&buf, AP_REP_PDU, (LPVOID *) ApRep))
+				if(kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(&buf, KULL_M_ASN1_AP_REP_PDU, (LPVOID *) ApRep))
 				{
 					buf.length = sizeOut - 6 - _byteswap_ushort(((PWORD) bufferOut)[2]);
 					buf.value = (PBYTE) bufferOut + 6 + _byteswap_ushort(((PWORD) bufferOut)[2]);
 
-					status = kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(&buf, KRB_PRIV_PDU, (LPVOID *) KrbPriv);
+					status = kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(&buf, KULL_M_ASN1_KRB_PRIV_PDU, (LPVOID *) KrbPriv);
 					if(!status)
 					{
 						if(*KrbPriv)
-							ossFreePDU(&kull_m_kerberos_asn1_world, KRB_PRIV_PDU, *KrbPriv);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_PRIV_PDU, *KrbPriv);
 						if(*ApRep)
-							ossFreePDU(&kull_m_kerberos_asn1_world, AP_REP_PDU, *ApRep);
+							ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_AP_REP_PDU, *ApRep);
 					}
 				}
 			}
@@ -83,7 +83,7 @@ BOOL kull_m_kerberos_asn1_net_SendAndRecv(PKULL_M_SOCK fullsocket, LPCVOID dataI
 				*dataOutSize = bufferSize - sizeof(DWORD);
 				if(*dataOut = LocalAlloc(LPTR, *dataOutSize))
 				{
-					RtlCopyMemory(*dataOut, (PBYTE) buffer + sizeof(DWORD), *dataOutSize);
+					RtlCopyMemory(*dataOut, (PBYTE)buffer + sizeof(DWORD), *dataOutSize);
 					if(!(status = (*dataOutSize == _byteswap_ulong(*(PDWORD) buffer))))
 						PRINT_ERROR(L"Packet size + 4 != Kerberos Packet Size\n");
 
@@ -103,11 +103,11 @@ BOOL kull_m_kerberos_asn1_net_SendAndRecv(PKULL_M_SOCK fullsocket, LPCVOID dataI
 BOOL kull_m_kerberos_asn1_helper_util_decodeOrTryKrbError(OssBuf *data, int pdu, LPVOID *out)
 {
 	BOOL status = FALSE;
-	KRB_ERROR *error = NULL;
+	KULL_M_ASN1_KRB_ERROR *error = NULL;
 
 	if(!(status = !ossDecode(&kull_m_kerberos_asn1_world, &pdu, data, out)))
 	{
-		pdu = KRB_ERROR_PDU;
+		pdu = KULL_M_ASN1_KRB_ERROR_PDU;
 		if(!ossDecode(&kull_m_kerberos_asn1_world, &pdu, data, (LPVOID *) &error))
 		{
 			kprintf(L"%s (%u) - ", kull_m_kerberos_asn1_helper_util_err_to_string(error->error_code), error->error_code);

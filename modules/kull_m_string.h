@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -30,6 +30,7 @@ extern VOID WINAPI RtlUpperString(OUT PSTRING DestinationString, IN const STRING
 extern NTSTATUS WINAPI RtlUpcaseUnicodeString(IN OUT PUNICODE_STRING DestinationString, IN PCUNICODE_STRING SourceString, IN BOOLEAN AllocateDestinationString);
 extern NTSTATUS WINAPI RtlDowncaseUnicodeString(PUNICODE_STRING DestinationString, IN PCUNICODE_STRING SourceString, IN BOOLEAN AllocateDestinationString);
 extern WCHAR WINAPI RtlUpcaseUnicodeChar(IN WCHAR SourceCharacter);
+extern NTSTATUS WINAPI RtlUpcaseUnicodeStringToOemString(IN OUT POEM_STRING DestinationString, IN PCUNICODE_STRING SourceString, IN BOOLEAN AllocateDestinationString);
 
 extern BOOLEAN WINAPI RtlEqualString(IN const STRING *String1, IN const STRING *String2, IN BOOLEAN CaseInSensitive);
 extern BOOLEAN WINAPI RtlEqualUnicodeString(IN PCUNICODE_STRING String1, IN PCUNICODE_STRING String2, IN BOOLEAN CaseInSensitive);
@@ -39,6 +40,7 @@ extern LONG WINAPI RtlCompareString(IN const STRING *String1, IN const STRING *S
 
 extern VOID WINAPI RtlFreeAnsiString(IN PANSI_STRING AnsiString);
 extern VOID WINAPI RtlFreeUnicodeString(IN PUNICODE_STRING UnicodeString);
+extern VOID WINAPI RtlFreeOemString(IN OUT POEM_STRING OemString);
 
 extern NTSTATUS WINAPI RtlStringFromGUID(IN LPCGUID Guid, PUNICODE_STRING UnicodeString);
 extern NTSTATUS WINAPI RtlGUIDFromString(IN PCUNICODE_STRING GuidString, OUT GUID *Guid);

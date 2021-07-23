@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
@@ -10,10 +10,10 @@ BOOL kiwi_krbcred_valid_header(OssBuf *input)
 	return ((input->length > 4) && ((_byteswap_ushort(*(PUSHORT) input->value) & 0xfff0) == 0x7680));
 }
 
-BOOL kiwi_krbcred_read(OssBuf *input, KRB_CRED **cred)
+BOOL kiwi_krbcred_read(OssBuf *input, KULL_M_ASN1_KRB_CRED **cred)
 {
 	BOOL status = FALSE;
-	int pduNum = KRB_CRED_PDU;
+	int pduNum = KULL_M_ASN1_KRB_CRED_PDU;
 	*cred = NULL;
 	status = !ossDecode(&kull_m_kerberos_asn1_world, &pduNum, input, (LPVOID *) cred);
 	if(!status)
@@ -21,14 +21,14 @@ BOOL kiwi_krbcred_read(OssBuf *input, KRB_CRED **cred)
 	return status;
 }
 
-BOOL kiwi_krbcred_write(KRB_CRED *cred, OssBuf *output)
+BOOL kiwi_krbcred_write(KULL_M_ASN1_KRB_CRED *cred, OssBuf *output)
 {
 	BOOL status = FALSE;
 	OssBuf tmp = {0, NULL};
 
 	output->length = 0;
 	output->value = NULL;
-	if(!ossEncode(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, cred, &tmp))
+	if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, cred, &tmp))
 	{
 		if(output->value = (unsigned char *) LocalAlloc(LPTR, tmp.length))
 		{

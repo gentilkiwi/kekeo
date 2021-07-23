@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by/4.0/
 */
@@ -30,5 +30,5 @@ BOOL kuhl_m_pac_stringToGroups(PCWSTR szGroups, PGROUP_MEMBERSHIP *groups, DWORD
 BOOL kuhl_m_pac_stringToSids(PCWSTR szSids, PKERB_SID_AND_ATTRIBUTES *sids, DWORD *cbSids);
 
 BOOL kuhl_m_kerberos_pac_to_infos(PPACTYPE pacType, DWORD pacLenght, PISID *sid, DWORD *rid);
-void kuhl_m_kerberos_pac_info_data(PPACTYPE pacType, DWORD pacLenght, EncryptionKey *AsRepKey);
-void kuhl_m_kerberos_pac_info_data_credentialinfo(PPAC_CREDENTIAL_INFO pCredentialInfo, ULONG uCredentialInfo, EncryptionKey *AsRepKey);
+void kuhl_m_kerberos_pac_info_data(PPACTYPE pacType, DWORD pacLenght, KULL_M_ASN1_EncryptionKey *AsRepKey);
+void kuhl_m_kerberos_pac_info_data_credentialinfo(PPAC_CREDENTIAL_INFO pCredentialInfo, ULONG uCredentialInfo, KULL_M_ASN1_EncryptionKey *AsRepKey);

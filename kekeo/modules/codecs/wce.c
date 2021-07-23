@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
@@ -10,11 +10,11 @@ BOOL kiwi_wce_valid_header(OssBuf *input)
 	return ((input->length > 3 * sizeof(DWORD)) && (*(PDWORD) input->value) == WCE_KERBEROS_TICKET_HEADER);
 }
 
-BOOL kiwi_wce_read(OssBuf *input, KRB_CRED **cred)
+BOOL kiwi_wce_read(OssBuf *input, KULL_M_ASN1_KRB_CRED **cred)
 {
 	PWCE_KERBEROS_TICKET pWce;
 	OssBuf buffer;
-	KRB_CRED *bufferCred;
+	KULL_M_ASN1_KRB_CRED *bufferCred;
 	DWORD i, curTicket, nbTicket = 0;
 	BOOL isKey = FALSE;
 
@@ -34,7 +34,7 @@ BOOL kiwi_wce_read(OssBuf *input, KRB_CRED **cred)
 			{
 				addCred(bufferCred, cred);
 				nbTicket++;
-				ossFreePDU(&kull_m_kerberos_asn1_world, KRB_CRED_PDU, bufferCred);
+				ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_KRB_CRED_PDU, bufferCred);
 			}
 			else PRINT_ERROR(L"[ticket %u] reading KRB-CRED from wce cache\n", curTicket);
 		}
@@ -43,17 +43,17 @@ BOOL kiwi_wce_read(OssBuf *input, KRB_CRED **cred)
 	return (nbTicket > 0);
 }
 
-BOOL kiwi_wce_write(KRB_CRED *cred, OssBuf *output)
+BOOL kiwi_wce_write(KULL_M_ASN1_KRB_CRED *cred, OssBuf *output)
 {
 	BOOL status = FALSE;
 	PWCE_BUFF_TICKET outputTmp = NULL;
-	EncKrbCredPart * encKrbCredPart = NULL, credpart;
-	struct _seqof5 * nextInfos, infos;
-	struct _seqof3 * nextTicket, ticket;
-	KRB_CRED tmp;
+	KULL_M_ASN1_EncKrbCredPart * encKrbCredPart = NULL, credpart;
+	struct KULL_M_ASN1__seqof5 * nextInfos, infos;
+	struct KULL_M_ASN1__seqof3 * nextTicket, ticket;
+	KULL_M_ASN1_KRB_CRED tmp;
 	DWORD i, count = 0;
 	PWCE_KERBEROS_TICKET pWce;
-	int pduNum = EncKrbCredPart_PDU;
+	int pduNum = KULL_M_ASN1_EncKrbCredPart_PDU;
 	output->length = 0;
 	output->value = NULL;
 	if(!ossDecode(&kull_m_kerberos_asn1_world, &pduNum, (OssBuf *) &cred->enc_part.cipher, (LPVOID *) &encKrbCredPart))
@@ -84,7 +84,7 @@ BOOL kiwi_wce_write(KRB_CRED *cred, OssBuf *output)
 				if(outputTmp[i].SessionKey.length && (outputTmp[i].SessionKey.value = (PBYTE) LocalAlloc(LPTR, outputTmp[i].SessionKey.length)))
 				{
 					RtlCopyMemory(outputTmp[i].SessionKey.value, infos.value.key.keyvalue.value, outputTmp[i].SessionKey.length);
-					if(!ossEncode(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, &credpart, (OssBuf *) &tmp.enc_part.cipher))
+					if(!ossEncode(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, &credpart, (OssBuf *) &tmp.enc_part.cipher))
 					{
 						if(!kiwi_krbcred_write(&tmp, &outputTmp[i].Ticket))
 							PRINT_ERROR(L"writing KRB_CRED\n");
@@ -93,7 +93,7 @@ BOOL kiwi_wce_write(KRB_CRED *cred, OssBuf *output)
 					else PRINT_ERROR(L"Unable to encode EncKrbCredPart: %S", ossGetErrMsg(&kull_m_kerberos_asn1_world));
 				}
 			}
-			ossFreePDU(&kull_m_kerberos_asn1_world, EncKrbCredPart_PDU, encKrbCredPart);
+			ossFreePDU(&kull_m_kerberos_asn1_world, KULL_M_ASN1_EncKrbCredPart_PDU, encKrbCredPart);
 		
 			for(i = 0; i < count; i++)
 				output->length += FIELD_OFFSET(WCE_KERBEROS_TICKET, data) + outputTmp[i].SessionKey.length + outputTmp[i].Ticket.length;

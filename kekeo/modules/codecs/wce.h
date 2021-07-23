@@ -1,5 +1,5 @@
 /*	Benjamin DELPY `gentilkiwi`
-	http://blog.gentilkiwi.com
+	https://blog.gentilkiwi.com
 	benjamin@gentilkiwi.com
 	Licence : https://creativecommons.org/licenses/by-nc-sa/4.0/
 */
@@ -24,5 +24,5 @@ typedef struct _WCE_BUFF_TICKET {
 } WCE_BUFF_TICKET, *PWCE_BUFF_TICKET;
 
 BOOL kiwi_wce_valid_header(OssBuf *input);
-BOOL kiwi_wce_read(OssBuf *input, KRB_CRED **cred);
-BOOL kiwi_wce_write(KRB_CRED *cred, OssBuf *output);
+BOOL kiwi_wce_read(OssBuf *input, KULL_M_ASN1_KRB_CRED **cred);
+BOOL kiwi_wce_write(KULL_M_ASN1_KRB_CRED *cred, OssBuf *output);
