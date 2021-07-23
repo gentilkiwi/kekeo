@@ -18,6 +18,7 @@ void kprintf(PCWCHAR format, ...);
 void kprintf_inputline(PCWCHAR format, ...);
 
 BOOL kull_m_output_file(PCWCHAR file);
-
+#define kread	kull_m_cli_read //
+BOOL kull_m_cli_read(wchar_t *buffer, DWORD NumberOfChars); //
 void kull_m_output_init();
 void kull_m_output_clean();

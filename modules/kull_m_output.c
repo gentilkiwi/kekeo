@@ -95,10 +95,35 @@ BOOL kull_m_output_file(PCWCHAR file)
 	return (!file || (file && logfile));
 }
 
+// A little gift in advance from mimikatz 3
+HANDLE hConsoleInput = NULL;
+BOOL kull_m_cli_read(wchar_t *buffer, DWORD NumberOfChars)
+{
+	BOOL status = FALSE;
+	DWORD NumberOfCharsRead;
+
+	if (ReadConsole(hConsoleInput, buffer, NumberOfChars, &NumberOfCharsRead, NULL))
+	{
+		if (NumberOfCharsRead > 2)
+		{
+			buffer[NumberOfCharsRead - 1] = L'\0';
+			buffer[NumberOfCharsRead - 2] = L'\0';
+			NumberOfCharsRead -= 2;
+			
+			status = TRUE;
+		}
+	}
+	else PRINT_ERROR_AUTO(L"ReadConsole");
+
+	return status;
+}
+
 int previousStdOut, previousStdErr;
 UINT previousConsoleOutput;
 void kull_m_output_init()
 {
+	hConsoleInput = GetStdHandle(STD_INPUT_HANDLE);
+
 #if !defined(_POWERKATZ)
 #if !defined(_WINDLL)
 	previousStdOut = _setmode(_fileno(stdout), _O_U8TEXT);

@@ -23,8 +23,7 @@ int wmain(int argc, wchar_t * argv[])
 	NTSTATUS status = STATUS_SUCCESS;
 	int i;
 #if !defined(_POWERKATZ)
-	size_t len;
-	wchar_t input[0xffff];
+	wchar_t input[0x4000];
 #endif
 	mimikatz_begin();
 	for(i = MIMIKATZ_AUTO_COMMAND_START ; (i < argc) && (status != STATUS_FATAL_APP_EXIT) ; i++)
@@ -36,10 +35,8 @@ int wmain(int argc, wchar_t * argv[])
 	while ((status != STATUS_PROCESS_IS_TERMINATING) && (status != STATUS_THREAD_IS_TERMINATING))
 	{
 		kprintf(L"\n" MIMIKATZ L" # "); fflush(stdin);
-		if(fgetws(input, ARRAYSIZE(input), stdin) && (len = wcslen(input)) && (input[0] != L'\n'))
+		if (kread(input, ARRAYSIZE(input)))
 		{
-			if(input[len - 1] == L'\n')
-				input[len - 1] = L'\0';
 			kprintf_inputline(L"%s\n", input);
 			status = mimikatz_dispatchCommand(input);
 		}
