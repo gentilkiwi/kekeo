@@ -145,15 +145,17 @@ void kull_m_kerberos_asn1_Authinfos_create_for_cert_names(PKIWI_AUTH_INFOS infos
 
 BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int argc, wchar_t * argv[])
 {
-	BOOL status = FALSE;
-	LPCWSTR szData, szStoreCA, szCRLDP;
+	BOOL status = FALSE, findHash = FALSE;
+	LPCWSTR szData, szStoreCA, szCRLDP, szCertHash;
 	LPWSTR buffer;
 	LPSTR abuf;
 	CRYPT_DATA_BLOB blob;
+	BYTE hashB[SHA_DIGEST_LENGTH] = {0};
+	CRYPT_HASH_BLOB hash = {sizeof(hashB), hashB};
 
 	if(kull_m_string_args_byName(argc, argv, L"subject", &szData, NULL))
 	{
-		if(status = kull_m_kerberos_asn1_crypto_get_CertInfo(szData, &infos->u.certinfos))
+		if(status = kull_m_kerberos_asn1_crypto_get_CertInfo(szData, NULL, &infos->u.certinfos))
 		{
 			if(kull_m_string_args_byName(argc, argv, L"pin", &szData, NULL))
 			{
@@ -168,6 +170,27 @@ BOOL kull_m_kerberos_asn1_Authinfos_create_for_cert(PKIWI_AUTH_INFOS infos, int 
 			infos->type = KIWI_AUTH_INFOS_TYPE_RSA;
 			kull_m_kerberos_asn1_Authinfos_create_for_cert_names(infos);
 		}
+	}
+	else if(kull_m_string_args_byName(argc, argv, L"certhash", &szCertHash, NULL))
+	{
+		if(kull_m_string_stringToHex(szCertHash, hash.pbData, hash.cbData))
+		{
+			if(status = kull_m_kerberos_asn1_crypto_get_CertInfo(NULL, &hash, &infos->u.certinfos))
+			{
+				if(kull_m_string_args_byName(argc, argv, L"pin", &szData, NULL))
+				{
+					if(abuf = kull_m_string_unicode_to_ansi(szData))
+					{
+						if(!CryptSetProvParam(infos->u.certinfos.provider.hProv, PP_SIGNATURE_PIN, (LPCBYTE) abuf, 0))
+							PRINT_ERROR_AUTO(L"CryptSetProvParam");
+						LocalFree(abuf);
+					}
+				}
+				infos->type = KIWI_AUTH_INFOS_TYPE_RSA;
+				kull_m_kerberos_asn1_Authinfos_create_for_cert_names(infos);
+			}
+		}
+		else PRINT_ERROR(L"/certhash needs a SHA1 in hex (40chars for 20bytes)\n");
 	}
 	else if(kull_m_string_args_byName(argc, argv, L"caname", &szData, NULL))
 	{

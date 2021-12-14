@@ -115,12 +115,12 @@ NTSTATUS kull_m_kerberos_asn1_crypto_encrypt(DWORD keyUsage, KULL_M_ASN1_Encrypt
 	return status;
 }
 
-BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PKULL_M_CRYPTO_CERT_INFO certInfo)
+BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PCRYPT_HASH_BLOB pHash, PKULL_M_CRYPTO_CERT_INFO certInfo)
 {
 	BOOL status = FALSE, keyToFree;
 	RtlZeroMemory(certInfo, sizeof(KULL_M_CRYPTO_CERT_INFO));
 	if(certInfo->hCertStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, (HCRYPTPROV_LEGACY) NULL, CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_OPEN_EXISTING_FLAG | CERT_STORE_READONLY_FLAG, L"My"))
-		if(certInfo->pCertContext = CertFindCertificateInStore(certInfo->hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_SUBJECT_STR, Subject, NULL))
+		if(certInfo->pCertContext = CertFindCertificateInStore(certInfo->hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, Subject ? CERT_FIND_SUBJECT_STR : CERT_FIND_SHA1_HASH , Subject ? (LPVOID) Subject : (LPVOID) pHash, NULL))
 			status = CryptAcquireCertificatePrivateKey(certInfo->pCertContext, CRYPT_ACQUIRE_CACHE_FLAG | ((MIMIKATZ_NT_MAJOR_VERSION < 6) ? 0 : CRYPT_ACQUIRE_ALLOW_NCRYPT_KEY_FLAG), NULL, &certInfo->provider.hProv, &certInfo->provider.dwKeySpec, &keyToFree);
 	if(!status)
 		kull_m_kerberos_asn1_crypto_free_CertInfo(certInfo);
@@ -239,9 +239,11 @@ BOOL kull_m_kerberos_asn1_crypto_simple_message_get(KULL_M_ASN1__octet1 *input, 
 {
 	BOOL status = FALSE;
 	HCRYPTMSG hCryptMsg2;
+	DWORD dwInfo = 0;
+	PBYTE pInfo;
+
 	output->length = 0;
 	output->value = NULL;
-
 	if(hCryptMsg2 = CryptMsgOpenToDecode(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, 0, 0, NULL, NULL))
 	{
 		if(CryptMsgUpdate(hCryptMsg2, input->value, input->length, TRUE))
@@ -256,11 +258,105 @@ BOOL kull_m_kerberos_asn1_crypto_simple_message_get(KULL_M_ASN1__octet1 *input, 
 					}
 			}
 			else PRINT_ERROR_AUTO(L"CryptMsgGetParam(CMSG_CONTENT_PARAM - init)");
+
+			if(CryptMsgGetParam(hCryptMsg2, CMSG_CERT_PARAM, 0, NULL, &dwInfo))
+			{
+				if(pInfo = (PBYTE) LocalAlloc(LPTR, dwInfo))
+				{
+					if(CryptMsgGetParam(hCryptMsg2, CMSG_CERT_PARAM, 0, pInfo, &dwInfo))
+					{
+						kull_m_kerberos_asn1_crypto_der_info(pInfo, dwInfo, NULL);
+					}
+					else PRINT_ERROR_AUTO(L"CryptMsgGetParam(CMSG_CERT_PARAM - data)");
+					LocalFree(pInfo);
+				}
+			}
+			else PRINT_ERROR_AUTO(L"CryptMsgGetParam(CMSG_CERT_PARAM - init)");
 		}
 		else PRINT_ERROR_AUTO(L"CryptMsgUpdate");
 		CryptMsgClose(hCryptMsg2);
 	}
 	else PRINT_ERROR_AUTO(L"CryptMsgOpenToEncode");
+	return status;
+}
+
+PWSTR kull_m_crypto_CertGetNameString(PCCERT_CONTEXT pCertContext, DWORD dwType, DWORD dwFlags)
+{
+	BOOL status = FALSE;
+	PWSTR ret = NULL;
+	DWORD cchNameStringRequired, cchNameString;
+
+	cchNameStringRequired = CertGetNameString(pCertContext, dwType, dwFlags, NULL, NULL, 0);
+	if (cchNameStringRequired)
+	{
+		if (cchNameStringRequired > 1)
+		{
+			ret = (PWSTR)LocalAlloc(LPTR, cchNameStringRequired * sizeof(wchar_t));
+			if (ret)
+			{
+				cchNameString = CertGetNameString(pCertContext, dwType, dwFlags, NULL, ret, cchNameStringRequired);
+				if (cchNameString)
+				{
+					if (cchNameString == cchNameStringRequired)
+					{
+						status = TRUE;
+					}
+					else PRINT_ERROR(L"Needed %u, got %u\n", cchNameStringRequired, cchNameString);
+				}
+				else PRINT_ERROR_AUTO(L"CertGetNameString(data)");
+
+				if (!status)
+				{
+					LocalFree(ret);
+					ret = NULL;
+				}
+			}
+		}
+	}
+	else PRINT_ERROR_AUTO(L"CertGetNameString(init)");
+
+	return ret;
+}
+
+BOOL kull_m_kerberos_asn1_crypto_der_info(LPCVOID der, DWORD derLen, LPCWSTR filename)
+{
+	BOOL status = FALSE;
+	HCERTSTORE hTempStore;
+	PCCERT_CONTEXT pCertContext;
+	PWSTR szString;
+
+	if(hTempStore = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, 0, CERT_STORE_CREATE_NEW_FLAG, NULL))
+	{
+		if(CertAddEncodedCertificateToStore(hTempStore, X509_ASN_ENCODING, (LPCBYTE) der, derLen, CERT_STORE_ADD_NEW, &pCertContext))
+		{
+			status = TRUE;
+			
+			szString = kull_m_crypto_CertGetNameString(pCertContext, CERT_NAME_RDN_TYPE, 0);
+			if(szString)
+			{
+				kprintf(L"[kdc] Subject : %s\n", szString);
+				LocalFree(szString);
+			}
+			szString = kull_m_crypto_CertGetNameString(pCertContext, CERT_NAME_RDN_TYPE, CERT_NAME_ISSUER_FLAG);
+			
+			kprintf(L"[kdc] Serial  : ");
+			kull_m_string_wprintf_hex(pCertContext->pCertInfo->SerialNumber.pbData, pCertContext->pCertInfo->SerialNumber.cbData, 0);
+			kprintf(L"\n[kdc] Validity: ");
+			kull_m_string_displayLocalFileTime(&pCertContext->pCertInfo->NotBefore);
+			kprintf(L" -> ");
+			kull_m_string_displayLocalFileTime(&pCertContext->pCertInfo->NotAfter);
+			kprintf(L"\n");
+
+			if(szString)
+			{
+				kprintf(L"[kdc] Issuer  : %s\n", szString);
+				LocalFree(szString);
+			}
+			CertFreeCertificateContext(pCertContext);
+		}
+		else PRINT_ERROR_AUTO(L"CertAddEncodedCertificateToStore");
+		CertCloseStore(hTempStore, CERT_CLOSE_STORE_FORCE_FLAG);
+	}
 	return status;
 }
 

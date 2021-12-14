@@ -20,13 +20,14 @@ void kull_m_kerberos_asn1_crypto_ekey_descr(KULL_M_ASN1_EncryptionKey *ekey);
 
 NTSTATUS kull_m_kerberos_asn1_crypto_encrypt(DWORD keyUsage, KULL_M_ASN1_EncryptionKey *key, OssBuf *in, OssBuf *out, BOOL encrypt);
 
-BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PKULL_M_CRYPTO_CERT_INFO certInfo);
+BOOL kull_m_kerberos_asn1_crypto_get_CertInfo(PCWSTR Subject, PCRYPT_HASH_BLOB pHash, PKULL_M_CRYPTO_CERT_INFO certInfo);
 BOOL kull_m_kerberos_asn1_crypto_get_CertInfo_FromPFX(PCRYPT_DATA_BLOB pBlob, LPCWSTR szPassword, PKULL_M_CRYPTO_CERT_INFO certInfo);
 void kull_m_kerberos_asn1_crypto_free_CertInfo(PKULL_M_CRYPTO_CERT_INFO certInfo);
 
 BOOL kull_m_kerberos_asn1_crypto_simple_message_sign(PKULL_M_CRYPTO_CERT_INFO certInfo, OssBuf *input, KULL_M_ASN1__octet1 *output);
 BOOL kull_m_kerberos_asn1_crypto_simple_message_dec(PKULL_M_CRYPTO_PROV_INFO provInfo, KULL_M_ASN1__octet1 *input, OssBuf *output);
 BOOL kull_m_kerberos_asn1_crypto_simple_message_get(KULL_M_ASN1__octet1 *input, OssBuf *output);
+BOOL kull_m_kerberos_asn1_crypto_der_info(LPCVOID der, DWORD derLen, LPCWSTR filename);
 BOOL kull_m_kerberos_asn1_crypto_genericEncode(__in LPCSTR lpszStructType, __in const void *pvStructInfo, __inout PBYTE *pvEncoded, __inout DWORD *pcbEncoded);
 BOOL kull_m_kerberos_asn1_crypto_genericDecode(__in LPCSTR lpszStructType,  __in_bcount(cbEncoded) const BYTE *pbEncoded, __in DWORD cbEncoded, __out void **ppvStructInfo);
 
