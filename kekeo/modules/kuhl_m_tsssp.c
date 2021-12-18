@@ -173,7 +173,7 @@ NTSTATUS kuhl_m_tsssp_list(int argc, wchar_t * argv[])
 	return STATUS_SUCCESS;
 }
 
-LPCWCHAR AllowToCheckData[] = {L"AllowDefaultCredentials", L"AllowDefaultCredentialsDomain", L"AllowDefaultCredentialsWhenNTLMOnly", L"AllowDefaultCredentialsWhenNTLMOnlyDomain"};
+LPCWCHAR AllowToCheckData[] = {L"AllowDefaultCredentials", L"AllowDefaultCredentialsDomain", L"AllowDefaultCredentialsWhenNTLMOnly", L"AllowDefCredentialsWhenNTLMOnly", L"AllowDefaultCredentialsWhenNTLMOnlyDomain", L"AllowDefCredentialsWhenNTLMOnlyDomain"};
 void kuhl_m_tsssp_list_data(HKEY hPd)
 {
 	HKEY hData;
