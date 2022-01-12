@@ -286,7 +286,7 @@ NTSTATUS kuhl_m_kerberos_ask(int argc, wchar_t * argv[])
 	KULL_M_ASN1_KRB_CRED *KrbCred = NULL;
 	KULL_M_ASN1_EncKrbCredPart *encKrbCred = NULL;
 
-	if(kull_m_string_args_byName(argc, argv, L"service", &szTarget, NULL))
+	if(kull_m_string_args_byName(argc, argv, L"target", &szTarget, NULL))
 	{
 		dwTarget = (USHORT) ((wcslen(szTarget) + 1) * sizeof(wchar_t));
 
